@@ -1,0 +1,896 @@
+{
+    "plugin": [],
+    "analysis": {
+        "FRF": {
+            "study": "frf",
+            "puls_inf": 5430.0,
+            "puls_sup": 5465.0,
+            "ds_min": 1e-08,
+            "ds_max": 1.0,
+            "ds0": 1.0,
+            "verbose": true,
+            "reductors": [
+                {
+                    "type": "NLdofs"
+                },
+                {
+                    "type": "AllgowerPreconditioner"
+                }
+            ]
+        }
+    },
+    "system": {
+        "type": "Base",
+        "nh": 1,
+        "nti": 64,
+        "adim": {
+            "status": false,
+            "lc": 1.6,
+            "wc": 5452.0
+        }
+    },
+    "substructures": {
+        "Aube": {
+            "filename": "./tests/nonregression/NonRegressionData/turbotopo/aube_ABQ.h5",
+            "ndofs": 3,
+            "damping": {
+                "Rayleigh": {
+                    "coef_M": 4.0,
+                    "coef_K": 0.0
+                }
+            }
+        },
+        "Disque": {
+            "filename": "./tests/nonregression/NonRegressionData/turbotopo/disque_ABQ.h5",
+            "ndofs": 3,
+            "damping": {
+                "Rayleigh": {
+                    "coef_M": 4.0,
+                    "coef_K": 0.0
+                }
+            }
+        }
+    },
+    "coordinates": {
+        "leftside": [
+            [
+                1.0,
+                -1.0,
+                0.0
+            ],
+            [
+                0.0,
+                0.0,
+                -1.0
+            ],
+            [
+                1.0,
+                1.0,
+                0.0
+            ]
+        ],
+        "rightside": [
+            [
+                1.0,
+                1.0,
+                -0.0
+            ],
+            [
+                0.0,
+                0.0,
+                1.0
+            ],
+            [
+                1.0,
+                -1.0,
+                0.0
+            ]
+        ]
+    },
+    "connectors": {
+        "Forcing": {
+            "type": "CosinusForcing",
+            "connect": {
+                "Aube": [
+                    4
+                ]
+            },
+            "dirs": [
+                1
+            ],
+            "amp": 0.1
+        },
+        "Con_Aube_001_Disque_023": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    1
+                ],
+                "Disque": [
+                    23
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_003_Disque_019": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    3
+                ],
+                "Disque": [
+                    19
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_006_Disque_018": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    6
+                ],
+                "Disque": [
+                    18
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_007_Disque_020": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    7
+                ],
+                "Disque": [
+                    20
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_008_Disque_021": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    8
+                ],
+                "Disque": [
+                    21
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_009_Disque_022": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    9
+                ],
+                "Disque": [
+                    22
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_010_Disque_024": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    10
+                ],
+                "Disque": [
+                    24
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_027_Disque_034": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    27
+                ],
+                "Disque": [
+                    34
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_028_Disque_035": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    28
+                ],
+                "Disque": [
+                    35
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_029_Disque_025": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    29
+                ],
+                "Disque": [
+                    25
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_030_Disque_029": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    30
+                ],
+                "Disque": [
+                    29
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_031_Disque_028": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    31
+                ],
+                "Disque": [
+                    28
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_032_Disque_027": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    32
+                ],
+                "Disque": [
+                    27
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_033_Disque_026": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    33
+                ],
+                "Disque": [
+                    26
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_034_Disque_033": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    34
+                ],
+                "Disque": [
+                    33
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_035_Disque_032": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    35
+                ],
+                "Disque": [
+                    32
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_036_Disque_031": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    36
+                ],
+                "Disque": [
+                    31
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_037_Disque_030": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    37
+                ],
+                "Disque": [
+                    30
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_000_Disque_012": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    0
+                ],
+                "Disque": [
+                    12
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "leftside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_002_Disque_015": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    2
+                ],
+                "Disque": [
+                    15
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_011_Disque_017": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    11
+                ],
+                "Disque": [
+                    17
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_012_Disque_007": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    12
+                ],
+                "Disque": [
+                    7
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_013_Disque_006": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    13
+                ],
+                "Disque": [
+                    6
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_014_Disque_005": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    14
+                ],
+                "Disque": [
+                    5
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_015_Disque_004": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    15
+                ],
+                "Disque": [
+                    4
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_016_Disque_003": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    16
+                ],
+                "Disque": [
+                    3
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_017_Disque_002": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    17
+                ],
+                "Disque": [
+                    2
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_018_Disque_001": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    18
+                ],
+                "Disque": [
+                    1
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_019_Disque_000": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    19
+                ],
+                "Disque": [
+                    0
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_020_Disque_011": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    20
+                ],
+                "Disque": [
+                    11
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_021_Disque_010": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    21
+                ],
+                "Disque": [
+                    10
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_022_Disque_009": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    22
+                ],
+                "Disque": [
+                    9
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_023_Disque_008": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    23
+                ],
+                "Disque": [
+                    8
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_024_Disque_016": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    24
+                ],
+                "Disque": [
+                    16
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_025_Disque_014": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    25
+                ],
+                "Disque": [
+                    14
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        },
+        "Con_Aube_026_Disque_013": {
+            "type": "DLFT3D",
+            "connect": {
+                "Aube": [
+                    26
+                ],
+                "Disque": [
+                    13
+                ]
+            },
+            "dirs": [
+                0,
+                1,
+                2
+            ],
+            "coordinatesystem": "rightside",
+            "mu": 0.4,
+            "N0": 70.0,
+            "g": 0.0,
+            "eps": 387828.0,
+            "jac": "jax"
+        }
+    }
+}

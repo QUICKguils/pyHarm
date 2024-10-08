@@ -1,0 +1,96 @@
+{
+    "analysis": {
+        "FRF": {
+            "study": "frf",
+            "puls_inf": 0.1,
+            "puls_sup": 7.0,
+            "ds0": 0.05,
+            "ds_min": 1e-12,
+            "ds_max": 0.05,
+            "sign_ds": 1,
+            "verbose": false,
+            "stepsizer": "acceptance",
+            "predictor": "tangent",
+            "predictor_options": {
+                "verbose": false
+            },
+            "corrector": "arc_length",
+            "preconditioner": "nopreconditioner",
+            "stopper": "bounds",
+            "solver": "scipyroot"
+        }
+    },
+    "system": {
+        "type": "Base",
+        "nh": 7,
+        "nti": 1024,
+        "adim": {
+            "status": false,
+            "lc": 1.0,
+            "wc": 1.0
+        }
+    },
+    "substructures": {
+        "sub1": {
+            "filename": "./tests/nonregression/NonRegressionData/coupledduffing/sub.mat",
+            "ndofs": 1
+        },
+        "sub2": {
+            "filename": "./tests/nonregression/NonRegressionData/coupledduffing/sub.mat",
+            "ndofs": 1
+        }
+    },
+    "connectors": {
+        "loading": {
+            "type": "CosinusForcing",
+            "connect": {
+                "sub1": [
+                    0
+                ]
+            },
+            "dirs": [
+                0
+            ],
+            "amp": 2.0
+        },
+        "cubic1": {
+            "type": "CubicSpring",
+            "connect": {
+                "sub1": [
+                    0
+                ]
+            },
+            "dirs": [
+                0
+            ],
+            "k": 1.0
+        },
+        "cubic2": {
+            "type": "CubicSpring",
+            "connect": {
+                "sub2": [
+                    0
+                ]
+            },
+            "dirs": [
+                0
+            ],
+            "k": 1.0
+        },
+        "LinearSpring": {
+            "type": "LinearSpring",
+            "connect": {
+                "sub1": [
+                    0
+                ],
+                "sub2": [
+                    0
+                ]
+            },
+            "dirs": [
+                0
+            ],
+            "k": 5.0
+        }
+    }
+}

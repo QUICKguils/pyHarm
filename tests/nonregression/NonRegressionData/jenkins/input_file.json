@@ -1,0 +1,67 @@
+{
+    "analysis": {
+        "FRF": {
+            "study": "frf",
+            "puls_inf": 24.0,
+            "puls_sup": 28.0,
+            "ds0": 0.03,
+            "ds_min": 1e-12,
+            "ds_max": 0.03,
+            "sign_ds": 1,
+            "verbose": false,
+            "stepsizer": "acceptance",
+            "predictor": "secant",
+            "predictor_options": {
+                "bifurcation_detect": false
+            },
+            "corrector": "pseudo_arc_length",
+            "preconditioner": "nopreconditioner",
+            "stopper": "bounds",
+            "solver": "scipyroot"
+        }
+    },
+    "system": {
+        "type": "Base",
+        "nh": 7,
+        "nti": 1024,
+        "adim": {
+            "status": false,
+            "lc": 1.0,
+            "wc": 1.0
+        }
+    },
+    "substructures": {
+        "sub1": {
+            "filename":"./tests/nonregression/NonRegressionData/jenkins/sub.mat",
+            "ndofs": 1
+        }
+    },
+    "connectors": {
+        "loading": {
+            "type": "CosinusForcing",
+            "connect": {
+                "sub1": [
+                    0
+                ]
+            },
+            "dirs": [
+                0
+            ],
+            "amp": 1.0
+        },
+        "friction": {
+            "type": "Jenkins",
+            "connect": {
+                "sub1": [
+                    1
+                ]
+            },
+            "dirs": [
+                0
+            ],
+            "mu": 1.0,
+            "N0": 5.0,
+            "k": 200.0
+        }
+    }
+}

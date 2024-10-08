@@ -1,0 +1,87 @@
+{
+    "analysis": {
+        "FRF": {
+            "study": "frf",
+            "puls_inf": 6.28,
+            "puls_start": 6.28,
+            "puls_sup": 60.0,
+            "ds0": 0.1,
+            "ds_min": 1e-12,
+            "ds_max": 0.1,
+            "sign_ds": 1,
+            "verbose": false,
+            "stepsizer": "acceptance",
+            "predictor": "tangent",
+            "predictor_options": {"verbose":false},
+            "corrector": "arc_length",
+            "reductors": [{"type":"AllgowerPreconditioner"}],
+            "stopper": "bounds",
+            "solver": "scipyroot"
+        }
+    },
+    "system": {
+        "type": "Base",
+        "nh": 1,
+        "nti": 128,
+        "adim": {
+            "status": true,
+            "lc": 0.0003,
+            "wc": 1.0
+        }
+    },
+    "substructures": {
+        "sub1": {
+            "filename": "./tests/nonregression/NonRegressionData/yx/sub.mat",
+            "ndofs": 4
+        }
+    },
+    "connectors": {
+        "loading_dir0": {
+            "type": "GOForcing",
+            "connect": {
+                "sub1": [
+                    1
+                ]
+            },
+            "dirs": [
+                0
+            ],
+            "dto": 2,
+            "phi": 0,
+            "ho": 1,
+            "amp": 0.6
+        },
+        "loading_dir1": {
+            "type": "GOForcing",
+            "connect": {
+                "sub1": [
+                    1
+                ]
+            },
+            "dirs": [
+                1
+            ],
+            "dto": 2,
+            "phi": 1.5707963267948966,
+            "ho": 1,
+            "amp": 0.6
+        },
+        "gap": {
+            "type": "PenaltyBilateralGap",
+            "connect": {
+                "sub1": [
+                    4
+                ],
+                "INTERNAL": [
+                    5
+                ]
+            },
+            "dirs": [
+                0,
+                1
+            ],
+            "g": 0.0003,
+            "k": 1500000000.0
+        }
+    }
+}
