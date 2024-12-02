@@ -1,39 +1,55 @@
-## Basic installation : 
+## Basic Installation
 
-**pyHarm** is proposed as a full python package. In order to install the package, the user is invited to download/clone the source code from the gitlab and install the package using `pip` while in the project directory : 
-
+**pyHarm** is provided as a complete Python package. To install the package, use the `pip` Python package installer with the following command:
 ```
-pip install .
+pip install pyharm@git+https://gitlab.com/drti/pyharm
 ```
 
-### Required libraries 
+We strongly recommend using the package within a virtual environment dedicated to the library. A `pyharm_env.yml` file is available in the directory, enabling you to easily build a conda environment with the following command:
+```
+conda env create --name YOUR_ENV_NAME -f pyharm_env.yml
+```
+where `YOUR_ENV_NAME` is your chosen name for the environment. Otherwise, the default name `pyHarm_env` will be used and can be accessed via:
+```
+mamba activate YOUR_ENV_NAME
+```
 
-The required packages to run **pyHarm** are the following : 
+### Required Libraries
+
+The required packages to run **pyHarm** are:
 - numpy
 - scipy
 - numba
 - jax
-- jax-lib
+- jaxlib
 - pandas
 - h5py
 - matplotlib
-
-We strongly advice to build `pyHarm` problems using **jupyter notebooks** and to add :
-- notebook | jupyterlab
-
-For developers, some other libraries can be added : 
+- notebook
 - pytest
+
+We strongly recommend building `pyHarm` projects using **Jupyter notebooks**. For developers, additional libraries can be added:
 - sphinx
 
+### Notes for Developers
 
-### Notes for developers : 
-
-In order to include new developements into **pyHarm** it is advised to work in an environment where **pyHarm** is not installed and use it as a standalone package :
+To include new developments into **pyHarm**, it is advised to work in an environment where **pyHarm** is not installed and use it as a standalone package:
 
 ```
 import sys
-sys.path.append($PATH_TO_pyHarm_folder$)
+sys.path.append(YOUR_PATH_TO_pyHarm_folder)
 import pyHarm
 ```
 
-This way, any modification to the source file can be updated by reimporting the pyHarm module after restarting python kernel without reinstalling the package in the environment.
+This way, any modification to the source files can be updated by reimporting the pyHarm module after restarting the Python kernel, without reinstalling the package in the environment.
+
+### Running the Unitary Tests and the Non-Regression Test Suite
+
+The unitary tests are provided using the `pytest` library. They must be downloaded from the source repository at https://gitlab.com/drti/pyharm. The tests are classified into two categories: 
+- **unit**: Unit tests for basic features.
+- **nonregression**: Tests to ensure code non-regression, including proper physics problems.
+
+To run the tests, use the following command with your **pyHarm** environment activated, replacing `NAME_TEST_CAT` with one of the aforementioned categories: 
+```
+pytest -m NAME_TEST_CAT
+```

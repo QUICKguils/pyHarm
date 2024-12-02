@@ -1,0 +1,10 @@
+*.pyc
+*.nbi
+*.nbc
+*.egg-info
+Docs/_build/*
+Tutorials/.ipynb_checkpoints/*
+dist/*
+build/*
+.vscode
+.coverage
