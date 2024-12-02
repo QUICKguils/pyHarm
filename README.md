@@ -9,12 +9,20 @@ The code is extensively using the factory design pattern in the subpackages to i
 **Documentation** is available on readthedocs : 
 - https://pyharm-saf.readthedocs.io/en/latest/
 
-## Basic installation : 
+## Basic Installation
 
-pyHarm is provided as a full python package. In order to install the package, the user is invited to download/clone the source code from the gitlab and install the package using `pip` while in the project directory : 
-
+**pyHarm** is provided as a complete Python package. To install the package, use the `pip` Python package installer with the following command:
 ```
-pip install .
+pip install pyharm@git+https://gitlab.com/drti/pyharm
+```
+
+We strongly recommend using the package within a virtual environment dedicated to the library. A `pyharm_env.yml` file is available in the directory, enabling you to easily build a conda environment with the following command:
+```
+conda env create --name YOUR_ENV_NAME -f pyharm_env.yml
+```
+where `YOUR_ENV_NAME` is your chosen name for the environment. Otherwise, the default name `pyHarm_env` will be used and can be accessed via:
+```
+mamba activate YOUR_ENV_NAME
 ```
 
 *For more details about the installation process, please refer to the dedicated section of the documentation.*
@@ -25,10 +33,10 @@ The repository comprises three folders. The core files of the pyHarm code are co
 - unitests : contains small tests that check specific parts of the source code
 - nonregression : contains complete analysis of use cases
 
-To run those tests, `pytest` must be installed and the following command can be run while replacing the `$TEST_SET$` by one of the value described in the following table : 
 
+To run the tests, use the following command with your **pyHarm** environment activated, replacing `NAME_TEST_CAT` with one of the aforementioned categories: 
 ```
-pytest -m $TEST_SET$
+pytest -m NAME_TEST_CAT
 ```
 
 | `$TEST_SET$` | Description |

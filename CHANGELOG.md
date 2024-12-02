@@ -3,6 +3,27 @@
 Every modification is contained in this file. \
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)..
 
+## [1.0.1] - 2024-12-02
+### Added
+- `pyHarm_env.yml` file added in order to simplify conda environment setup.
+- `.gitignore` generic file added
+
+### Changed
+- No changes in this release.
+
+### Deprecated
+- No deprecations in this release.
+
+### Removed
+- No removals in this release.
+
+### Fixed
+- No fixes in this release.
+
+### Security
+- No security changes in this release.
+
+
 ## [1.0.0] - 2024-10-09
 ### Added
 - Initial release of the project.
