@@ -8,3 +8,5 @@ dist/*
 build/*
 .vscode
 .coverage
+src/pyHarm/_version.py
+_build/*

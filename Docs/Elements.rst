@@ -15,7 +15,7 @@ Elements package
 ================
 
 
-.. include:: ../pyHarm/Elements/README.md
+.. include:: ./_source/pyHarm/Elements/Elements.md
    :parser: myst_parser.sphinx_
 
 Elements subpackages

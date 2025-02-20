@@ -24,11 +24,12 @@ where `YOUR_ENV_NAME` is your chosen name for the environment. Otherwise, the de
 ```
 mamba activate YOUR_ENV_NAME
 ```
+
 *For more details about the installation process, please refer to the dedicated section of the documentation.*
 
 # Project content description
 
-The repository comprises three folders. The core files of the pyHarm code are contained in the `src` folder. The `Tutorials` folder contains a set of Tutorials to learn how to use pyHarm in the form of *Jupyter Notebooks*. Finally, the `tests` folder contains a set of `pytest` tests divided into two sections : 
+The repository comprises three folders. The core files of the pyHarm code are contained in the `pyHarm` folder. The `Tutorials` folder contains a set of Tutorials to learn how to use pyHarm in the form of *Jupyter Notebooks*. Finally, the `tests` folder contains a set of `pytest` tests divided into two sections : 
 - unitests : contains small tests that check specific parts of the source code
 - nonregression : contains complete analysis of use cases
 

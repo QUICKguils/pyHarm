@@ -14,7 +14,7 @@
 Modules
 =======
 
-.. include:: ../pyHarm/README.md
+.. include:: ./_source/pyHarm/Module.md
    :parser: myst_parser.sphinx_
    
 .. rubric:: API links

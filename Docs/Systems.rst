@@ -14,7 +14,7 @@
 Systems package
 ===============
 
-.. include:: ../pyHarm/Systems/README.md
+.. include:: ./_source/pyHarm/Systems/Systems.md
    :parser: myst_parser.sphinx_
 
    

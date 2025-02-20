@@ -14,7 +14,7 @@
 Predictors package
 ==================
 
-.. include:: ../pyHarm/Predictors/README.md
+.. include:: ./_source/pyHarm/Predictors/Predictors.md
    :parser: myst_parser.sphinx_
 
    

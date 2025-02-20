@@ -6,7 +6,7 @@
 SubsDataReader package
 ======================
 
-.. include:: ../pyHarm/Substructures/SubDataReader/README.md
+.. include:: ./_source/pyHarm/Substructures/SubDataReader/SubDataReader.md
    :parser: myst_parser.sphinx_
 
    

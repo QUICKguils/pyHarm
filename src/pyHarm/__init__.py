@@ -16,6 +16,9 @@
 """
 The pyHarm package is the core of pyHarm. It contains every modules and subpackages for pyHarm to be runnning an analysis. 
 """
-from .__version__ import __version__
+try:
+    from ._version import __version__ # type: ignore
+except ImportError:
+    __version__ = "0.0.0"
 from .BaseUtilFuncs import *
 from .Maestro import Maestro

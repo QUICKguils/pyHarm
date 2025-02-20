@@ -10,7 +10,7 @@ NodeToNodeElements with DLFT formulation package
 ================================================
 
 
-.. include:: ../pyHarm/Elements/NodeToNodeElements/DLFTElements/README.md
+.. include:: ./_source/pyHarm/Elements/NodeToNodeElements/DLFTElements/DLFTElements.md
    :parser: myst_parser.sphinx_
 
    

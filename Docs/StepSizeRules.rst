@@ -14,7 +14,7 @@
 StepSizeRules package
 =====================
 
-.. include:: ../pyHarm/StepSizeRules/README.md
+.. include:: ./_source/pyHarm/StepSizeRules/StepSizeRules.md
    :parser: myst_parser.sphinx_
 
    

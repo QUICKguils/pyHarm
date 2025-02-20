@@ -11,7 +11,7 @@ Welcome to pyHarm's documentation!
    :caption: Contents:
 
 
-.. include:: ../README.md
+.. include:: ./_source/README.md
    :parser: myst_parser.sphinx_
 
 .. toctree::

@@ -14,7 +14,7 @@
 Correctors package
 ==================
 
-.. include:: ../pyHarm/Correctors/README.md
+.. include:: ./_source/pyHarm/Correctors/Correctors.md
    :parser: myst_parser.sphinx_
 
 

@@ -10,7 +10,7 @@ NodeToNodeElements with WR formulation package
 ==============================================
 
 
-.. include:: ../pyHarm/Elements/NodeToNodeElements/WRElements/README.md
+.. include:: ./_source/pyHarm/Elements/NodeToNodeElements/WRElements/WRElements.md
    :parser: myst_parser.sphinx_
 
 

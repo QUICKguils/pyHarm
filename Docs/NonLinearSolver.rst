@@ -14,7 +14,7 @@
 NonLinearSolver package
 =======================
 
-.. include:: ../pyHarm/NonLinearSolver/README.md
+.. include:: ./_source/pyHarm/NonLinearSolver/NonLinearSolver.md
    :parser: myst_parser.sphinx_
 
    

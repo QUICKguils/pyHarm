@@ -52,7 +52,7 @@ class FRF_NonLinear(ABCAnalysis):
 
     name = "Nonlinear FRF analysis"
 
-    default={   "study":"FRF",
+    default={   "study":"frf",
                 "solver":"scipyroot",
                 "predictor":"tangent",
                 "corrector":"arc_length",
