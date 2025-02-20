@@ -199,7 +199,6 @@ class Jenkins(NodeToNodeElement) :
         Returns:
             np.ndarray: residual vector.
         """
-        self.N0 = self.data["N0"]
         x = xg[self.indices]
         self.R, stuck = JenkinsResidual(x, om, self.Pdir, self.Pslave, self.Pmaster, self.mu, self.N0, self.k, self.D["ft"],self.D["tf"])
         self.stuck = stuck
