@@ -6,7 +6,7 @@
 Substructures package
 =====================
 
-.. include:: ../pyHarm/Substructures/README.md
+.. include:: ./_source/pyHarm/Substructures/Substructures.md
    :parser: myst_parser.sphinx_
 
 Reader subpackage

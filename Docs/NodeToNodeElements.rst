@@ -10,7 +10,7 @@ NodeToNodeElements package
 ==========================
 
 
-.. include:: ../pyHarm/Elements/NodeToNodeElements/README.md
+.. include:: ./_source/pyHarm/Elements/NodeToNodeElements/NodeToNodeElements.md
    :parser: myst_parser.sphinx_
 
    

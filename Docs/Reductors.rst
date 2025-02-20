@@ -14,7 +14,7 @@
 Reductors package
 =================
 
-.. include:: ../pyHarm/Reductors/README.md
+.. include:: ./_source/pyHarm/Reductors/Reductors.md
    :parser: myst_parser.sphinx_
 
    

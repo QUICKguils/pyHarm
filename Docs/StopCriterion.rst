@@ -14,7 +14,7 @@
 StopCriterion package
 =====================
 
-.. include:: ../pyHarm/StopCriterion/README.md
+.. include:: ./_source/pyHarm/StopCriterion/StopCriterion.md
    :parser: myst_parser.sphinx_
 
 

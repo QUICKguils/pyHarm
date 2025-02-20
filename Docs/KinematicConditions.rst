@@ -14,7 +14,7 @@
 KinematicConditions package
 ===========================
 
-.. include:: ../pyHarm/KinematicConditions/README.md
+.. include:: ./_source/pyHarm/KinematicConditions/KinematicConditions.md
    :parser: myst_parser.sphinx_
 
 

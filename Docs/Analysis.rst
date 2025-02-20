@@ -14,7 +14,7 @@
 Analysis package
 ================
 
-.. include:: ../pyHarm/Analysis/README.md
+.. include:: ./_source/pyHarm/Analysis/Analysis.md
    :parser: myst_parser.sphinx_
 
    

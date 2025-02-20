@@ -10,7 +10,7 @@ SubstructureMatrixElements package
 ==================================
 
 
-.. include:: ../pyHarm/Elements/SubstructureMatrixElements/README.md
+.. include:: ./_source/pyHarm/Elements/SubstructureMatrixElements/SubstructureMatrixElements.md
    :parser: myst_parser.sphinx_
 
 

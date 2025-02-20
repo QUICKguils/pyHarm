@@ -22,17 +22,12 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
-
-def read_version():
-    version_file = os.path.join(os.path.dirname(__file__), '..', 'pyHarm', '__version__.py')
-    with open(version_file) as f:
-        exec(f.read())
-        return locals()['__version__']
+from pyHarm import __version__
 
 project = 'pyHarm'
 copyright = '2024, SAFRAN SA'
 author = 'J. Armand, Q. Mercier'
-release = read_version()
+release = __version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -45,7 +40,7 @@ extensions = [
     'myst_parser',
 ]
 
-autoapi_dirs = ['../pyHarm']
+autoapi_dirs = ['../src/pyHarm']
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 myst_enable_extensions = [
@@ -60,5 +55,4 @@ sys.path.insert(0, os.path.abspath("../"))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'furo'
-html_static_path = ['_static']
-html_logo = r"./_source/pyHarm_inline.png"
+html_logo = r"./_source/pyHarm_logo.png"

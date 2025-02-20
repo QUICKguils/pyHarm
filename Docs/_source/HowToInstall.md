@@ -16,7 +16,7 @@ mamba activate YOUR_ENV_NAME
 
 ### Required Libraries
 
-The required packages to run **pyHarm** are:
+The required packages to run **pyHarm** are described in `pyproject.toml`:
 - numpy
 - scipy
 - numba
@@ -26,20 +26,25 @@ The required packages to run **pyHarm** are:
 - h5py
 - matplotlib
 - notebook
-- pytest
 
-We strongly recommend building `pyHarm` projects using **Jupyter notebooks**. For developers, additional libraries can be added:
-- sphinx
+We strongly recommend building `pyHarm` projects using **Jupyter notebooks**. 
 
 ### Notes for Developers
 
-To include new developments into **pyHarm**, it is advised to work in an environment where **pyHarm** is not installed and use it as a standalone package:
+To include new developments into **pyHarm**, it is advised to work in an environment where **pyHarm** is installed editable after cloning the repo in the folder of your choice:
 
 ```
-import sys
-sys.path.append(YOUR_PATH_TO_pyHarm_folder)
-import pyHarm
+git clone https://gitlab.com/drti/pyharm.git
 ```
+```
+cd pyharm
+```
+```
+pip install -e .[dev]
+```
+The `[dev]` tag allows for the installation of the optional dependencies specific for pyHarm's development : 
+- pytest in order to run the unitests 
+- sphinx in order to build the documentation locally
 
 This way, any modification to the source files can be updated by reimporting the pyHarm module after restarting the Python kernel, without reinstalling the package in the environment.
 
