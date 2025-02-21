@@ -12,30 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
-from pyHarm.KinematicConditions.GODisplacement import GODisplacement
 import numpy as np
 
+from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
+from pyHarm.KinematicConditions.GODisplacement import GODisplacement
 
-class SpeedImposed(GODisplacement) : 
+
+class SpeedImposed(GODisplacement):
     """Kinematic condition that imposes a speed on a specific dof.
-    
+
     Attributes:
         amp (float): amplitude to impose.
     """
-    factory_keyword:str = "SpeedImposed"
+
+    factory_keyword: str = "SpeedImposed"
     """str: keyword that is used to call the creation of this class in the system factory."""
 
-    default = {"phi":0., "ho":1}
+    default = {"phi": 0.0, "ho": 1}
     """dict: dictionary containing the default parameters of the kinematic condition"""
 
-    def __post_init__(self,):
-        self.data = getCustomOptionDictionary(self.data,self.default)
+    def __post_init__(
+        self,
+    ):
+        self.data = getCustomOptionDictionary(self.data, self.default)
         self.amp = self.data["amp"]
         self.ho = self.data["ho"]
         self.dto = 1.0
-        if "phi" not in self.data.keys() : 
-            self.phi = 0.
-        else : 
+        if "phi" not in self.data.keys():
+            self.phi = 0.0
+        else:
             self.phi = float(self.data["phi"])
         self.loadvec = self._loadingdofs()

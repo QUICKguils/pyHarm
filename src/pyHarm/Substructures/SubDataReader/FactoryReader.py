@@ -18,19 +18,17 @@ This module is the factory of the Substructure Readers.
 Attributes:
     SubstructureReaderDictionary (dict[str, ABCReader]): Dictionary of available Substructure reader subclasses as values and their factory_keyword as key.
 """
+
 from pyHarm.Substructures.SubDataReader.ABCReader import ABCReader
 from pyHarm.Substructures.SubDataReader.GenericReader import GenericReader
 
-SubstructureReaderDictionary = \
-{
-    
-    GenericReader.factory_keyword:            GenericReader, # For now the dictionary is useless, but could be usefull if more type of Substructures are needed
-
+SubstructureReaderDictionary = {
+    GenericReader.factory_keyword: GenericReader,  # For now the dictionary is useless, but could be usefull if more type of Substructures are needed
 }
 """dict[str, ABCReader]: Dictionary of available Substructure readers subclasses as values and their factory_keyword as key."""
 
 
-def generate_subreader(data:dict) -> ABCReader:
+def generate_subreader(data: dict) -> ABCReader:
     """
     Function responsible for the instantiation of ABCReader objects.
 
@@ -40,7 +38,9 @@ def generate_subreader(data:dict) -> ABCReader:
     Returns:
         ABCReader: Instance of a subclass of ABCReader class.
     """
-    type_of_reader = data['reader']
+    type_of_reader = data["reader"]
     if type_of_reader not in SubstructureReaderDictionary.keys():
-        raise ValueError('The required substructure reader does not exist in the factory')
+        raise ValueError(
+            "The required substructure reader does not exist in the factory"
+        )
     return SubstructureReaderDictionary[type_of_reader]()

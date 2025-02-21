@@ -1,24 +1,32 @@
-import pytest
 import json
+
 import numpy as np
 import pandas as pd
+import pytest
+
 import pyHarm
-from tests.nonregression.nonregression_helperfunctions import check_residuals,chec_FRF_vs_ref, generate_arc_length
+from tests.nonregression.nonregression_helperfunctions import (
+    chec_FRF_vs_ref,
+    check_residuals,
+    generate_arc_length,
+)
 
 NRProb_inputfolder = "./tests/nonregression/NonRegressionData/onedofgap/"
 
-def getFRF_basic(M:pyHarm.Maestro):
-    SA = [sol for sol in M.nls['FRF'].SolList if sol.flag_accepted]
-    indices_selection = ("sub1",0,0)
+
+def getFRF_basic(M: pyHarm.Maestro):
+    SA = [sol for sol in M.nls["FRF"].SolList if sol.flag_accepted]
+    indices_selection = ("sub1", 0, 0)
     indexH = M.getIndex(*indices_selection)
     om = np.array([sol.x[-1] for sol in SA])
     ampH = np.array([np.linalg.norm(sol.x[indexH]) for sol in SA])
-    return om,ampH
+    return om, ampH
+
 
 @pytest.mark.all
 @pytest.mark.nonregression
 def test_onedofgap():
-    with open(NRProb_inputfolder + "input_file.json","r") as f :
+    with open(NRProb_inputfolder + "input_file.json", "r") as f:
         inp = json.load(f)
     M = pyHarm.Maestro(inp)
     M.operate("null")

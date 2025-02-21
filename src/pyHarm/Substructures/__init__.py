@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""""
+""" "
 This package purpose is the integration of Substructure type of objects in pyHarm mostly responsible of creating the dofs of the problem to be solved.
 The ABCsubstructure have also the possibility of influency/adding connectors into the input dictionary.
 """

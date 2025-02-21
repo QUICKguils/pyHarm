@@ -12,15 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyHarm.Elements.SubstructureMatrixElements.GeneralOrderMatrixElement import GOMatrix
-import numpy as np 
+import numpy as np
+
+from pyHarm.Elements.SubstructureMatrixElements.GeneralOrderMatrixElement import (
+    GOMatrix,
+)
 
 
-class LinearHystMatrix(GOMatrix) : 
-
-    factory_keyword = 'linear_hysteretic'
+class LinearHystMatrix(GOMatrix):
+    factory_keyword = "linear_hysteretic"
 
     def _generateMatrices(self, data):
         self.dto = 1
         self.dom = 0
-        self.kronMat = np.kron(np.linalg.matrix_power(np.sign(self.nabla),self.dto),data["matrix"])
+        self.kronMat = np.kron(
+            np.linalg.matrix_power(np.sign(self.nabla), self.dto), data["matrix"]
+        )

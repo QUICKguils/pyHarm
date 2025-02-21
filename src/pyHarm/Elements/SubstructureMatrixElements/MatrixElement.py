@@ -13,16 +13,19 @@
 # limitations under the License.
 
 """
-This module contains the basic MatrixElement class being a abstract class derived from the ABCElement class 
+This module contains the basic MatrixElement class being a abstract class derived from the ABCElement class
 It mostly implements a part of the required abstract methods : the methods that generates the indices from the input datas.
 """
+
 from abc import abstractmethod
-from pyHarm.Elements.ABCElement import ABCElement
-import pandas as pd
+
 import numpy as np
+import pandas as pd
 
-class MatrixElement(ABCElement) : 
+from pyHarm.Elements.ABCElement import ABCElement
 
+
+class MatrixElement(ABCElement):
     def __init_data__(self, name, data, CS):
         self.indices = []
         self.name = name
@@ -34,19 +37,16 @@ class MatrixElement(ABCElement) :
     def __str__(self):
         return f"Matrix Element of type {self.factory_keyword} applied on {self.subs} substructure"
 
-    def generateIndices(self,ed:pd.DataFrame) :
+    def generateIndices(self, ed: pd.DataFrame):
         """From the explicit dof DataFrame, generates the index of dofs concerned by the connector.
-        
+
         Args:
             expl_dofs (pd.DataFrame): explicit dof DataFrame from the studied system.
 
         Attributes:
             indices (np.ndarray): index of the dofs that the connector needs.
         """
-        self.indices = np.array(
-            ed[ed['sub']==self.sub].index
-        )
+        self.indices = np.array(ed[ed["sub"] == self.sub].index)
 
     @abstractmethod
-    def _generateMatrices(self,data):
-        ...
+    def _generateMatrices(self, data): ...

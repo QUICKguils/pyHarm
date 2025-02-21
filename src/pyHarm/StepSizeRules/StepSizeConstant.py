@@ -12,21 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyHarm.StepSizeRules.ABCStepSizeRule import ABCStepSizeRule 
 from pyHarm.Solver import SystemSolution
+from pyHarm.StepSizeRules.ABCStepSizeRule import ABCStepSizeRule
 
 
 class StepSizeConstant(ABCStepSizeRule):
     """
     Step size is kept constant.
     """
-    factory_keyword : str = "constant"
+
+    factory_keyword: str = "constant"
     name = "constant step size"
 
-    def getStepSize(self, ds:float, sollist:list[SystemSolution], **kwargs) -> float:
+    def getStepSize(self, ds: float, sollist: list[SystemSolution], **kwargs) -> float:
         """Returns the step size to be used for the prediction step of the analysis.
 
-        Args: 
+        Args:
             ds (float): Current step size.
             sollist (list[SystemSolution]): list of SystemSolution returned during the analysis.
 

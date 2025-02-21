@@ -16,27 +16,26 @@ from pyHarm.Substructures.ABCSubstructure import ABCSubstructure
 
 
 class Substructure(ABCSubstructure):
-    
-    factory_keyword = 'substructure'
-    
-    def _add_connectors(self,data:dict):
-        """"
+    factory_keyword = "substructure"
+
+    def _add_connectors(self, data: dict):
+        """ "
         Method that adds a substructure Element.
 
         Returns :
             dict: Containing one connector with key of the same name that of the defined substructure
         """
         con = {
-            self.name:{
-                "type":"substructure",
-                "connect":self.name,
-                "matrix":data['matrix']
+            self.name: {
+                "type": "substructure",
+                "connect": self.name,
+                "matrix": data["matrix"],
             }
         }
         return con
-    
-    def _add_kinematics(self,data:dict):
-        """"
+
+    def _add_kinematics(self, data: dict):
+        """ "
         Method that adds no kinematic conditions.
 
         Returns :

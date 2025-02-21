@@ -18,29 +18,31 @@ Module that contains the factory of reducers.
 Attributes:
     Reductor_dico (dict): Dictionary containing available ABCReductors as values and their factoryu keyword as key.
 """
-from pyHarm.Reductors.ABCReductor import ABCReductor
-from pyHarm.Reductors.NoReductor import NoReductor
-from pyHarm.Reductors.StaticReductor import StaticReductor
-from pyHarm.Reductors.GlobalHarmonicReductor import GlobalHarmonicReductor
-from pyHarm.Reductors.LocalHarmonicReductor import LocalHarmonicReductor
-from pyHarm.Reductors.AllgowerPreconditioner import AllgowerPreconditioner
-from pyHarm.Reductors.KrackPreconditioner import KrackPreconditioner
-from pyHarm.Reductors.NLdofsReductor import NLdofsReductor
 
 import pandas as pd
 
+from pyHarm.Reductors.ABCReductor import ABCReductor
+from pyHarm.Reductors.AllgowerPreconditioner import AllgowerPreconditioner
+from pyHarm.Reductors.GlobalHarmonicReductor import GlobalHarmonicReductor
+from pyHarm.Reductors.KrackPreconditioner import KrackPreconditioner
+from pyHarm.Reductors.LocalHarmonicReductor import LocalHarmonicReductor
+from pyHarm.Reductors.NLdofsReductor import NLdofsReductor
+from pyHarm.Reductors.NoReductor import NoReductor
+from pyHarm.Reductors.StaticReductor import StaticReductor
+
 Reductor_dico = {
-    NoReductor.factory_keyword:                     NoReductor,
-    StaticReductor.factory_keyword:                 StaticReductor,
-    NLdofsReductor.factory_keyword:                 NLdofsReductor,
-    GlobalHarmonicReductor.factory_keyword:         GlobalHarmonicReductor,
-    LocalHarmonicReductor.factory_keyword:          LocalHarmonicReductor,
-    AllgowerPreconditioner.factory_keyword:         AllgowerPreconditioner,
-    KrackPreconditioner.factory_keyword:            KrackPreconditioner,
+    NoReductor.factory_keyword: NoReductor,
+    StaticReductor.factory_keyword: StaticReductor,
+    NLdofsReductor.factory_keyword: NLdofsReductor,
+    GlobalHarmonicReductor.factory_keyword: GlobalHarmonicReductor,
+    LocalHarmonicReductor.factory_keyword: LocalHarmonicReductor,
+    AllgowerPreconditioner.factory_keyword: AllgowerPreconditioner,
+    KrackPreconditioner.factory_keyword: KrackPreconditioner,
 }
 """dict: Dictionary containing availabe ABCReductors as values and their factoryu keyword as key."""
 
-def generateReductor(data:dict,expl_dofs:pd.DataFrame) -> ABCReductor:
+
+def generateReductor(data: dict, expl_dofs: pd.DataFrame) -> ABCReductor:
     """
     Factory function that creates a ABCReductor object.
 
@@ -52,5 +54,5 @@ def generateReductor(data:dict,expl_dofs:pd.DataFrame) -> ABCReductor:
         ABCReductor: Instance of the required ABCReductor class.
     """
     typeReductor = data["type"]
-    reductor = Reductor_dico[typeReductor](data,expl_dofs)
+    reductor = Reductor_dico[typeReductor](data, expl_dofs)
     return reductor

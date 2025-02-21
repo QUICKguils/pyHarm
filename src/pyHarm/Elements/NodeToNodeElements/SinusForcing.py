@@ -13,23 +13,29 @@
 # limitations under the License.
 
 
-from pyHarm.Elements.NodeToNodeElements.GeneralOrderForcing import GeneralOrderForcing
 import numpy as np
 
-class SinusForcing(GeneralOrderForcing): 
+from pyHarm.Elements.NodeToNodeElements.GeneralOrderForcing import GeneralOrderForcing
+
+
+class SinusForcing(GeneralOrderForcing):
     """
-    This element is an external forcing that applies a pure sine signal onto the first harmonic. 
-    
+    This element is an external forcing that applies a pure sine signal onto the first harmonic.
+
     Attributes:
         amp (float): amplitude value of the forcing.
     """
-    factory_keyword : str = "SinusForcing"
+
+    factory_keyword: str = "SinusForcing"
     """str: keyword that is used to call the creation of this class in the system factory."""
-    def __post_init__(self,):
+
+    def __post_init__(
+        self,
+    ):
         self.dto = 0
         self.ho = 1
-        self.phi = np.pi/2.
+        self.phi = np.pi / 2.0
         self.loadvec = self._loadingdofs()
         self.amp = self.data["amp"]
-        self.nabo = np.linalg.matrix_power(self.nabla,self.dto)
-        self.flag_elemtype = -1 # it does not contribute to any of the system matrices
+        self.nabo = np.linalg.matrix_power(self.nabla, self.dto)
+        self.flag_elemtype = -1  # it does not contribute to any of the system matrices

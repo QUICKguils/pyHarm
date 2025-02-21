@@ -169,7 +169,7 @@ r = np.sqrt(dx**2 + dy**2)
 theta = np.arctan2(dy, dx)
 
 # Plot the orbital motion.
-fig_orbit, ax_orbit = plt.subplots(subplot_kw={'projection': 'polar'})
+fig_orbit, ax_orbit = plt.subplots(subplot_kw={"projection": "polar"})
 ax_orbit.plot(theta, r, label="Rotor motion")
 ax_orbit.plot(
     np.linspace(0, 2 * np.pi, len(r)), 1 * np.ones_like(r), "k--", label="Gap"

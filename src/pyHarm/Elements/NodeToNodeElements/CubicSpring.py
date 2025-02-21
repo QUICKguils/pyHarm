@@ -13,22 +13,26 @@
 # limitations under the License.
 
 
-from pyHarm.Elements.NodeToNodeElements.GeneralOrderElement import GeneralOrderElement
 import numpy as np
+
+from pyHarm.Elements.NodeToNodeElements.GeneralOrderElement import GeneralOrderElement
+
 
 class CubicSpring(GeneralOrderElement):
     """
-    This element is the cubic spring element. 
-    
+    This element is the cubic spring element.
+
     Attributes:
         k (float): linear factor to apply.
     """
 
-    factory_keyword : str = "CubicSpring"
+    factory_keyword: str = "CubicSpring"
     """str: keyword that is used to call the creation of this class in the system factory."""
 
-    def __post_init__(self,):
+    def __post_init__(
+        self,
+    ):
         self.dto = 0
         self.xo = 3
         self.k = self.data["k"]
-        self.nabo = np.linalg.matrix_power(self.nabla,self.dto)
+        self.nabo = np.linalg.matrix_power(self.nabla, self.dto)

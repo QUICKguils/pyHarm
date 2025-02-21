@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyHarm.Correctors.ABCCorrector import ABCCorrector
 import numpy as np
+
+from pyHarm.Correctors.ABCCorrector import ABCCorrector
 from pyHarm.Solver import SystemSolution
 
 
@@ -22,11 +23,16 @@ class Corrector_arc_length(ABCCorrector):
     Corrector that uses an arc length parametrisation equation.
     """
 
-    factory_keyword : str = "arc_length"
+    factory_keyword: str = "arc_length"
     """str: name of the class to call in the factory in order to create an instance of the class."""
 
-
-    def ClosureEquation(self, solx:np.ndarray,sol:SystemSolution,sollist:list[SystemSolution],**kwargs) -> np.ndarray:
+    def ClosureEquation(
+        self,
+        solx: np.ndarray,
+        sol: SystemSolution,
+        sollist: list[SystemSolution],
+        **kwargs,
+    ) -> np.ndarray:
         """Computes the residual contribution of the correction equation.
 
         Args:
@@ -38,10 +44,20 @@ class Corrector_arc_length(ABCCorrector):
             np.ndarray: Residual of the correction equation.
         """
         ds = np.linalg.norm(sol.precedent_solution.x_pred - sol.precedent_solution.x)
-        R_cont =  (np.linalg.norm(solx[:-1]-sol.precedent_solution.x[:-1]) ** 2 + (solx[-1]-sol.precedent_solution.x[-1]) ** 2 - ds ** 2)
+        R_cont = (
+            np.linalg.norm(solx[:-1] - sol.precedent_solution.x[:-1]) ** 2
+            + (solx[-1] - sol.precedent_solution.x[-1]) ** 2
+            - ds**2
+        )
         return R_cont
 
-    def ClosureJacobian(self, solx:np.ndarray,sol:SystemSolution,sollist:list[SystemSolution],**kwargs) -> tuple[np.ndarray,np.ndarray]:
+    def ClosureJacobian(
+        self,
+        solx: np.ndarray,
+        sol: SystemSolution,
+        sollist: list[SystemSolution],
+        **kwargs,
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Computes the jacobian contribution of the correction equation.
 
         Args:
@@ -52,6 +68,6 @@ class Corrector_arc_length(ABCCorrector):
         Returns:
             tuple[np.ndarray,np.ndarray]: Jacobians of the correction equation.
         """
-        dRdx = (2. * (solx[:-1] - sol.precedent_solution.x[:-1]).T)
-        dRdom = (2. * (solx[-1] - sol.precedent_solution.x[-1]) )
+        dRdx = 2.0 * (solx[:-1] - sol.precedent_solution.x[:-1]).T
+        dRdom = 2.0 * (solx[-1] - sol.precedent_solution.x[-1])
         return dRdx, dRdom

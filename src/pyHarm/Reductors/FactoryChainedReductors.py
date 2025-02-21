@@ -15,10 +15,11 @@
 """
 This module contains the factory of ChainReductor objects that is a specific kind of ABCReductors chaining reducing methods in series allowing to use simultaneously multiple reduction layers.
 """
+
 from pyHarm.Reductors.ChainReductor import ChainReductor
 
 
-def generateChainReductor(data,expl_dofs):
+def generateChainReductor(data, expl_dofs):
     """
     Factory function that creates a ChainReductor object.
 
@@ -29,4 +30,4 @@ def generateChainReductor(data,expl_dofs):
     Returns:
         ChainReductor: Instance of the required ChainReductor class.
     """
-    return ChainReductor(data,expl_dofs)
+    return ChainReductor(data, expl_dofs)

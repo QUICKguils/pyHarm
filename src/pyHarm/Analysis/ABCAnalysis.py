@@ -14,11 +14,12 @@
 
 
 import abc
+
 from pyHarm.Systems.ABCSystem import ABCSystem
 
-class ABCAnalysis(abc.ABC): 
-    """This is the abstract class ruling the solver class. The system is responsible of solving the system starting at a given starting point.
-    """
+
+class ABCAnalysis(abc.ABC):
+    """This is the abstract class ruling the solver class. The system is responsible of solving the system starting at a given starting point."""
 
     @property
     @abc.abstractmethod
@@ -28,27 +29,26 @@ class ABCAnalysis(abc.ABC):
         """
         ...
 
-    def __init__(self, inputData:dict, System:ABCSystem, ndofs:int,**kwargs):
+    def __init__(self, inputData: dict, System: ABCSystem, ndofs: int, **kwargs):
         pass
 
     @abc.abstractmethod
-    def initialise(self,**kwargs):
+    def initialise(self, **kwargs):
         """
         Initialise step of the analysis.
         """
         pass
-    
+
     @abc.abstractmethod
-    def Solve(self,**kwargs):
+    def Solve(self, **kwargs):
         """
         Solving step of the analysis.
         """
         pass
-    
+
     @abc.abstractmethod
-    def makeStep(self,**kwargs):
+    def makeStep(self, **kwargs):
         """
         Make a whole step of the analysis.
         """
         pass
-    

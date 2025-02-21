@@ -13,21 +13,22 @@
 # limitations under the License.
 
 """
-This is the factory of the ABCCorrector subclasses. 
+This is the factory of the ABCCorrector subclasses.
 
 Attributes:
     Corrector_dico (dict[str, ABCCorrector]): Dictionary containing the ABCCorrector subclasses as values and their factory_keyword as key.
 """
 
-from pyHarm.Correctors.CorrectorArcLength import Corrector_arc_length
-from pyHarm.Correctors.CorrectorPseudoArcLength import Corrector_pseudo_arc_length
-from pyHarm.Correctors.CorrectorNoContinuation import Corrector_no_continuation
 from pyHarm.Correctors.ABCCorrector import ABCCorrector
+from pyHarm.Correctors.CorrectorArcLength import Corrector_arc_length
+from pyHarm.Correctors.CorrectorNoContinuation import Corrector_no_continuation
+from pyHarm.Correctors.CorrectorPseudoArcLength import Corrector_pseudo_arc_length
 
-
-Corrector_dico = {Corrector_no_continuation.factory_keyword:                      Corrector_no_continuation,
-                  Corrector_arc_length.factory_keyword:                          Corrector_arc_length,
-                  Corrector_pseudo_arc_length.factory_keyword:                   Corrector_pseudo_arc_length}
+Corrector_dico = {
+    Corrector_no_continuation.factory_keyword: Corrector_no_continuation,
+    Corrector_arc_length.factory_keyword: Corrector_arc_length,
+    Corrector_pseudo_arc_length.factory_keyword: Corrector_pseudo_arc_length,
+}
 """dict[str, ABCCorrector]: Dictionary containing the ABCCorrector subclasses as values and their factory_keyword as key."""
 
 

@@ -13,26 +13,30 @@
 # limitations under the License.
 
 import abc
+
 import numpy as np
+
 from pyHarm.Solver import SystemSolution
 
+
 class ABCCorrector(abc.ABC):
-    """This is the abstract class ruling the corrector class. The system is responsible for adding the correction residual equation to the augmented system.
-    
-    """
+    """This is the abstract class ruling the corrector class. The system is responsible for adding the correction residual equation to the augmented system."""
+
     @property
     @abc.abstractmethod
-    def factory_keyword(self)->str:
+    def factory_keyword(self) -> str:
         """
         str: name of the class to call in the factory in order to create an instance of the class.
         """
         ...
-    
-    def __init__(self,**kwargs):
+
+    def __init__(self, **kwargs):
         pass
 
     @abc.abstractmethod
-    def ClosureEquation(self, solx:np.ndarray, sol:SystemSolution,sollist:list[SystemSolution]) -> np.ndarray:
+    def ClosureEquation(
+        self, solx: np.ndarray, sol: SystemSolution, sollist: list[SystemSolution]
+    ) -> np.ndarray:
         """Computes the residual contribution of the correction equation.
 
         Args:
@@ -43,7 +47,9 @@ class ABCCorrector(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def ClosureJacobian(self, solx:np.ndarray, sol:SystemSolution,sollist:list[SystemSolution]) -> tuple[np.ndarray,np.ndarray]:
+    def ClosureJacobian(
+        self, solx: np.ndarray, sol: SystemSolution, sollist: list[SystemSolution]
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Computes the jacobian contribution of the correction equation.
 
         Args:

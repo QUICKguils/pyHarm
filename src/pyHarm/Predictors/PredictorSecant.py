@@ -12,20 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyHarm.Predictors.PredictorTangent import PredictorTangent
-from pyHarm.Solver import FirstSolution, SystemSolution
-from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
 import numpy as np
 import scipy.linalg as spl
 
+from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
+from pyHarm.Predictors.PredictorTangent import PredictorTangent
+from pyHarm.Solver import FirstSolution, SystemSolution
+
+
 class PredictorSecant(PredictorTangent):
-    """Define the Secant predictor. From the last two solution points, generates the adequate direction. When only one solution point is available, makes use of the tangent predictor.
-    """
+    """Define the Secant predictor. From the last two solution points, generates the adequate direction. When only one solution point is available, makes use of the tangent predictor."""
+
     predictor_name = "Secant Predictor"
     """str: keyword that is used to call the creation of this class in the system factory."""
-    factory_keyword : str = "secant"
+    factory_keyword: str = "secant"
 
-    def predict_usingtan(self, sollist:list, ds:float, k_imposed=None) -> tuple[np.ndarray,SystemSolution,float]:
+    def predict_usingtan(
+        self, sollist: list, ds: float, k_imposed=None
+    ) -> tuple[np.ndarray, SystemSolution, float]:
         """Predicts the next starting point using the tangent.
 
         Args:
@@ -38,9 +42,11 @@ class PredictorSecant(PredictorTangent):
             SystemSolution: last accepted point in the list of solutions.
             float: sign of the prediction used (-1 | 1)
         """
-        return super().predict(sollist,ds,k_imposed=None)
+        return super().predict(sollist, ds, k_imposed=None)
 
-    def predict(self, sollist:list, ds:float, k_imposed=None) -> tuple[np.ndarray,SystemSolution,float]:
+    def predict(
+        self, sollist: list, ds: float, k_imposed=None
+    ) -> tuple[np.ndarray, SystemSolution, float]:
         """Predicts the next starting point using secant prediction.
 
         Args:
@@ -54,16 +60,20 @@ class PredictorSecant(PredictorTangent):
             float: sign of the prediction used (-1 | 1)
         """
         ### Get pointer to solution, Jacobian in full mode, and bifurcation detection
-        lstpt = self.getPointerToSolution(sollist,k_imposed) # get pointer
-        lstpt.getJacobian("full") # get J_f
-        self.bifurcation_detect(lstpt) # get pointer
-        if isinstance(lstpt,FirstSolution) : 
-            xpred,lstpt,self.sign_ds = self.predict_usingtan(sollist,ds,k_imposed=None)
-        else : 
-            dir = (lstpt.x - lstpt.precedent_solution.x)/np.linalg.norm(lstpt.x - lstpt.precedent_solution.x)
+        lstpt = self.getPointerToSolution(sollist, k_imposed)  # get pointer
+        lstpt.getJacobian("full")  # get J_f
+        self.bifurcation_detect(lstpt)  # get pointer
+        if isinstance(lstpt, FirstSolution):
+            xpred, lstpt, self.sign_ds = self.predict_usingtan(
+                sollist, ds, k_imposed=None
+            )
+        else:
+            dir = (lstpt.x - lstpt.precedent_solution.x) / np.linalg.norm(
+                lstpt.x - lstpt.precedent_solution.x
+            )
             dir = self.norm_dir(dir) * np.sign(dir[-1])
             xpred = lstpt.x + dir * ds * self.sign_ds
             ## write some stuff in the solution
             lstpt.dir = dir
             lstpt.x_pred = xpred
-        return xpred,lstpt,self.sign_ds
+        return xpred, lstpt, self.sign_ds

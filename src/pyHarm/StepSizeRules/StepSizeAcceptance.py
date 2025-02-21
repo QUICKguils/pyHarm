@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyHarm.StepSizeRules.ABCStepSizeRule import ABCStepSizeRule 
-from pyHarm.Solver import SystemSolution
-from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
 import numpy as np
+
+from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
+from pyHarm.Solver import SystemSolution
+from pyHarm.StepSizeRules.ABCStepSizeRule import ABCStepSizeRule
 
 
 class StepSizeAcceptance(ABCStepSizeRule):
@@ -27,31 +28,38 @@ class StepSizeAcceptance(ABCStepSizeRule):
         consecutive_accept (int): number of consecutive accept before increasing step size.
 
     """
+
     name = "accepted step size adaptation"
-    factory_keyword : str = "acceptance"
-    default_options = {"consecutive_accept":5}
-    def __init__(self,bounds:list[float,float],**kwargs):
+    factory_keyword: str = "acceptance"
+    default_options = {"consecutive_accept": 5}
+
+    def __init__(self, bounds: list[float, float], **kwargs):
         super().__init__(bounds)
-        self.stepsize_options = getCustomOptionDictionary(kwargs.get("stepsize_options",dict()),self.default_options)
+        self.stepsize_options = getCustomOptionDictionary(
+            kwargs.get("stepsize_options", dict()), self.default_options
+        )
         self.consecutive_accept = self.stepsize_options["consecutive_accept"]
-    
-    def getStepSize(self, ds:float, sollist:list[SystemSolution], **kwargs) -> float:
+
+    def getStepSize(self, ds: float, sollist: list[SystemSolution], **kwargs) -> float:
         """Returns the step size to be used for the prediction step of the analysis.
 
-        Args: 
+        Args:
             ds (float): Current step size.
             sollist (list[SystemSolution]): list of SystemSolution returned during the analysis.
 
         Returns:
             float: updated step size.
         """
-        if ((not sollist[-1].flag_accepted) and (ds>self.ds_min)): 
-            ds/=2
-        try :
-            acc = np.array([sol.flag_accepted for sol in sollist[-self.consecutive_accept::]])
-            if np.sum(acc) == self.consecutive_accept and ds<self.ds_max: 
-                ds*=2
+        if (not sollist[-1].flag_accepted) and (ds > self.ds_min):
+            ds /= 2
+        try:
+            acc = np.array(
+                [sol.flag_accepted for sol in sollist[-self.consecutive_accept : :]]
+            )
+            if np.sum(acc) == self.consecutive_accept and ds < self.ds_max:
+                ds *= 2
         except:
             pass
-        if ds<self.ds_min or ds>self.ds_max: ds = self.ProjectInBounds(ds) #shouldn't be necessary
+        if ds < self.ds_min or ds > self.ds_max:
+            ds = self.ProjectInBounds(ds)  # shouldn't be necessary
         return ds

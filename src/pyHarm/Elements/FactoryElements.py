@@ -25,52 +25,62 @@ from pyHarm.CoordinateSystem import CoordinateSystem
 # --- Elements
 # ------ NodeToNodeElements
 from pyHarm.Elements.ABCElement import ABCElement
-from pyHarm.Elements.NodeToNodeElements.GeneralOrderElement import GeneralOrderElement
-from pyHarm.Elements.NodeToNodeElements.LinearDamper import LinearDamper
-from pyHarm.Elements.NodeToNodeElements.LinearSpring import LinearSpring
-from pyHarm.Elements.NodeToNodeElements.CubicSpring import CubicSpring
-from pyHarm.Elements.NodeToNodeElements.PenaltyBilateralGap import PenaltyBilateralGap
-from pyHarm.Elements.NodeToNodeElements.PenaltyUnilateralGap import PenaltyUnilateralGap
-from pyHarm.Elements.NodeToNodeElements.Jenkins import Jenkins
-from pyHarm.Elements.NodeToNodeElements.Penalty3D import Penalty3D
-from pyHarm.Elements.NodeToNodeElements.GeneralOrderForcing import GeneralOrderForcing
 from pyHarm.Elements.NodeToNodeElements.CosinusForcing import CosinusForcing
-from pyHarm.Elements.NodeToNodeElements.SinusForcing import SinusForcing
+from pyHarm.Elements.NodeToNodeElements.CubicSpring import CubicSpring
+from pyHarm.Elements.NodeToNodeElements.DLFTElements.DLFT3D import DLFT3D
+from pyHarm.Elements.NodeToNodeElements.DLFTElements.DLFTFriction import DLFTFriction
+
 # --------- NodeToNodeElements/DLFTElements
 from pyHarm.Elements.NodeToNodeElements.DLFTElements.DLFTUniGap import DLFTUniGap
-from pyHarm.Elements.NodeToNodeElements.DLFTElements.DLFTFriction import DLFTFriction
-from pyHarm.Elements.NodeToNodeElements.DLFTElements.DLFT3D import DLFT3D
+from pyHarm.Elements.NodeToNodeElements.GeneralOrderElement import GeneralOrderElement
+from pyHarm.Elements.NodeToNodeElements.GeneralOrderForcing import GeneralOrderForcing
+from pyHarm.Elements.NodeToNodeElements.Jenkins import Jenkins
+from pyHarm.Elements.NodeToNodeElements.LinearDamper import LinearDamper
+from pyHarm.Elements.NodeToNodeElements.LinearSpring import LinearSpring
+from pyHarm.Elements.NodeToNodeElements.Penalty3D import Penalty3D
+from pyHarm.Elements.NodeToNodeElements.PenaltyBilateralGap import PenaltyBilateralGap
+from pyHarm.Elements.NodeToNodeElements.PenaltyUnilateralGap import PenaltyUnilateralGap
+from pyHarm.Elements.NodeToNodeElements.SinusForcing import SinusForcing
+from pyHarm.Elements.SubstructureMatrixElements.GeneralOrderMatrixElement import (
+    GOMatrix,
+)
+from pyHarm.Elements.SubstructureMatrixElements.LinearHystMatrixElement import (
+    LinearHystMatrix,
+)
 
 # --- SubstructureMatrixElements
 from pyHarm.Elements.SubstructureMatrixElements.Substructure import Substructure
-from pyHarm.Elements.SubstructureMatrixElements.GeneralOrderMatrixElement import GOMatrix
-from pyHarm.Elements.SubstructureMatrixElements.LinearHystMatrixElement import LinearHystMatrix
 
-# --- Forcing 
+# --- Forcing
 
-L_Elem = [GeneralOrderElement,
-          LinearDamper,
-          LinearSpring,
-          CubicSpring,
-          PenaltyBilateralGap,
-          PenaltyUnilateralGap,
-          Jenkins,
-          Penalty3D,
-          DLFTUniGap,
-          DLFT3D,
-          DLFTFriction,
-          GeneralOrderForcing,
-          CosinusForcing,
-          SinusForcing,
-          Substructure,
-          GOMatrix,
-          LinearHystMatrix]
+L_Elem = [
+    GeneralOrderElement,
+    LinearDamper,
+    LinearSpring,
+    CubicSpring,
+    PenaltyBilateralGap,
+    PenaltyUnilateralGap,
+    Jenkins,
+    Penalty3D,
+    DLFTUniGap,
+    DLFT3D,
+    DLFTFriction,
+    GeneralOrderForcing,
+    CosinusForcing,
+    SinusForcing,
+    Substructure,
+    GOMatrix,
+    LinearHystMatrix,
+]
 """list[ABCElement]: List of available ABCElement subclasses available for creation."""
 
-ElementDictionary = {e.factory_keyword:e for e in L_Elem}
+ElementDictionary = {e.factory_keyword: e for e in L_Elem}
 """dict[str, ABCElement]: Dictionary of available ABCElement as values and their factory_keyword as key."""
 
-def generateElement(nh, nti, name, data, dict_CS:dict[str,CoordinateSystem]) -> ABCElement:
+
+def generateElement(
+    nh, nti, name, data, dict_CS: dict[str, CoordinateSystem]
+) -> ABCElement:
     """
     Factory function that creates an ABCElement object.
 
@@ -85,9 +95,9 @@ def generateElement(nh, nti, name, data, dict_CS:dict[str,CoordinateSystem]) -> 
         ABCElement: Instance of the required ABCElement class.
     """
     typeE = data["type"]
-    if "coordinatesystem" in data : 
+    if "coordinatesystem" in data:
         CS = dict_CS[data["coordinatesystem"]]
-    else : 
+    else:
         CS = dict_CS["global"]
     E = ElementDictionary[typeE](nh, nti, name, data, CS)
     return E

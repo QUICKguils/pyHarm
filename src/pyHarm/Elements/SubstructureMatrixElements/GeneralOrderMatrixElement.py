@@ -12,42 +12,46 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyHarm.Elements.SubstructureMatrixElements.MatrixElement import MatrixElement
-from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
 import numpy as np
 from numba import njit
 
+from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
+from pyHarm.Elements.SubstructureMatrixElements.MatrixElement import MatrixElement
+
+
 @njit(cache=True)
-def GOMatrixResidual(x,om,kronMat,dom):
+def GOMatrixResidual(x, om, kronMat, dom):
     R = (om ** (dom) * kronMat) @ x
     return R
 
+
 @njit(cache=True)
-def GOMatrixJacobian(x,om,kronMat,dom):
-    dJdx = (om ** (dom) * kronMat)
+def GOMatrixJacobian(x, om, kronMat, dom):
+    dJdx = om ** (dom) * kronMat
     dJdom = np.zeros(x.shape)
-    if dom != 0 :
-        dJdom = (dom * om ** (dom-1) * kronMat) @ x
-    return dJdx,dJdom
+    if dom != 0:
+        dJdom = (dom * om ** (dom - 1) * kronMat) @ x
+    return dJdx, dJdom
 
 
 class GOMatrix(MatrixElement):
-
-    factory_keyword='GOMatrix'
-    default_GOMatrix = {'dto':0}
+    factory_keyword = "GOMatrix"
+    default_GOMatrix = {"dto": 0}
 
     def _generateMatrices(self, data):
-        data = getCustomOptionDictionary(data,self.default_GOMatrix)
-        if 'dom' not in data :
-            data['dom'] = data['dto']
-        self.dto = data['dto']
-        self.dom = data['dom']
-        self.kronMat = np.kron(np.linalg.matrix_power(self.nabla,self.dto),data["matrix"])
+        data = getCustomOptionDictionary(data, self.default_GOMatrix)
+        if "dom" not in data:
+            data["dom"] = data["dto"]
+        self.dto = data["dto"]
+        self.dom = data["dom"]
+        self.kronMat = np.kron(
+            np.linalg.matrix_power(self.nabla, self.dto), data["matrix"]
+        )
         self.flag_elemtype = self.dto
 
     def adim(self, lc, wc):
         """Modifies the element properties according to the characteristic length and angular frequency.
-        
+
         Attributes:
             kronM (float): modified mass matrix according to the characteristic parameters.
             kronC (float): modified damping matrix according to the characteristic parameters.
@@ -58,9 +62,9 @@ class GOMatrix(MatrixElement):
         self.kronMat = self.kronMat * lc * (wc**self.dom)
         self.flag_adim = True
 
-    def evalResidual(self,xg,om):
+    def evalResidual(self, xg, om):
         """Computes the residual.
-        
+
         Args:
             xg (np.ndarray): full displacement vector.
             om (float): angular frequency value.
@@ -69,12 +73,12 @@ class GOMatrix(MatrixElement):
             np.ndarray: residual vector.
         """
         x = xg[self.indices]
-        self.R = GOMatrixResidual(x,om,self.kronMat,self.dom)
+        self.R = GOMatrixResidual(x, om, self.kronMat, self.dom)
         return self.R
-    
-    def evalJacobian(self,xg,om):
+
+    def evalJacobian(self, xg, om):
         """Computes the jacobians.
-        
+
         Args:
             xg (np.ndarray): full displacement vector.
             om (float): angular frequency value.
@@ -84,5 +88,5 @@ class GOMatrix(MatrixElement):
             np.ndarray: Jacobian with respect to angular frequency.
         """
         x = xg[self.indices]
-        self.J, self.dJdom = GOMatrixJacobian(x,om,self.kronMat,self.dom)
+        self.J, self.dJdom = GOMatrixJacobian(x, om, self.kronMat, self.dom)
         return self.J, self.dJdom

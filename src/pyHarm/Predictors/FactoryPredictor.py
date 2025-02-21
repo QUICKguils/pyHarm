@@ -13,19 +13,22 @@
 # limitations under the License.
 
 """
-This module contains the factory of the predictor objects. 
+This module contains the factory of the predictor objects.
 
 Attributes:
     Predictor_dico (dict): Dictionary that contains ABCPredictor objects as values and their factory_keyword attribute as their key.
 """
-from pyHarm.Predictors.PredictorTangent import PredictorTangent
-from pyHarm.Predictors.PredictorSecant import PredictorSecant
-from pyHarm.Predictors.PredictorPreviousSolution import PredictorPreviousSolution
-from pyHarm.Predictors.ABCPredictor import ABCPredictor
 
-Predictor_dico = {PredictorTangent.factory_keyword:                             PredictorTangent,
-                  PredictorSecant.factory_keyword:                              PredictorSecant,
-                  PredictorPreviousSolution.factory_keyword:                            PredictorPreviousSolution}
+from pyHarm.Predictors.ABCPredictor import ABCPredictor
+from pyHarm.Predictors.PredictorPreviousSolution import PredictorPreviousSolution
+from pyHarm.Predictors.PredictorSecant import PredictorSecant
+from pyHarm.Predictors.PredictorTangent import PredictorTangent
+
+Predictor_dico = {
+    PredictorTangent.factory_keyword: PredictorTangent,
+    PredictorSecant.factory_keyword: PredictorSecant,
+    PredictorPreviousSolution.factory_keyword: PredictorPreviousSolution,
+}
 """dict: Dictionary that contains ABCPredictor objects as values and their factory_keyword attribute as their key."""
 
 
@@ -41,5 +44,5 @@ def generatePredictor(name_predictor, sign_ds, predictor_options) -> ABCPredicto
     Returns:
         ABCPredictor: Instance of the required ABCPredictor class.
     """
-    E = Predictor_dico[name_predictor](sign_ds,**predictor_options)
+    E = Predictor_dico[name_predictor](sign_ds, **predictor_options)
     return E

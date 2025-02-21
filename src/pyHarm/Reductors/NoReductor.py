@@ -12,17 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyHarm.Reductors.ABCReductor import ABCReductor
 import numpy as np
 
-class NoReductor(ABCReductor) : 
+from pyHarm.Reductors.ABCReductor import ABCReductor
+
+
+class NoReductor(ABCReductor):
     """
     This Reductor does nothing.
     """
-    factory_keyword : str = "noreductor"
+
+    factory_keyword: str = "noreductor"
     """str: keyword that is used to call the creation of this class in the factory."""
-    
-    def update_reductor(self, xpred, J_f, *args) :
+
+    def update_reductor(self, xpred, J_f, *args):
         """
         Nothing is done here.
 
@@ -33,8 +36,8 @@ class NoReductor(ABCReductor) :
 
         """
         return xpred, J_f, self.expl_dofs
-    
-    def expand(self,q:np.ndarray) -> np.ndarray:
+
+    def expand(self, q: np.ndarray) -> np.ndarray:
         """
         Does nothing.
 
@@ -45,8 +48,8 @@ class NoReductor(ABCReductor) :
             np.ndarray: Same vector as input.
         """
         return q
-    
-    def reduce_vector(self,x:np.ndarray) -> np.ndarray:
+
+    def reduce_vector(self, x: np.ndarray) -> np.ndarray:
         """
         Does nothing.
 
@@ -57,8 +60,8 @@ class NoReductor(ABCReductor) :
             np.ndarray: same residual vector.
         """
         return x
-    
-    def reduce_matrix(self,dJdx:np.ndarray,*args) -> np.ndarray:
+
+    def reduce_matrix(self, dJdx: np.ndarray, *args) -> np.ndarray:
         """
         Does nothing.
 
@@ -69,13 +72,15 @@ class NoReductor(ABCReductor) :
             np.ndarray: same matrix.
         """
         return dJdx
-    
-    def _get_output_expl_dofs(self,):
+
+    def _get_output_expl_dofs(
+        self,
+    ):
         """
         Does nothing.
-        
+
         Returns:
             pd.DataFrame: reduced explicit dof DataFrame given as input.
 
         """
-        return self.expl_dofs 
+        return self.expl_dofs

@@ -1,21 +1,27 @@
-import pytest 
+import numpy as np
+import pytest
+
 from pyHarm.NonLinearSolver.ABCNonLinearSolver import ABCNLSolver
 from pyHarm.Solver import SystemSolution
-import numpy as np
 
-fakeSystemSolution = SystemSolution(xs=np.array([1.]))
-residual = lambda res : np.zeros(1,)
-jacobian = lambda res : np.zeros((1,1))
-solver_options = {'a':1., 'b':2.}
-factory_keyword='fakeABCNLSolver'
+fakeSystemSolution = SystemSolution(xs=np.array([1.0]))
+residual = lambda res: np.zeros(
+    1,
+)
+jacobian = lambda res: np.zeros((1, 1))
+solver_options = {"a": 1.0, "b": 2.0}
+factory_keyword = "fakeABCNLSolver"
 
-class fakeABCNLSolver(ABCNLSolver) : 
-    factory_keyword=factory_keyword
+
+class fakeABCNLSolver(ABCNLSolver):
+    factory_keyword = factory_keyword
+
     def Solve(self, system_solution: SystemSolution) -> SystemSolution:
         return system_solution
+
     def __post_init__(self):
         self.post_init_ran = True
-        pass 
+        pass
 
 
 @pytest.mark.all
@@ -27,11 +33,13 @@ def test_ABCNLSolver_init():
     assert solver.solver_options == solver_options
     assert solver.post_init_ran == True
 
+
 @pytest.mark.all
 @pytest.mark.unit
 def test_ABCNLSolver_factory_keyword():
     solver = fakeABCNLSolver(residual, jacobian, solver_options)
     assert solver.factory_keyword == factory_keyword
+
 
 @pytest.mark.all
 @pytest.mark.unit

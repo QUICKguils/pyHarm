@@ -14,10 +14,11 @@
 
 ## This is the init file of pyHarm Package
 """
-The pyHarm package is the core of pyHarm. It contains every modules and subpackages for pyHarm to be runnning an analysis. 
+The pyHarm package is the core of pyHarm. It contains every modules and subpackages for pyHarm to be runnning an analysis.
 """
+
 try:
-    from ._version import __version__ # type: ignore
+    from ._version import __version__  # type: ignore
 except ImportError:
     __version__ = "0.0.0"
 from .BaseUtilFuncs import *

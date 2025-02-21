@@ -20,16 +20,21 @@ Attributes:
 """
 
 from pyHarm.NonLinearSolver.ABCNonLinearSolver import ABCNLSolver
-from pyHarm.NonLinearSolver.ScipyRoot import Solver_ScipyRoot
 from pyHarm.NonLinearSolver.MoorePenrose import Solver_MoorePenrose
 from pyHarm.NonLinearSolver.NewtonRaphson import Solver_NewtonRaphson
+from pyHarm.NonLinearSolver.ScipyRoot import Solver_ScipyRoot
 
-Solver_dico = {Solver_ScipyRoot.factory_keyword:     Solver_ScipyRoot,
-               Solver_MoorePenrose.factory_keyword:  Solver_MoorePenrose,
-               Solver_NewtonRaphson.factory_keyword:  Solver_NewtonRaphson}
+Solver_dico = {
+    Solver_ScipyRoot.factory_keyword: Solver_ScipyRoot,
+    Solver_MoorePenrose.factory_keyword: Solver_MoorePenrose,
+    Solver_NewtonRaphson.factory_keyword: Solver_NewtonRaphson,
+}
 """dict: Dictionary containing all the available ABCNLSolvers as values, and their factory_keyword attribute as key."""
 
-def generateNonLinearSolver(name_nonlinearsolver, residual, jacobian, nonlinearsolver_options) -> ABCNLSolver:
+
+def generateNonLinearSolver(
+    name_nonlinearsolver, residual, jacobian, nonlinearsolver_options
+) -> ABCNLSolver:
     """
     Factory function that creates a ABCNLSolver object.
 

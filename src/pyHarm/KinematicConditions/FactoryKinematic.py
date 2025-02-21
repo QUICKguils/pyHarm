@@ -18,25 +18,28 @@ Attributes:
     Kinematic_dico (dict): Dictionary containing ABCKinematic as values and their factory_keyword attribute as key.
 
 """
+
 from pyHarm.CoordinateSystem import CoordinateSystem
 from pyHarm.KinematicConditions.ABCKinematic import ABCKinematic
-from pyHarm.KinematicConditions.GODisplacement import GODisplacement
 from pyHarm.KinematicConditions.AccelImposed import AccelImposed
-from pyHarm.KinematicConditions.SpeedImposed import SpeedImposed
-from pyHarm.KinematicConditions.DispImposed import DispImposed
 from pyHarm.KinematicConditions.BaseProjection import BaseProjection
+from pyHarm.KinematicConditions.DispImposed import DispImposed
+from pyHarm.KinematicConditions.GODisplacement import GODisplacement
+from pyHarm.KinematicConditions.SpeedImposed import SpeedImposed
 
 Kinematic_dico = {
-    GODisplacement.factory_keyword :        GODisplacement,
-    AccelImposed.factory_keyword:           AccelImposed,
-    SpeedImposed.factory_keyword:           SpeedImposed,
-    DispImposed.factory_keyword:           DispImposed,
-    BaseProjection.factory_keyword:           BaseProjection,
+    GODisplacement.factory_keyword: GODisplacement,
+    AccelImposed.factory_keyword: AccelImposed,
+    SpeedImposed.factory_keyword: SpeedImposed,
+    DispImposed.factory_keyword: DispImposed,
+    BaseProjection.factory_keyword: BaseProjection,
 }
 """dict: Dictionary containing ABCKinematic as values and their factory_keyword attribute as key."""
 
 
-def generateKinematic(nh, nti, name, data, dict_CS:dict[str,CoordinateSystem]) -> ABCKinematic:
+def generateKinematic(
+    nh, nti, name, data, dict_CS: dict[str, CoordinateSystem]
+) -> ABCKinematic:
     """
     Factory function that creates a ABCKinematic object.
 
@@ -51,9 +54,9 @@ def generateKinematic(nh, nti, name, data, dict_CS:dict[str,CoordinateSystem]) -
         ABCKinematic: Instance of the required ABCKinematic class.
     """
     typeK = data["type"]
-    if "coordinatesystem" in data : 
+    if "coordinatesystem" in data:
         CS = dict_CS[data["coordinatesystem"]]
-    else : 
+    else:
         CS = dict_CS["global"]
     K = Kinematic_dico[typeK](nh, nti, name, data, CS)
     return K

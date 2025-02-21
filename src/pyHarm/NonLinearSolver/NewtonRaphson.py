@@ -12,16 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyHarm.NonLinearSolver.ABCNonLinearSolver import ABCNLSolver
 import copy
+
 import numpy as np
-from pyHarm.Solver import FirstSolution,SystemSolution
+
 from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
+from pyHarm.NonLinearSolver.ABCNonLinearSolver import ABCNLSolver
+from pyHarm.Solver import FirstSolution, SystemSolution
 
 
 class Solver_NewtonRaphson(ABCNLSolver):
     """This nonlinear solver is an implementation of iterative Newton Raphson solving procedure.
-    
+
     Attributes:
         factory_keyword (str): keyword that is used to call the creation of this class in the system factory.
         solver_options (dict): dictionary containing other options for creation of the solver class.
@@ -30,29 +32,33 @@ class Solver_NewtonRaphson(ABCNLSolver):
         solver_options_root (dict): dictionary containing options for the root function.
         extcall (Callable): root function of scipy.optimize.
     """
-    
-    factory_keyword : str = "NewtonRaphson"
+
+    factory_keyword: str = "NewtonRaphson"
     """str: keyword that is used to call the creation of this class in the system factory."""
 
-    default = {"tol_residual":1e-8          ,
-               "tol_delta_x" :1e-8          ,
-               "max_iter"    :50            } # Maximum iterations accepted before confirming divergence
+    default = {
+        "tol_residual": 1e-8,
+        "tol_delta_x": 1e-8,
+        "max_iter": 50,
+    }  # Maximum iterations accepted before confirming divergence
     """dict: dictionary containing the default solver_options"""
-
 
     def __post_init__(self):
         from scipy.linalg import solve as solve
+
         self.linearsolve = solve
-        self.solver_options = getCustomOptionDictionary(self.solver_options,self.default)
-               
-    def Solve(self,sol:SystemSolution,SolList:list) -> SystemSolution:
+        self.solver_options = getCustomOptionDictionary(
+            self.solver_options, self.default
+        )
+
+    def Solve(self, sol: SystemSolution, SolList: list) -> SystemSolution:
         """
         Runs the solver.
 
         Args:
             sol (SystemSolution): SystemSolution that contains the starting point.
             SolList (SystemSolution): list of previously solved solutions.
-        
+
         Returns:
             sol (SystemSolution): SystemSolution solved and completed with the output information.
         """
@@ -62,21 +68,21 @@ class Solver_NewtonRaphson(ABCNLSolver):
         self.AXk = self.jacobian(sol.x_start, sol)
         self.iter = 0
         self.status = 1
-        while ((np.linalg.norm(self.FXk)>=self.solver_options["tol_residual"]) or\
-             (np.linalg.norm(self.x - self.xprec)>=self.solver_options["tol_delta_x"])):
+        while (np.linalg.norm(self.FXk) >= self.solver_options["tol_residual"]) or (
+            np.linalg.norm(self.x - self.xprec) >= self.solver_options["tol_delta_x"]
+        ):
             self.deltak = self.linSysdeltak()
             self.xprec = copy.deepcopy(self.x)
             self.x -= self.deltak
             self.FXk = self.residual(self.x, sol)
             self.AXk = self.jacobian(self.x, sol)
-            self.iter+=1
-            if self.iter>=self.solver_options["max_iter"]:
-                self.status=5
-                self.CompleteSystemSolution(sol,SolList)
+            self.iter += 1
+            if self.iter >= self.solver_options["max_iter"]:
+                self.status = 5
+                self.CompleteSystemSolution(sol, SolList)
                 return sol
-        self.CompleteSystemSolution(sol,SolList)
+        self.CompleteSystemSolution(sol, SolList)
         return sol
-
 
     def CompleteSystemSolution(self, sol, SolList):
         """
@@ -89,15 +95,14 @@ class Solver_NewtonRaphson(ABCNLSolver):
         sol.x_red = copy.deepcopy(self.x)
         sol.R_solver = copy.deepcopy(self.FXk)
         sol.iter_numb = self.iter
-        sol.flag_R = True 
+        sol.flag_R = True
         sol.flag_J = True
         sol.flag_J_f = True
-        sol.J_f = self.jacobian(sol.x,sol)
+        sol.J_f = self.jacobian(sol.x, sol)
         sol.flag_intosolver = True
         if self.status == 1:
             sol.flag_accepted = True
         sol.status_solver = self.status
-
 
     def linSysdeltak(self):
         """
@@ -106,4 +111,4 @@ class Solver_NewtonRaphson(ABCNLSolver):
         Returns:
             self.extcall_newton(matA,matB): Correction 'deltak'
         """
-        return self.linearsolve(self.AXk,self.FXk)
+        return self.linearsolve(self.AXk, self.FXk)

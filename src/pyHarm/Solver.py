@@ -12,15 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import numpy as np 
-import scipy.linalg as spl
-import copy 
+import copy
 
-class SystemSolution():
+import numpy as np
+import scipy.linalg as spl
+
+
+class SystemSolution:
     """
     Class that represents a solution of the system to be solved.
 
-    This class is the main object that transits in the analysis process while solving a problem. 
+    This class is the main object that transits in the analysis process while solving a problem.
     The object contains information about its starting point, the previous SystemSolution it is linked to and the actual point the solver is studying.
     Once the solver has converged, the values of the residual and the solution point are stored in some of the attributes.
 
@@ -28,8 +30,8 @@ class SystemSolution():
         xs (np.ndarray): An array representing the starting point.
         last_solution_pointer: A pointer to the last converged solution object.
         **kwargs: Additional keyword arguments.
-    
-        
+
+
     Attributes:
         flag_restart (bool): Flag indicating if the solution is a restart (last_solution_pointer != index - 1).
         flag_accepted (bool): Flag indicating if the solution is considered valid.
@@ -54,14 +56,15 @@ class SystemSolution():
         precedent_solution: A pointer to the last converged solution.
 
     """
-    def __init__(self,xs:np.ndarray,last_solution_pointer=None,**kwargs):
+
+    def __init__(self, xs: np.ndarray, last_solution_pointer=None, **kwargs):
         ######################### The flags of the SystemSolution class
         self._init_flags()
         ######################### Values and Vectors
         # The scalar/integer values
         self.index_insolve = 0
-        self.ds = 0.
-        self.sign_ds = 1.
+        self.ds = 0.0
+        self.sign_ds = 1.0
         # The variable points of the SystemSolution
         self.x_start = xs
         self.x = copy.deepcopy(xs)
@@ -74,104 +77,132 @@ class SystemSolution():
         # If the continuation is going, give the pointer to the last conveged solution
         self.precedent_solution = last_solution_pointer
 
-    def _init_flags(self,):
+    def _init_flags(
+        self,
+    ):
         """
         Initialise the different flag attributes of the class.
         """
         ######################### The flags of the SystemSolution class
-        self.flag_restart = False # This flags is set to True whenever its last_solution_point!=index-1
-        self.flag_accepted = False # This flag is set by the solver, if the solution can be considered valid
-        self.flag_bifurcation = False # This flags True when bifurcation has been detected at this point
-        self.flag_solved = False # this flag is set with method CheckComplete
-        self.flag_intosolver = False # this flag is set to True when the Solution went through the solver
+        self.flag_restart = (
+            False  # This flags is set to True whenever its last_solution_point!=index-1
+        )
+        self.flag_accepted = False  # This flag is set by the solver, if the solution can be considered valid
+        self.flag_bifurcation = (
+            False  # This flags True when bifurcation has been detected at this point
+        )
+        self.flag_solved = False  # this flag is set with method CheckComplete
+        self.flag_intosolver = (
+            False  # this flag is set to True when the Solution went through the solver
+        )
         ### Residual flag
-        self.flag_R = False # Presence of a Residual result 
+        self.flag_R = False  # Presence of a Residual result
         ### Jacobian flags
-        self.flag_J = False # presence of a Jacobian result
-        self.flag_J_qr = False # Jacobian available with qr formalism of scipy.linalg.qr=[Q,R]
-        self.flag_J_lu = False # Jacobian available with lu formalism of scipy.linalg.lu=[P,L,U]
-        self.flag_J_f = False # Jacobian available full size
-
+        self.flag_J = False  # presence of a Jacobian result
+        self.flag_J_qr = (
+            False  # Jacobian available with qr formalism of scipy.linalg.qr=[Q,R]
+        )
+        self.flag_J_lu = (
+            False  # Jacobian available with lu formalism of scipy.linalg.lu=[P,L,U]
+        )
+        self.flag_J_f = False  # Jacobian available full size
 
     def CheckComplete(self):
         """
         Checks if all elements required to proceed are present in the SystemSolution object.
-        
+
         Returns:
             bool: True if the solution is considered valid.
         """
         # presence of Jacobian at the solution point :
-        if self.flag_R and self.flag_J and self.flag_intosolver: self.flag_solved=True
+        if self.flag_R and self.flag_J and self.flag_intosolver:
+            self.flag_solved = True
         return self.flag_solved
 
-    def SaveSolution(self,List:list):
+    def SaveSolution(self, List: list):
         """
         Saves the SystemSolution object in the provided list if it is complete.
-        
+
         Args:
             List (list): A list to save the SystemSolution object.
-        
+
         Raises:
             ValueError: If the SystemSolution is not complete.
         """
-        if self.CheckComplete() :
+        if self.CheckComplete():
             List.append(self)
         else:
-            raise ValueError("The SystemSolution is not complete and thus cannot be saved in the provided list")
+            raise ValueError(
+                "The SystemSolution is not complete and thus cannot be saved in the provided list"
+            )
 
-    def getJacobian(self,format:str="full",dump:bool=False) -> np.ndarray: 
+    def getJacobian(self, format: str = "full", dump: bool = False) -> np.ndarray:
         """
         Returns the Jacobian in the specified format.
-        
+
         Args:
             format (str): The format of the Jacobian. Options: "full", "qr", "lu" (default: "full").
             dump (bool): If True, erases the Jacobian result with the format_in (default: False).
-            
+
         Returns:
             np.ndarray: The Jacobian in the requested format, or None if the Jacobian is not available.
-            
+
         Raises:
             ValueError: If the format is not compatible.
         """
-        format_poss = {"full":self.flag_J_f,"qr":self.flag_J_qr,"lu":self.flag_J_lu}
-        if not self.flag_J : return None
-        elif format not in format_poss : raise ValueError("Format not compatible")
-        elif (format == "full" and self.flag_J_f) : return self.J_f
-        elif (format == "qr" and self.flag_J_qr) : return self.J_qr
-        elif (format == "lu" and self.flag_J_lu) : return self.J_lu
-        else : 
-            if (format == "qr" and self.flag_J_f) : 
-                self.convertJacobian("full","qr")
+        format_poss = {
+            "full": self.flag_J_f,
+            "qr": self.flag_J_qr,
+            "lu": self.flag_J_lu,
+        }
+        if not self.flag_J:
+            return None
+        elif format not in format_poss:
+            raise ValueError("Format not compatible")
+        elif format == "full" and self.flag_J_f:
+            return self.J_f
+        elif format == "qr" and self.flag_J_qr:
+            return self.J_qr
+        elif format == "lu" and self.flag_J_lu:
+            return self.J_lu
+        else:
+            if format == "qr" and self.flag_J_f:
+                self.convertJacobian("full", "qr")
                 return self.J_qr
-            if (format == "full" and self.flag_J_qr) : 
-                self.convertJacobian("qr","full")
+            if format == "full" and self.flag_J_qr:
+                self.convertJacobian("qr", "full")
                 return self.J_f
 
-    def convertJacobian(self,format_in,format_out,dump=False):
+    def convertJacobian(self, format_in, format_out, dump=False):
         """
         Converts the Jacobian format from format_in to format_out.
-        
+
         Args:
             format_in (str): The current format of the Jacobian.
             format_out (str): The desired format of the Jacobian.
             dump (bool): If True, erases the Jacobian result with the format_in (default: False).
-            
+
         Returns:
             tuple: The updated flags and Jacobian data.
-            
+
         Raises:
             ValueError: If the format is not compatible.
         """
-        format_poss = {"full":[self.flag_J_f,self.J_f],"qr":[self.flag_J_qr,self.J_qr],"lu":[self.flag_J_lu,self.J_lu]}
-        ### Converts the format_in for the Jacobian to the format out, if dump=True, 
+        format_poss = {
+            "full": [self.flag_J_f, self.J_f],
+            "qr": [self.flag_J_qr, self.J_qr],
+            "lu": [self.flag_J_lu, self.J_lu],
+        }
+
+        ### Converts the format_in for the Jacobian to the format out, if dump=True,
         ### then erases the Jacobian result with the format_in
         def from_qr_to_full():
-            self.J_f = np.dot(self.J_qr[0],self.J_qr[1])
+            self.J_f = np.dot(self.J_qr[0], self.J_qr[1])
             self.flag_J_f = True
-            pass 
+            pass
 
         def from_full_to_qr():
-            self.J_qr = spl.qr(self.J_f,mode="full")
+            self.J_qr = spl.qr(self.J_f, mode="full")
             self.flag_J_qr = True
             pass
 
@@ -181,7 +212,7 @@ class SystemSolution():
             pass
 
         def from_lu_to_full():
-            self.J_f = np.dot(self.J_lu[0],self.J_lu[1],self.J_lu[2])
+            self.J_f = np.dot(self.J_lu[0], self.J_lu[1], self.J_lu[2])
             self.flag_J_f = True
             pass
 
@@ -194,29 +225,34 @@ class SystemSolution():
             from_lu_to_full()
             from_full_to_qr()
             pass
-        convert_func = {"full":{"qr":from_full_to_qr,"lu":from_full_to_lu},
-                        "qr":{"full":from_qr_to_full,"lu":from_qr_to_lu},
-                        "lu":{"full":from_lu_to_full,"qr":from_lu_to_qr}
-                        }
+
+        convert_func = {
+            "full": {"qr": from_full_to_qr, "lu": from_full_to_lu},
+            "qr": {"full": from_qr_to_full, "lu": from_qr_to_lu},
+            "lu": {"full": from_lu_to_full, "qr": from_lu_to_qr},
+        }
         convert_func[format_in][format_out]()
-        if dump : 
+        if dump:
             format_poss[format_in][0] = False
             format_poss[format_in][1] = None
-            if ((format_in,format_out) == ("qr","lu") or (format_in,format_out) == ("lu","qr")) :
+            if (format_in, format_out) == ("qr", "lu") or (format_in, format_out) == (
+                "lu",
+                "qr",
+            ):
                 format_poss["full"][0] = False
                 format_poss["full"][1] = None
         return format_poss[format_out]
 
+
 class FirstSolution(SystemSolution):
     """Inherits from the SystemSolution class with one major difference: there is no previous SystemSolution point
     for this class.
-    
+
     Args:
         xs (np.ndarray): An array representing the starting point.
     """
-    def __init__(self,xs):
-        super().__init__(xs,None)
+
+    def __init__(self, xs):
+        super().__init__(xs, None)
         self.x = copy.deepcopy(self.x_start)
         self.x_pred = copy.deepcopy(self.x_start)
-
-            

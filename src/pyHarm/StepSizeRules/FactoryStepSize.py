@@ -13,22 +13,26 @@
 # limitations under the License.
 
 """
-Module that contains the factory of ABCStepSizeRule objects. 
+Module that contains the factory of ABCStepSizeRule objects.
 
 Attributes:
     StepSizer_dico (dict): Dictionary containing the factory keywords and their associated class of ABCStepSizeRule objects.
 """
-from pyHarm.StepSizeRules.ABCStepSizeRule import ABCStepSizeRule 
-from pyHarm.StepSizeRules.StepSizeConstant import StepSizeConstant 
-from pyHarm.StepSizeRules.StepSizeAcceptance import StepSizeAcceptance 
 
+from pyHarm.StepSizeRules.ABCStepSizeRule import ABCStepSizeRule
+from pyHarm.StepSizeRules.StepSizeAcceptance import StepSizeAcceptance
+from pyHarm.StepSizeRules.StepSizeConstant import StepSizeConstant
 
-StepSizer_dico = {StepSizeConstant.factory_keyword:                            StepSizeConstant,
-                  StepSizeAcceptance.factory_keyword:                          StepSizeAcceptance}
+StepSizer_dico = {
+    StepSizeConstant.factory_keyword: StepSizeConstant,
+    StepSizeAcceptance.factory_keyword: StepSizeAcceptance,
+}
 """dict: Dictionary containing the factory keywords and their associated class of ABCStepSizeRule objects."""
 
 
-def generateStepSizeRule(name_stepsize, bounds:list[float,float], stepsize_options) -> ABCStepSizeRule:
+def generateStepSizeRule(
+    name_stepsize, bounds: list[float, float], stepsize_options
+) -> ABCStepSizeRule:
     """
     Factory function that creates a ABCStepSizeRule object.
 

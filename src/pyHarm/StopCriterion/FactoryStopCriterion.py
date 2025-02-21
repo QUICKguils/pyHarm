@@ -21,14 +21,23 @@ Attributes:
 
 from pyHarm.StopCriterion.ABCStopCriterion import ABCStopCriterion
 from pyHarm.StopCriterion.StopCriterionBounds import StopCriterionBounds
-from pyHarm.StopCriterion.StopCriterionBoundsOrSolNumber import StopCriterionBoundsOrSolNumber
+from pyHarm.StopCriterion.StopCriterionBoundsOrSolNumber import (
+    StopCriterionBoundsOrSolNumber,
+)
 
-
-Stopper_dico = {StopCriterionBounds.factory_keyword:                                StopCriterionBounds,
-                StopCriterionBoundsOrSolNumber.factory_keyword:                             StopCriterionBoundsOrSolNumber}
+Stopper_dico = {
+    StopCriterionBounds.factory_keyword: StopCriterionBounds,
+    StopCriterionBoundsOrSolNumber.factory_keyword: StopCriterionBoundsOrSolNumber,
+}
 """dict[str,ABCStopCriterion]: Dictionary containing all the StopCriterions available."""
 
-def generateStopCriterion(name_stopcriterion:str, bounds:list[float,float], ds_min:float, stopcriterion_options) -> ABCStopCriterion:
+
+def generateStopCriterion(
+    name_stopcriterion: str,
+    bounds: list[float, float],
+    ds_min: float,
+    stopcriterion_options,
+) -> ABCStopCriterion:
     """
     Factory function that creates a ABCSystem object.
 

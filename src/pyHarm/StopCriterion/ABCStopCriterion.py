@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import abc 
+import abc
+
 from pyHarm.Solver import SystemSolution
 
 
@@ -20,7 +21,7 @@ from pyHarm.Solver import SystemSolution
 class ABCStopCriterion(abc.ABC):
     """Abstract class for the stopping criterion. Any stopping criterion code
     shall inherit from this class.
-    
+
     Args:
         bounds (list[float, float]): A list of upper and lower bounds.
         ds_min: The minimum step size.
@@ -30,34 +31,36 @@ class ABCStopCriterion(abc.ABC):
         NotImplementedError: If the subclass lacks the factory_keyword class attribute.
         TypeError: If the factory_keyword is not a string value.
     """
+
     @property
     @abc.abstractmethod
-    def factory_keyword(self)->str:
+    def factory_keyword(self) -> str:
         """
         Returns:
             str: keyword that is used to call the creation of this class in the system factory.
         """
         ...
-        
-    
-    def __init__(self,bounds:list[float,float], ds_min:float,**kwargs) -> None:
+
+    def __init__(self, bounds: list[float, float], ds_min: float, **kwargs) -> None:
         self.puls_inf = bounds[0]
         self.puls_sup = bounds[1]
-        self.epsilon_bounds = (self.puls_inf+self.puls_sup) / 2 * 1E-5
+        self.epsilon_bounds = (self.puls_inf + self.puls_sup) / 2 * 1e-5
         self.bound_inf = self.puls_inf - self.epsilon_bounds
         self.bound_sup = self.puls_sup + self.epsilon_bounds
         self.ds_min = ds_min
         pass
 
     @abc.abstractmethod
-    def getStopCriterionStatus(self,sol:SystemSolution,sollist:list,**kwargs) -> bool:
+    def getStopCriterionStatus(
+        self, sol: SystemSolution, sollist: list, **kwargs
+    ) -> bool:
         """Abstract method to get the stop criterion status.
 
         Args:
             sol (SystemSolution): A SystemSolution object.
             sollist (list): A list of solutions.
             **kwargs: Additional keyword arguments.
-        
+
         Raises:
             None.
         """

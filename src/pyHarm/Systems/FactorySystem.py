@@ -13,20 +13,21 @@
 # limitations under the License.
 
 """
-Module that defines the Factory of the package. 
+Module that defines the Factory of the package.
 
 Attributes:
     System_dico (dict[str,ABCSystem]) : Dictionary containing the available ABCSystem in pyHarm for creation as values and their factory_keyword as keys.
 """
+
 from pyHarm.Systems.ABCSystem import ABCSystem
 from pyHarm.Systems.System import System
 
-
-System_dico = { System.factory_keyword:             System}
+System_dico = {System.factory_keyword: System}
 """dict[str,ABCSystem]: Dictionary containing the available ABCSystem in pyHarm for creation as values and their factory_keyword as keys.
 """
 
-def generateSystem(name_system:str, datas:dict) -> ABCSystem:
+
+def generateSystem(name_system: str, datas: dict) -> ABCSystem:
     """
     Factory function that creates a ABCSystem object.
 
