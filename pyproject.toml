@@ -5,41 +5,40 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pyHarm"
 authors = [
-    {name = "Owner pyHarm", email = "pyharm.fr.saf@safrangroup.com"},
-    {name = "J.Armand", email = "jason.armand@safrangroup.com"},
-    {name = "Q.Mercier", email = "quentin.mercier@safrangroup.com"},
+	{name = "Owner pyHarm", email = "pyharm.fr.saf@safrangroup.com"},
+	{name = "J.Armand", email = "jason.armand@safrangroup.com"},
+	{name = "Q.Mercier", email = "quentin.mercier@safrangroup.com"},
 ]
 description = "A Harmonic Balance code for mechanical vibration systems with nonlinearities."
 readme = "README.md"
 requires-python = ">=3.6"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
-    "Topic :: Software Development :: Libraries :: Python Modules",
+	"Programming Language :: Python :: 3",
+	"License :: OSI Approved :: Apache Software License",
+	"Operating System :: OS Independent",
+	"Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "scipy>=1.7.1",
-    "numpy>=1.20.3",
-    "matplotlib>=3.4.3",
-    "numba>=0.56.2",
-    "h5py>=3.7.0",
-    "jax>=0.4.12",
-    "pandas>=1.5.1",
-    "jaxlib>=0.4.12",
-    "notebook>=7.2.2",
+	"scipy>=1.7.1",
+	"numpy>=1.20.3",
+	"matplotlib>=3.4.3",
+	"numba>=0.56.2",
+	"h5py>=3.7.0",
+	"jax>=0.4.12",
+	"pandas>=1.5.1",
+	"jaxlib>=0.4.12",
+	"ipython",
+	"ipykernel",
 ]
 dynamic = ["version"]
 
-
-
 [project.optional-dependencies]
 dev = [
-    "pytest>=8.3.3",
-    "sphinx",
-    "myst_parser",
-    "sphinx-autoapi",
-    "furo",
+	"pytest>=8.3.3",
+	"sphinx",
+	"myst_parser",
+	"sphinx-autoapi",
+	"furo",
 ]
 
 [project.urls]
