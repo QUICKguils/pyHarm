@@ -15,7 +15,7 @@ def load_rcparams(style="running") -> None:
     # Here, figure.dpi is set to scale nicely on the screen.
     # If one desire to save the plot in raster format,
     # higher dpi values should be used (e.g., 250dpi).
-    mpl.rcParams["figure.dpi"] = 150
+    mpl.rcParams["figure.dpi"] = 109  # qhd 27in = 109 dpi
 
     # Running figures
     if style == "running":
