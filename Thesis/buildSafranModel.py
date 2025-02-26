@@ -1,0 +1,104 @@
+"""buildSafranModel -- Build the Safran toy model."""
+
+import pathlib
+
+import numpy as np
+
+from StepSizeMyAcceptance import StepSizeMyAcceptance
+import pyHarm
+
+MODEL_PATH = pathlib.Path(__file__).parent / "res"
+
+# Problem specification as a phHarm dictionary
+# NOTE: see SafranModel.py for the original problem specs.
+PROBLEM = {
+    "plugin": [StepSizeMyAcceptance],
+    "analysis": {
+        # "linear": {"study": "linear_analysis"},
+        "nonlinear": {
+            "study": "frf",
+            "puls_inf": 1.0,
+            "puls_start": 1.0,
+            "puls_sup": 300.0,
+            "ds0": 1e-1,
+            "ds_min": 1e-12,
+            "ds_max": 1e-1,
+            "sign_ds": 1,
+            "verbose": True,
+            "stepsizer": "myacceptance",
+            "predictor": "tangent",  # XXX: secant not able to pass first fold
+            "reductors": [
+                {
+                    "type": "globalHarmonic",
+                    "nh_start": np.array([1]),
+                    "err_admissible": 1e10,
+                    "h_always_kept": np.array([1]),
+                    "verbose": False,
+                },
+                # {
+                #     "type": "AllgowerPreconditioner",
+                # },
+                # {
+                #     "type": "KrackPreconditioner",
+                # },
+            ],
+            "corrector": "arc_length",
+            # "corrector": "pseudo_arc_length",
+            "stopper": "bounds",
+            # "solver": "scipyroot",
+            "solver": "NewtonRaphson",
+            # "solver": "MoorePenrose",
+        },
+    },
+    "system": {
+        "type": "Base",
+        "nh": 1,
+        "nti": 1024,
+        "adim": {
+            "status": True,
+            "lc": 0.15e-3,  # Adim by the gap clearance
+            "wc": 1.0,
+        },
+    },
+    "substructures": {
+        "linear_rotor": {  # Unforced, linear rotor toy model from Safran
+            "filename": str(MODEL_PATH / "Jeffcott_asym.mat"),
+            "ndofs": 4,
+        },
+    },
+    "connectors": {
+        # Unbalance force can be modelled as m*d*Om^2*cos(Om*t)
+        # See MDoT, rotordynamics 1.
+        # To model a rotating unbalance, specify sinusoid unbalance
+        # loading in the two transverse directions with a dephase of
+        # pi/2 between them.
+        "unbalance_dir0": {
+            "connect": {"linear_rotor": [1]},
+            "dirs": [0],
+            "type": "GOForcing",
+            "amp": 50e-3,
+            "ho": 1,  # cos(Om*t) term
+            "dto": 2,  # Om^2 term
+            "phi": 0,  # Phase lag
+        },
+        "unbalance_dir1": {
+            "connect": {"linear_rotor": [1]},
+            "dirs": [1],
+            "type": "GOForcing",
+            "amp": 50e-3,
+            "ho": 1,  # cos(Om*t) term
+            "dto": 2,  # Om^2 term
+            "phi": np.pi / 2,  # Phase lag
+        },
+        "bearing_gap": {
+            "connect": {"linear_rotor": [4], "INTERNAL": [5]},
+            "dirs": [0, 1],
+            "type": "PenaltyBilateralGap",
+            "g": 0.15e-3,
+            "k": 1e8,
+            # "k": 1e7,
+        },
+    },
+}
+
+M = pyHarm.Maestro(PROBLEM)
