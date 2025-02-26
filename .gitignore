@@ -1,3 +1,8 @@
+# ni2d models
+Thesis/ni2d/*
+
+# ===== generated from UV python manager =====
+
 *.pyc
 *.nbi
 *.nbc
