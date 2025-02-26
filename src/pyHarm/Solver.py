@@ -31,7 +31,6 @@ class SystemSolution:
         last_solution_pointer: A pointer to the last converged solution object.
         **kwargs: Additional keyword arguments.
 
-
     Attributes:
         flag_restart (bool): Flag indicating if the solution is a restart (last_solution_pointer != index - 1).
         flag_accepted (bool): Flag indicating if the solution is considered valid.
@@ -54,7 +53,6 @@ class SystemSolution:
         J_lu: Jacobian with LU decomposition.
         J_qr: Jacobian with QR decomposition.
         precedent_solution: A pointer to the last converged solution.
-
     """
 
     def __init__(self, xs: np.ndarray, last_solution_pointer=None, **kwargs):
@@ -77,9 +75,7 @@ class SystemSolution:
         # If the continuation is going, give the pointer to the last conveged solution
         self.precedent_solution = last_solution_pointer
 
-    def _init_flags(
-        self,
-    ):
+    def _init_flags(self):
         """
         Initialise the different flag attributes of the class.
         """
@@ -136,7 +132,7 @@ class SystemSolution:
                 "The SystemSolution is not complete and thus cannot be saved in the provided list"
             )
 
-    def getJacobian(self, format: str = "full", dump: bool = False) -> np.ndarray:
+    def getJacobian(self, format="full", dump=False) -> np.ndarray:
         """
         Returns the Jacobian in the specified format.
 

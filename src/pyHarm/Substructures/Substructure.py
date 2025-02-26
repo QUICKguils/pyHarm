@@ -19,11 +19,10 @@ class Substructure(ABCSubstructure):
     factory_keyword = "substructure"
 
     def _add_connectors(self, data: dict):
-        """ "
-        Method that adds a substructure Element.
+        """Method that adds a substructure Element.
 
-        Returns :
-            dict: Containing one connector with key of the same name that of the defined substructure
+        Returns:
+            dict: Containing one connector with key of the same name that of the defined substructure.
         """
         con = {
             self.name: {
@@ -35,10 +34,9 @@ class Substructure(ABCSubstructure):
         return con
 
     def _add_kinematics(self, data: dict):
-        """ "
-        Method that adds no kinematic conditions.
+        """Method that adds no kinematic conditions.
 
-        Returns :
-            dict: empty dictionary
+        Returns:
+            dict: empty dictionary.
         """
         return dict()

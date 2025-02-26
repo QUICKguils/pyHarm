@@ -95,11 +95,12 @@ class Linear_Analysis(ABCAnalysis):
         """
         w, phi = linalg.eig(K, M)
         omega = np.sort(np.sqrt(np.absolute(w)))
-        freq_Hz = omega[:10] / (2 * np.pi)
+        n_freq = np.min((omega.shape[-1], 10))
+        freq_Hz = omega[:n_freq] / (2 * np.pi)
         if self.flag_print:
             print(
-                "First ten eigenfrequencies of the linear stuck system\n"
-                + "\n".join([f"{valeur:.2f} Hz".rjust(12) for valeur in freq_Hz])
+                f"First {n_freq} eigenfrequencies of the linear stuck system:\n"
+                + "\n".join([f"{value:.2f} Hz".rjust(12) for value in freq_Hz])
             )
         return omega, phi
 

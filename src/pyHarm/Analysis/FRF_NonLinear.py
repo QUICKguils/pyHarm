@@ -154,7 +154,7 @@ class FRF_NonLinear(ABCAnalysis):
     def _get_x0(self, x0):
         om0 = np.array([self.analysis_options["puls_start"]])
         if not isinstance(x0, np.ndarray):
-            if x0 == None:  # if none, takes linear solution as starting point
+            if x0 is None:  # if none, takes linear solution as starting point
                 x0 = np.concatenate(
                     [
                         np.zeros(self.system.ndofs_solve),
@@ -267,7 +267,7 @@ class FRF_NonLinear(ABCAnalysis):
             J_red (np.ndarray): reduced jacobian matrix.
             output_expl_dofs (pd.DataFrame): DataFrame of the dofs after applying the reduction layers.
         """
-        if last_solution_pointer == None:
+        if last_solution_pointer is None:
             sol = FirstSolution(xpred_full)
         else:
             sol = SystemSolution(
@@ -306,14 +306,14 @@ class FRF_NonLinear(ABCAnalysis):
         sol.SaveSolution(self.SolList)
         if self.flag_print:
             if sol.flag_accepted:
-                print("solution converged at om={}".format(sol.x[-1]))
+                print(f"solution converged at om={sol.x[-1]}")
             else:
-                print("solution not accepted at om={}".format(sol.x[-1]))
+                print(f"solution not accepted at om={sol.x[-1]}")
         pass
 
     def Solve(self, x0=None, **kwargs):
         """
-        Makes the whole analysis using continuation techniques until the stopping criterion is validated
+        Makes the whole analysis using continuation techniques until the stopping criterion is validated.
 
         Args:
             x0 (None|str|np.ndarray): if None x0 is the linear solution at initial angular frequency, if "null" x0 is null vector, otherwise x0 is initialised using the provided array.
@@ -326,9 +326,7 @@ class FRF_NonLinear(ABCAnalysis):
             k += 1
         pass
 
-    def purge_jacobians(
-        self,
-    ):
+    def purge_jacobians(self):
         """Purge the Jacobians of Solutions that are no longer used."""
 
         def purge(SA):

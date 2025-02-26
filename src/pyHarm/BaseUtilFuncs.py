@@ -112,7 +112,8 @@ def pyHarm_plugin(cls):
     def check_keyword(cls, Dico):
         if cls.factory_keyword in Dico.keys():
             print(
-                f"Warning : {cls.factory_keyword} is being override by plugin - consider changing your factory_keyword"
+                f"Warning : {cls.factory_keyword} is being override by plugin"
+                " - consider changing your factory_keyword"
             )
 
     for ABCClass, Dico in Dico_ABCClass_factory_keyword.items():

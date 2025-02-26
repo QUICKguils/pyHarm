@@ -68,8 +68,9 @@ class Solver_NewtonRaphson(ABCNLSolver):
         self.AXk = self.jacobian(sol.x_start, sol)
         self.iter = 0
         self.status = 1
-        while (np.linalg.norm(self.FXk) >= self.solver_options["tol_residual"]) or (
-            np.linalg.norm(self.x - self.xprec) >= self.solver_options["tol_delta_x"]
+        while (
+            np.linalg.norm(self.FXk) >= self.solver_options["tol_residual"]
+            or np.linalg.norm(self.x - self.xprec) >= self.solver_options["tol_delta_x"]
         ):
             self.deltak = self.linSysdeltak()
             self.xprec = copy.deepcopy(self.x)

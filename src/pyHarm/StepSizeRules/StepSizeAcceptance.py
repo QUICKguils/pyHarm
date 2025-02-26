@@ -58,7 +58,7 @@ class StepSizeAcceptance(ABCStepSizeRule):
             )
             if np.sum(acc) == self.consecutive_accept and ds < self.ds_max:
                 ds *= 2
-        except:
+        except Exception:
             pass
         if ds < self.ds_min or ds > self.ds_max:
             ds = self.ProjectInBounds(ds)  # shouldn't be necessary
