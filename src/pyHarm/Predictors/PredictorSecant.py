@@ -13,9 +13,7 @@
 # limitations under the License.
 
 import numpy as np
-import scipy.linalg as spl
 
-from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
 from pyHarm.Predictors.PredictorTangent import PredictorTangent
 from pyHarm.Solver import FirstSolution, SystemSolution
 
@@ -59,10 +57,10 @@ class PredictorSecant(PredictorTangent):
             SystemSolution: last accepted point in the list of solutions.
             float: sign of the prediction used (-1 | 1)
         """
-        ### Get pointer to solution, Jacobian in full mode, and bifurcation detection
-        lstpt = self.getPointerToSolution(sollist, k_imposed)  # get pointer
-        lstpt.getJacobian("full")  # get J_f
-        self.bifurcation_detect(lstpt)  # get pointer
+        ### Get pointer to solution and bifurcation detection
+        lstpt = self.getPointerToSolution(sollist, k_imposed)
+        if self.predictor_options["bifurcation_detect"]:
+            self.bifurcation_detect(lstpt)
         if isinstance(lstpt, FirstSolution):
             xpred, lstpt, self.sign_ds = self.predict_usingtan(
                 sollist, ds, k_imposed=None

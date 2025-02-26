@@ -15,7 +15,6 @@
 import numpy as np
 import scipy.linalg as spl
 
-from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
 from pyHarm.Predictors.ABCPredictor import ABCPredictor
 from pyHarm.Solver import FirstSolution, SystemSolution
 
@@ -46,9 +45,10 @@ class PredictorTangent(ABCPredictor):
             float: sign of the prediction used (-1 | 1)
         """
         ### Get pointer to solution, Jacobian in full mode, and bifurcation detection
-        lstpt = self.getPointerToSolution(sollist, k_imposed)  # get pointer
+        lstpt = self.getPointerToSolution(sollist, k_imposed)
         lstpt.getJacobian("full")  # get J_f
-        self.bifurcation_detect(lstpt)  # get pointer
+        if self.predictor_options["bifurcation_detect"]:
+            self.bifurcation_detect(lstpt)
         ### Get the tangent
         # get QR decomposition of transpose of Jacobian without correction equation
         lstpt.J_x_T_qr = spl.qr(np.transpose(lstpt.J_f[:-1, :]))

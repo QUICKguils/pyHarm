@@ -43,7 +43,7 @@ class ABCPredictor(abc.ABC):
 
     default_options = {"norm": "norm1", "bifurcation_detect": True, "verbose": True}
     """dict: set of default parameters for the system class if not given in the input argument.
-    
+
     It contains a normalisation parameter using the keyword 'norm' that can be set to either 'norm1' (default) if the direction is normed to 1 or 'om' if the direction is normed to 1 only for the angular frequency.
     It contains a bifurcation detection using the 'bifurcation_detect' keyword that can be set to True (default) if detection is needed.
     It contains a 'verbose' keyword that can be set to True (default) if information about detection of bifurcations is to be displayed during solving.
@@ -78,37 +78,30 @@ class ABCPredictor(abc.ABC):
         Attributes:
             sign_ds (float): Attribute is modified if a turning point is detected.
         """
-        if self.predictor_options["bifurcation_detect"] == False:
-            pass
+        Jaco = lstpt.getJacobian("full")
+        det_J_f = spl.det(Jaco)
+        det_J_x = spl.det(Jaco[:-1, :-1])
+        lstpt.det_J_f = det_J_f
+        lstpt.det_J_x = det_J_x
+        if isinstance(lstpt, FirstSolution):
+            det_J_x_prec = det_J_x
+            det_J_f_prec = det_J_f
         else:
-            Jaco_qr = lstpt.getJacobian("qr")
-            Jaco = lstpt.getJacobian("full")
-            det_J_f = spl.det(Jaco)
-            det_J_x = spl.det(Jaco[:-1, :-1])
-            lstpt.det_J_f = det_J_f
-            lstpt.det_J_x = det_J_x
-            if isinstance(lstpt, FirstSolution):
-                det_J_x_prec = det_J_x
-                det_J_f_prec = det_J_f
-            else:
-                det_J_x_prec = lstpt.precedent_solution.det_J_x
-                det_J_f_prec = lstpt.precedent_solution.det_J_f
+            det_J_x_prec = lstpt.precedent_solution.det_J_x
+            det_J_f_prec = lstpt.precedent_solution.det_J_f
 
-            if np.sign(det_J_x) != np.sign(det_J_x_prec):
-                if np.sign(det_J_f) == np.sign(det_J_f_prec) or np.sign(
-                    det_J_f
-                ) != np.sign(det_J_x):
-                    self.sign_ds *= -1
-                    lstpt.flag_bifurcation = True
-                    if self.flag_print:
-                        print(
-                            "Warning: a limit point (fold bifurcation) was detected --> path direction is reversed"
-                        )
-                else:
-                    lstpt.flag_bifurcation = True
-                    if self.flag_print:
-                        print("Warning: a branching point was detected")
-                pass
+        if np.sign(det_J_x) != np.sign(det_J_x_prec):
+            lstpt.flag_bifurcation = True
+            if np.sign(det_J_f) == np.sign(det_J_f_prec) or np.sign(det_J_f) != np.sign(det_J_x):
+                self.sign_ds *= -1
+                if self.flag_print:
+                    print(
+                        "Warning: a limit point (fold bifurcation) was detected"
+                        " --> path direction is reversed"
+                    )
+            else:
+                if self.flag_print:
+                    print("Warning: a branching point was detected")
 
     ################################################### /!\
 
@@ -124,7 +117,7 @@ class ABCPredictor(abc.ABC):
         Returns:
             SystemSolution: last accepted point.
         """
-        if k_imposed == None:
+        if k_imposed is None:
             lstpt = sollist[-1]
             k = 0
             while not lstpt.flag_accepted:
