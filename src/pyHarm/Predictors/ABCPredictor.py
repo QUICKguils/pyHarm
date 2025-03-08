@@ -13,12 +13,19 @@
 # limitations under the License.
 
 import abc
+from enum import Enum
 
 import numpy as np
 import scipy.linalg as spl
 
 from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
 from pyHarm.Solver import FirstSolution, SystemSolution
+
+
+class BifurcationType(Enum):
+    FOLD = "fold bifurcation"
+    BRANCHING = "branching point bifurcation"
+    NEIMARK_SACKER = "Neimark-Sacker bifurcation"
 
 
 class ABCPredictor(abc.ABC):
@@ -39,14 +46,23 @@ class ABCPredictor(abc.ABC):
         Returns:
             str: keyword that is used to call the creation of this class in the system factory.
         """
-        ...
+        pass
 
-    default_options = {"norm": "norm1", "bifurcation_detect": True, "verbose": True}
+    default_options = {
+        "norm": "norm1",
+        "bifurcation_detect": True,
+        "verbose": True,
+    }
     """dict: set of default parameters for the system class if not given in the input argument.
 
-    It contains a normalisation parameter using the keyword 'norm' that can be set to either 'norm1' (default) if the direction is normed to 1 or 'om' if the direction is normed to 1 only for the angular frequency.
-    It contains a bifurcation detection using the 'bifurcation_detect' keyword that can be set to True (default) if detection is needed.
-    It contains a 'verbose' keyword that can be set to True (default) if information about detection of bifurcations is to be displayed during solving.
+    It contains a normalisation parameter using the keyword 'norm' that can be
+    set to either 'norm1' (default) if the direction is normed to 1 or 'om' if
+    the direction is normed to 1 only for the angular frequency.
+    It contains a bifurcation detection using the 'bifurcation_detect' keyword
+    that can be set to True (default) if detection is needed.
+    It contains a 'verbose' keyword that can be set to True (default) if
+    information about detection of bifurcations is to be displayed during
+    solving.
     """
 
     def __init__(self, sign_ds, **kwargs):
@@ -59,15 +75,13 @@ class ABCPredictor(abc.ABC):
     def predict(
         self, sollist: list[SystemSolution], ds: float
     ) -> tuple[np.ndarray, SystemSolution, float]:
-        """Predicts the next strating point.
+        """Predicts the next starting point.
 
         Args:
             sollist (list[SystemSolution]): list of SystemSolution already solved during the analysis.
             ds (float): step size for the prediction.
         """
         pass
-
-    ################################################### /!\
 
     def bifurcation_detect(self, lstpt: SystemSolution):
         """Makes a bifurcation detection analysis computing determinant of jacobian matrix and analysing change of sign.
@@ -76,9 +90,11 @@ class ABCPredictor(abc.ABC):
             lstpt (SystemSolution): previously accepted point in direct link with the actual solved point.
 
         Attributes:
-            sign_ds (float): Attribute is modified if a turning point is detected.
+            sign_ds (float): Attribute is modified if a fold bifurcation is detected.
+            bifurcation_type (BifurcationType): Attribute is assigned if a bifurcation is detected.
         """
-        Jaco = lstpt.getJacobian("full")
+        Jaco = lstpt.get_jacobian("full")
+        # XXX: heavy to compute dets. Consider bordering techniques
         det_J_f = spl.det(Jaco)
         det_J_x = spl.det(Jaco[:-1, :-1])
         lstpt.det_J_f = det_J_f
@@ -93,19 +109,17 @@ class ABCPredictor(abc.ABC):
         if np.sign(det_J_x) != np.sign(det_J_x_prec):
             lstpt.flag_bifurcation = True
             if np.sign(det_J_f) == np.sign(det_J_f_prec) or np.sign(det_J_f) != np.sign(det_J_x):
+                lstpt.bifurcation_type = BifurcationType.FOLD
                 self.sign_ds *= -1
-                if self.flag_print:
-                    print(
-                        "Warning: a limit point (fold bifurcation) was detected"
-                        " --> path direction is reversed"
-                    )
             else:
-                if self.flag_print:
-                    print("Warning: a branching point was detected")
+                lstpt.bifurcation_type = BifurcationType.BRANCHING
 
-    ################################################### /!\
+            if self.flag_print:
+                print(f"Warning: a {lstpt.bifurcation_type.value} was detected")
+                if lstpt.bifurcation_type is BifurcationType.FOLD:
+                    print("--> path direction is reversed")
 
-    def getPointerToSolution(
+    def get_pointer_to_solution(
         self, sollist: list[SystemSolution], k_imposed=None
     ) -> SystemSolution:
         """Gets the last accepted solution in direct link with the studied point.
