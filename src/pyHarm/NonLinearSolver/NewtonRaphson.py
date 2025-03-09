@@ -95,7 +95,7 @@ class Solver_NewtonRaphson(ABCNLSolver):
         """
         sol.x_red = copy.deepcopy(self.x)
         sol.R_solver = copy.deepcopy(self.FXk)
-        sol.iter_numb = self.iter
+        sol.niter = self.iter
         sol.flag_R = True
         sol.flag_J = True
         sol.flag_J_f = True

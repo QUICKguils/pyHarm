@@ -96,6 +96,7 @@ class Solver_MoorePenrose(ABCNLSolver):
         """
         sol.x_red = copy.deepcopy(self.x)
         sol.R_solver = copy.deepcopy(self.FXk)
+        sol.niter = self.iter
         sol.flag_intosolver = True
         if (self.status == 1) or (isinstance(sol, FirstSolution)):
             sol.flag_accepted = True

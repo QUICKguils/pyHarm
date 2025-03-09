@@ -22,9 +22,12 @@ class SystemSolution:
     """
     Class that represents a solution of the system to be solved.
 
-    This class is the main object that transits in the analysis process while solving a problem.
-    The object contains information about its starting point, the previous SystemSolution it is linked to and the actual point the solver is studying.
-    Once the solver has converged, the values of the residual and the solution point are stored in some of the attributes.
+    This class is the main object that transits in the analysis process while
+    solving a problem.
+    The object contains information about its starting point, the previous
+    SystemSolution it is linked to and the actual point the solver is studying.
+    Once the solver has converged, the values of the residual and the solution
+    point are stored in some of the attributes.
 
     Args:
         xs (np.ndarray): An array representing the starting point.
@@ -43,6 +46,7 @@ class SystemSolution:
         flag_J_lu (bool): Flag indicating the availability of the Jacobian with LU decomposition.
         flag_J_f (bool): Flag indicating the availability of the full-size Jacobian.
         index_insolve (int): The index of the solution within the solver.
+        niter (int): Number of iterations preformed by the solver.
         ds (float): The step size for the continuation.
         sign_ds (int): Sign of the step size.
         x_start (np.ndarray): An array representing the starting point.
@@ -56,11 +60,12 @@ class SystemSolution:
     """
 
     def __init__(self, xs: np.ndarray, last_solution_pointer=None, **kwargs):
-        ######################### The flags of the SystemSolution class
+        # The flags of the SystemSolution class
         self._init_flags()
         ######################### Values and Vectors
         # The scalar/integer values
         self.index_insolve = 0
+        self.niter = 0
         self.ds = 0.0
         self.sign_ds = 1.0
         # The variable points of the SystemSolution
@@ -76,41 +81,29 @@ class SystemSolution:
         self.precedent_solution = last_solution_pointer
 
     def _init_flags(self):
-        """
-        Initialise the different flag attributes of the class.
-        """
-        ######################### The flags of the SystemSolution class
-        self.flag_restart = (
-            False  # This flags is set to True whenever its last_solution_point!=index-1
-        )
-        self.flag_accepted = False  # This flag is set by the solver, if the solution can be considered valid
-        self.flag_bifurcation = (
-            False  # This flags True when bifurcation has been detected at this point
-        )
-        self.flag_solved = False  # this flag is set with method CheckComplete
-        self.flag_intosolver = (
-            False  # this flag is set to True when the Solution went through the solver
-        )
+        """Initialise the different flag attributes of the class."""
+        self.flag_restart     = False  # This flags is set to True whenever its last_solution_point != index-1
+        self.flag_accepted    = False  # This flag is set by the solver, if the solution can be considered valid
+        self.flag_bifurcation = False  # This flags True when bifurcation has been detected at this point
+        self.flag_solved      = False  # this flag is set with method CheckComplete
+        self.flag_intosolver  = False  # this flag is set to True when the Solution went through the solver
         ### Residual flag
         self.flag_R = False  # Presence of a Residual result
         ### Jacobian flags
-        self.flag_J = False  # presence of a Jacobian result
-        self.flag_J_qr = (
-            False  # Jacobian available with qr formalism of scipy.linalg.qr=[Q,R]
-        )
-        self.flag_J_lu = (
-            False  # Jacobian available with lu formalism of scipy.linalg.lu=[P,L,U]
-        )
-        self.flag_J_f = False  # Jacobian available full size
+        self.flag_J    = False  # Presence of a Jacobian result
+        self.flag_J_qr = False  # Jacobian available with qr formalism of scipy.linalg.qr = [Q,R]
+        self.flag_J_lu = False  # Jacobian available with lu formalism of scipy.linalg.lu = [P,L,U]
+        self.flag_J_f  = False  # Jacobian available full size
 
-    def CheckComplete(self):
+    def CheckComplete(self) -> bool:
         """
-        Checks if all elements required to proceed are present in the SystemSolution object.
+        Checks if all elements required to proceed are present in the
+        SystemSolution object.
 
         Returns:
             bool: True if the solution is considered valid.
         """
-        # presence of Jacobian at the solution point :
+        # presence of Jacobian at the solution point
         if self.flag_R and self.flag_J and self.flag_intosolver:
             self.flag_solved = True
         return self.flag_solved
@@ -129,12 +122,12 @@ class SystemSolution:
             List.append(self)
         else:
             raise ValueError(
-                "The SystemSolution is not complete and thus cannot be saved in the provided list"
+                "The SystemSolution is not complete "
+                "and thus cannot be saved in the provided list"
             )
 
     def getJacobian(self, format="full", dump=False) -> np.ndarray:
-        """
-        Returns the Jacobian in the specified format.
+        """Returns the Jacobian in the specified format.
 
         Args:
             format (str): The format of the Jacobian. Options: "full", "qr", "lu" (default: "full").
@@ -170,8 +163,7 @@ class SystemSolution:
                 return self.J_f
 
     def convertJacobian(self, format_in, format_out, dump=False):
-        """
-        Converts the Jacobian format from format_in to format_out.
+        """Converts the Jacobian format from format_in to format_out.
 
         Args:
             format_in (str): The current format of the Jacobian.

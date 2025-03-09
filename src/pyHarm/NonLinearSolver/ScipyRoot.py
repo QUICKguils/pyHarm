@@ -127,5 +127,7 @@ class Solver_ScipyRoot(ABCNLSolver):
         sol.R_solver = copy.deepcopy(S.fun)
         sol.flag_intosolver = True
         self.solution_accepted(S, sol)
+        # WARN: scipy.root seems unable to provide the `nit` attribute
+        # sol.niter = S.nit
         sol.status_solver = S.status
         sol.message_solver = S.message
