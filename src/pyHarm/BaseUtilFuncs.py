@@ -27,19 +27,6 @@ import copy
 import numpy as np
 import pandas as pd
 
-from pyHarm.Analysis.FactoryNonLinearStudy import ABCAnalysis, NonLinearStudy_kind
-from pyHarm.Correctors.FactoryCorrector import ABCCorrector, Corrector_dico
-from pyHarm.Elements.FactoryElements import ABCElement, ElementDictionary
-from pyHarm.KinematicConditions.FactoryKinematic import ABCKinematic, Kinematic_dico
-from pyHarm.NonLinearSolver.FactoryNonLinearSolver import ABCNLSolver, Solver_dico
-from pyHarm.Predictors.FactoryPredictor import ABCPredictor, Predictor_dico
-from pyHarm.Reductors.FactoryReductors import ABCReductor, Reductor_dico
-from pyHarm.StepSizeRules.FactoryStepSize import ABCStepSizeRule, StepSizer_dico
-from pyHarm.StopCriterion.FactoryStopCriterion import ABCStopCriterion, Stopper_dico
-from pyHarm.Substructures.FactorySubstructure import ABCSubstructure, SubstructureDico
-from pyHarm.Substructures.SubDataReader.FactoryReader import ABCReader, SubstructureReaderDictionary
-from pyHarm.Systems.FactorySystem import ABCSystem, System_dico
-
 
 def getCustomOptionDictionary(custom_options: dict, default_options: dict):
     """
@@ -95,6 +82,21 @@ def getIndexfromExpldofs(
             dof_match += expl_dofs["dof_num"] == dir
         matching += submatch * nodematch * dof_match
     return np.sort(expl_dofs[matching].index)
+
+
+# WARN: These imports should not be placed on to of the file, otherwise circular deps occurs.
+from pyHarm.Analysis.FactoryNonLinearStudy import ABCAnalysis, NonLinearStudy_kind
+from pyHarm.Correctors.FactoryCorrector import ABCCorrector, Corrector_dico
+from pyHarm.Elements.FactoryElements import ABCElement, ElementDictionary
+from pyHarm.KinematicConditions.FactoryKinematic import ABCKinematic, Kinematic_dico
+from pyHarm.NonLinearSolver.FactoryNonLinearSolver import ABCNLSolver, Solver_dico
+from pyHarm.Predictors.FactoryPredictor import ABCPredictor, Predictor_dico
+from pyHarm.Reductors.FactoryReductors import ABCReductor, Reductor_dico
+from pyHarm.StepSizeRules.FactoryStepSize import ABCStepSizeRule, StepSizer_dico
+from pyHarm.StopCriterion.FactoryStopCriterion import ABCStopCriterion, Stopper_dico
+from pyHarm.Substructures.FactorySubstructure import ABCSubstructure, SubstructureDico
+from pyHarm.Substructures.SubDataReader.FactoryReader import ABCReader, SubstructureReaderDictionary
+from pyHarm.Systems.FactorySystem import ABCSystem, System_dico
 
 
 Dico_ABCClass_factory_keyword = {

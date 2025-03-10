@@ -94,7 +94,7 @@ class ABCPredictor(abc.ABC):
             sign_ds (float): Attribute is modified if a fold bifurcation is detected.
             bifurcation_type (BifurcationType): Attribute is assigned if a bifurcation is detected.
         """
-        Jaco = lstpt.get_jacobian("full")
+        Jaco = lstpt.getJacobian("full")
         # XXX: heavy to compute dets. Consider bordering techniques
         det_J_f = spl.det(Jaco)
         det_J_x = spl.det(Jaco[:-1, :-1])
@@ -120,7 +120,7 @@ class ABCPredictor(abc.ABC):
                 if lstpt.bifurcation_type is BifurcationType.FOLD:
                     print("--> path direction is reversed")
 
-    def get_pointer_to_solution(
+    def getPointerToSolution(
         self, sollist: list[SystemSolution], k_imposed=None
     ) -> SystemSolution:
         """Gets the last accepted solution in direct link with the studied point.
