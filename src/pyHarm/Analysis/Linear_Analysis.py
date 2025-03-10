@@ -59,7 +59,7 @@ class Linear_Analysis(ABCAnalysis):
         self.SolList = []
         self.eigensol = {"eigenfrequencies": None, "eigenvectors": None}
 
-    def initialise(self):
+    def initialize(self):
         """Retrieves the mass and stiffness matrix of the assembled system.
 
         Returns:
@@ -168,7 +168,7 @@ class Linear_Analysis(ABCAnalysis):
 
     def Solve(self, x0=None):
         """Solving step of the analysis."""
-        K, M = self.initialise()
+        K, M = self.initialize()
         omega, phi = self.makeStep(K, M)
         self.eigensol["eigenfrequencies"] = omega / (2 * np.pi)
         self.eigensol["eigenvectors"] = phi

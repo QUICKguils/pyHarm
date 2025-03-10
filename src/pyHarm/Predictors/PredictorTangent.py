@@ -16,18 +16,22 @@ import numpy as np
 import scipy.linalg as spl
 
 from pyHarm.Predictors.ABCPredictor import ABCPredictor
-from pyHarm.Solver import FirstSolution, SystemSolution
+from pyHarm.Solver import SystemSolution
 
 
 class PredictorTangent(ABCPredictor):
-    """Define the tangent type of predictor. Using the Jacobian at solution point, a tangent to R(x)=0 solution is drawn and used as a prediction direction.
+    """Define the tangent type of predictor.
 
-    The tangent is computed using a QR decomposition of the Jacobian at the solution point.
+    Using the Jacobian at solution point, a tangent to R(x)=0 solution is drawn
+    and used as a prediction direction.
+
+    The tangent is computed using a QR decomposition of the Jacobian at the
+    solution point.
     """
 
     predictor_name = "Tangent Predictor"
     factory_keyword: str = "tangent"
-    """str: keyword that is used to call the creation of this class in the system factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
     def predict(
         self, sollist: list[SystemSolution], ds: float, k_imposed=None

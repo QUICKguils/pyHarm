@@ -18,7 +18,7 @@ import numpy as np
 
 from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
 from pyHarm.NonLinearSolver.ABCNonLinearSolver import ABCNLSolver
-from pyHarm.Solver import FirstSolution, SystemSolution
+from pyHarm.Solver import SystemSolution
 
 
 class Solver_NewtonRaphson(ABCNLSolver):
@@ -52,8 +52,7 @@ class Solver_NewtonRaphson(ABCNLSolver):
         )
 
     def Solve(self, sol: SystemSolution, SolList: list) -> SystemSolution:
-        """
-        Runs the solver.
+        """Runs the solver.
 
         Args:
             sol (SystemSolution): SystemSolution that contains the starting point.
@@ -80,14 +79,12 @@ class Solver_NewtonRaphson(ABCNLSolver):
             self.iter += 1
             if self.iter >= self.solver_options["max_iter"]:
                 self.status = 5
-                self.CompleteSystemSolution(sol, SolList)
-                return sol
+                break
         self.CompleteSystemSolution(sol, SolList)
         return sol
 
     def CompleteSystemSolution(self, sol, SolList):
-        """
-        Function that allows to retrieve information of interest
+        """Function that allows to retrieve information of interest.
 
         Args:
             sol (SystemSolution): SystemSolution that contains the starting point.
@@ -107,7 +104,8 @@ class Solver_NewtonRaphson(ABCNLSolver):
 
     def linSysdeltak(self):
         """
-        Calculation of the 'deltak' correction to apply to the current iteration in order to converge towards the solution.
+        Calculation of the 'deltak' correction to apply to the current
+        iteration in order to converge towards the solution.
 
         Returns:
             self.extcall_newton(matA,matB): Correction 'deltak'

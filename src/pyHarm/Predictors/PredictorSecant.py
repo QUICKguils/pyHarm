@@ -57,21 +57,18 @@ class PredictorSecant(PredictorTangent):
             SystemSolution: last accepted point in the list of solutions.
             float: sign of the prediction used (-1 | 1)
         """
-        ### Get pointer to solution and bifurcation detection
+        # Get pointer to solution and bifurcation detection
         lstpt = self.getPointerToSolution(sollist, k_imposed)
         if self.predictor_options["bifurcation_detect"]:
             self.bifurcation_detect(lstpt)
         if isinstance(lstpt, FirstSolution):
-            xpred, lstpt, self.sign_ds = self.predict_usingtan(
-                sollist, ds, k_imposed=None
-            )
+            xpred, lstpt, self.sign_ds = self.predict_usingtan(sollist, ds, k_imposed=None)
         else:
-            dir = (lstpt.x - lstpt.precedent_solution.x) / np.linalg.norm(
-                lstpt.x - lstpt.precedent_solution.x
-            )
+            dir = (lstpt.x - lstpt.precedent_solution.x) / np.linalg.norm(lstpt.x - lstpt.precedent_solution.x)
             dir = self.norm_dir(dir) * np.sign(dir[-1])
             xpred = lstpt.x + dir * ds * self.sign_ds
-            ## write some stuff in the solution
+            # write some stuff in the solution
             lstpt.dir = dir
             lstpt.x_pred = xpred
+
         return xpred, lstpt, self.sign_ds

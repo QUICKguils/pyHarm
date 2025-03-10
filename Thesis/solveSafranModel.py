@@ -8,19 +8,21 @@ from pyHarm.DynamicOperator import compute_DFT
 from pyHarm.Predictors.ABCPredictor import BifurcationType
 from pyHarm.Solver import SystemSolution
 
-from .buildSafranModel import M
+from .buildSafranModel import PROBLEM, CONT_1, CONT_2
 from .mplrc import load_rcparams
 
+M_BASE = Maestro(PROBLEM)
+
 # Discrete fourier transform operator
-DFTO = compute_DFT(M.system.nti, M.system.nh)
+DFTO = compute_DFT(M_BASE.system.nti, M_BASE.system.nh)
 
 # Get indexes of relevant dofs and associated harmonics.
 # DOF 4 and 5 in pyHarm are DOFs 5 and 6 in the Safran model schematic.
 # Nonlinear bearing is located bw. these two DOFs.
-idx_51 = M.getIndex("linear_rotor", 4, 0)
-idx_52 = M.getIndex("linear_rotor", 4, 1)
-idx_61 = M.getIndex("linear_rotor", 5, 0)
-idx_62 = M.getIndex("linear_rotor", 5, 1)
+idx_51 = M_BASE.getIndex("linear_rotor", 4, 0)
+idx_52 = M_BASE.getIndex("linear_rotor", 4, 1)
+idx_61 = M_BASE.getIndex("linear_rotor", 5, 0)
+idx_62 = M_BASE.getIndex("linear_rotor", 5, 1)
 
 
 def compute_amplitude(solutions: list[SystemSolution]):
@@ -40,10 +42,9 @@ def compute_amplitude(solutions: list[SystemSolution]):
     )
 
 
-def extract_solution(M: Maestro):
-    solutions = [sol for sol in M.nls["nonlinear"].SolList]
-    sol_accepted = [sol for sol in solutions if sol.flag_accepted]
-    sol_rejected = [sol for sol in solutions if not sol.flag_accepted]
+def extract_solution(SolList: list[SystemSolution]):
+    sol_accepted = [sol for sol in SolList if sol.flag_accepted]
+    sol_rejected = [sol for sol in SolList if not sol.flag_accepted]
 
     return (sol_accepted, sol_rejected)
 
@@ -57,49 +58,82 @@ def extract_bifurcation(sol_accepted: list[SystemSolution]):
 
 
 def plot_nfrc(sol_accepted, sol_fold, sol_branching) -> None:
-    ampl_accepted = compute_amplitude(sol_accepted)
-    ampl_fold = compute_amplitude(sol_fold)
-    ampl_branching = compute_amplitude(sol_branching)
-    om_accepted = [sol.x[-1] for sol in sol_accepted]
-    om_fold = [sol.x[-1] for sol in sol_fold]
-    om_branching = [sol.x[-1] for sol in sol_branching]
-
     fig_nfrc, ax_nfrc = plt.subplots()
-    ax_nfrc.plot(om_accepted, ampl_accepted, label="NFRC")
-    ax_nfrc.scatter(
-        om_fold, ampl_fold,
-        s=50, zorder=2.5, marker="x", color="C1", label="fold bifurcation",
-    )
-    ax_nfrc.scatter(
-        om_branching, ampl_branching,
-        s=50, zorder=2.5, marker="x", color="C6", label="branching point",
-    )
-    ax_nfrc.set_xlabel("$\\omega [rad/s]$")
-    ax_nfrc.set_ylabel(r"$\|\Delta \tilde{x}(\omega)\|/gap$")
+
+    if len(sol_accepted) != 0:
+        om_accepted = [sol.x[-1] for sol in sol_accepted]
+        ampl_accepted = compute_amplitude(sol_accepted)
+        ax_nfrc.plot(om_accepted, ampl_accepted, label="NFRC")
+
+    if len(sol_fold) != 0:
+        om_fold = [sol.x[-1] for sol in sol_fold]
+        ampl_fold = compute_amplitude(sol_fold)
+        ax_nfrc.scatter(
+            om_fold, ampl_fold,
+            s=50, zorder=2.5, marker="x", color="C1", label="fold bifurcation",
+        )
+
+    if len(sol_branching) != 0:
+        om_branching = [sol.x[-1] for sol in sol_branching]
+        ampl_branching = compute_amplitude(sol_branching)
+        ax_nfrc.scatter(
+            om_branching, ampl_branching,
+            s=50, zorder=2.5, marker="x", color="C6", label="branching point",
+        )
+
+    ax_nfrc.set_xlabel(r"$\omega$ [rad/s]")
+    ax_nfrc.set_ylabel(r"$\|\Delta \tilde{x}(\omega)\|/$gap")
     ax_nfrc.legend()
     fig_nfrc.show()
 
 
-def plot_orbit(sol_bifurcation, id=0) -> None:
-    """Orbital motion at the nonlinear bearing, for the selected `id` bifurcation."""
-    dx = (sol_bifurcation[id].x[idx_51] - sol_bifurcation[id].x[idx_61]) @ DFTO["ft"]
-    dy = (sol_bifurcation[id].x[idx_52] - sol_bifurcation[id].x[idx_62]) @ DFTO["ft"]
+def plot_orbit(SolList: list[SystemSolution], **kwargs) -> None:
+    """Orbital motion at the nonlinear bearing, at the desired curve point."""
+    # Check inputs
+    if len(SolList) == 0:
+        print("Empty list of solution: unable to plot orbit")
+    if not kwargs:
+        print(
+            "specify either an index `id` "
+            "or an approximate curve point `om, ampl`"
+        )
+
+    # Get id, om, ampl
+    omList = [sol.x[-1] for sol in SolList]
+    amplList = compute_amplitude(SolList)
+    if "id" in kwargs:
+        id = kwargs["id"]
+    else:
+        om_target = kwargs["om"]
+        ampl_target = kwargs["ampl"]
+        curve_sdist = np.array([  # square distance from the curve
+            (om_i-om_target)**2 + (ampl_i-ampl_target)**2
+            for (om_i, ampl_i) in zip(omList, amplList)
+        ])
+        id = np.argmin(curve_sdist)
+    om = omList[id]
+    ampl = amplList[id]
+
+    # Polar repr of the orbit at the defined id.
+    dx = (SolList[id].x[idx_51] - SolList[id].x[idx_61]) @ DFTO["ft"]
+    dy = (SolList[id].x[idx_52] - SolList[id].x[idx_62]) @ DFTO["ft"]
     r = np.sqrt(dx**2 + dy**2)
     theta = np.arctan2(dy, dx)
 
     fig_orbit, ax_orbit = plt.subplots(subplot_kw={"projection": "polar"})
     ax_orbit.plot(
-        theta, r,
-        color="C0", linewidth=0.8, label="Rotor motion",
+        np.linspace(0, 2 * np.pi, len(r)), 1 * np.ones_like(r),
+        color="C7", linewidth=1, linestyle="--", label="Gap",
     )
     ax_orbit.plot(
-        np.linspace(0, 2 * np.pi, len(r)), 1 * np.ones_like(r),
-        color="C7", linewidth=0.5, linestyle="--", label="Gap",
+        theta, r,
+        color="C0", linewidth=2, label="Rotor motion",
     )
     ax_orbit.scatter(
         theta[r > 1], r[r > 1],
-        s=10, marker="o", zorder=2.5, color="C6", label="displacement > gap",
+        s=15, marker="o", zorder=2.5, color="C6", label="displacement > gap",
     )
+    ax_orbit.set_title(f"Freq: {om:.4f} Hz, Mean ampl: {ampl:.4f}")
     ax_orbit.set_xticklabels([])
     ax_orbit.set_yticklabels([])
     ax_orbit.spines["polar"].set_visible(False)
@@ -111,18 +145,25 @@ def main() -> Maestro:
     load_rcparams()
 
     try:
-        M.operate()
+        M_1 = Maestro(PROBLEM | CONT_1)
+        M_1.operate()
+        x0_1 = M_1.nls["CONT_1"].SolList[-1].x[:-1]  # TODO: take the last *valid* solution
+        M_2 = Maestro(PROBLEM | CONT_2)
+        M_2.operate(x0_1)
     except KeyboardInterrupt:
-        return M
+        # Sort of an interactive StopCriterion
+        pass
 
-    (sol_accepted, sol_rejected) = extract_solution(M)
+    SolList = M_1.nls["CONT_1"].SolList + M_2.nls["CONT_2"].SolList
+
+    (sol_accepted, sol_rejected) = extract_solution(SolList)
     (sol_bifurcation, sol_fold, sol_branching) = extract_bifurcation(sol_accepted)
 
     plot_nfrc(sol_accepted, sol_fold, sol_branching)
     plot_orbit(sol_bifurcation, id=0)
 
-    return M
+    return locals()
 
 
 if __name__ == "__main__":
-    M = main()
+    main()

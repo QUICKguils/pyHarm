@@ -51,16 +51,12 @@ class Maestro:
         self.system = generateSystem(idata["system"]["type"], self.inputData)
         # -- Build the Analysis objects -- #
         self.nls = dict()
-        # Operate the analysis :
+        # Operate the analysis
         for analysis_name, analysis_config_input in self.inputData["analysis"].items():
             analysis_config = copy.deepcopy(analysis_config_input)
             if self.system.adim:
-                analysis_config["puls_sup"] = (
-                    analysis_config["puls_sup"] / self.system.wc
-                )
-                analysis_config["puls_inf"] = (
-                    analysis_config["puls_inf"] / self.system.wc
-                )
+                analysis_config["puls_sup"] = (analysis_config["puls_sup"] / self.system.wc)
+                analysis_config["puls_inf"] = (analysis_config["puls_inf"] / self.system.wc)
             self.nls[analysis_name] = generateNonLinearAnalysis(
                 analysis_config["study"], analysis_config, self.system
             )

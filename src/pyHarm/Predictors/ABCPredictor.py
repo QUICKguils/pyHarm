@@ -54,7 +54,10 @@ class ABCPredictor(abc.ABC):
         "bifurcation_detect": True,
         "verbose": True,
     }
-    """dict: set of default parameters for the system class if not given in the input argument.
+    """
+    dict:
+      Set of default parameters for the system class if not given in the input
+      argument.
 
     It contains a normalisation parameter using the keyword 'norm' that can be
     set to either 'norm1' (default) if the direction is normed to 1 or 'om' if
@@ -79,20 +82,26 @@ class ABCPredictor(abc.ABC):
         """Predicts the next starting point.
 
         Args:
-            sollist (list[SystemSolution]): list of SystemSolution already solved during the analysis.
+            sollist (list[SystemSolution]): list of SystemSolution already
+              solved during the analysis.
             ds (float): step size for the prediction.
         """
         pass
 
     def bifurcation_detect(self, lstpt: SystemSolution):
-        """Makes a bifurcation detection analysis computing determinant of jacobian matrix and analysing change of sign.
+        """
+        Makes a bifurcation detection analysis computing determinant of
+        jacobian matrix and analysing change of sign.
 
         Args:
-            lstpt (SystemSolution): previously accepted point in direct link with the actual solved point.
+            lstpt (SystemSolution): previously accepted point in direct link
+              with the actual solved point.
 
         Attributes:
-            sign_ds (float): Attribute is modified if a fold bifurcation is detected.
-            bifurcation_type (BifurcationType): Attribute is assigned if a bifurcation is detected.
+            sign_ds (float): Attribute is modified if a fold bifurcation is
+              detected.
+            bifurcation_type (BifurcationType): Attribute is assigned if a
+              bifurcation is detected.
         """
         Jaco = lstpt.getJacobian("full")
         # XXX: heavy to compute dets. Consider bordering techniques

@@ -4,8 +4,6 @@ import pathlib
 
 import numpy as np
 
-import pyHarm
-
 from .StepSizeMyAcceptance import StepSizeMyAcceptance
 
 MODEL_PATH = pathlib.Path(__file__).parent / "res"
@@ -14,47 +12,11 @@ MODEL_PATH = pathlib.Path(__file__).parent / "res"
 # NOTE: see SafranModel.py for the original problem specs.
 PROBLEM = {
     "plugin": [StepSizeMyAcceptance],
-    "analysis": {
-        # "linear": {"study": "linear_analysis"},
-        "nonlinear": {
-            "study": "frf",
-            "puls_inf": 1.0,
-            "puls_start": 1.0,
-            "puls_sup": 300.0,
-            "ds0": 1e-1,
-            "ds_min": 1e-12,
-            "ds_max": 1e-1,
-            "sign_ds": 1,
-            "verbose": True,
-            "stepsizer": "myacceptance",
-            "predictor": "tangent",  # XXX: secant not able to pass first fold
-            "reductors": [
-                {
-                    "type": "globalHarmonic",
-                    "nh_start": np.array([1]),
-                    "err_admissible": 1e10,
-                    "h_always_kept": np.array([1]),
-                    "verbose": False,
-                },
-                # {
-                #     "type": "AllgowerPreconditioner",
-                # },
-                # {
-                #     "type": "KrackPreconditioner",
-                # },
-            ],
-            "corrector": "arc_length",
-            # "corrector": "pseudo_arc_length",
-            "stopper": "bounds",
-            # "solver": "scipyroot",
-            "solver": "NewtonRaphson",
-            # "solver": "MoorePenrose",
-        },
-    },
+    "analysis": {},
     "system": {
         "type": "Base",
-        "nh": 1,
-        "nti": 1024,
+        "nh": 5,
+        "nti": 1024,  # WARN: beware of fs >= 200*f
         "adim": {
             "status": True,
             "lc": 0.15e-3,  # Adim by the gap clearance
@@ -97,9 +59,68 @@ PROBLEM = {
             "type": "PenaltyBilateralGap",
             "g": 0.15e-3,
             "k": 1e8,
-            # "k": 1e7,
         },
     },
 }
 
-M = pyHarm.Maestro(PROBLEM)
+CONT_1 = {
+    "analysis": {
+        "CONT_1": {
+            "study": "frf",
+            "puls_inf": 1.0,
+            "puls_start": 1.0,
+            "puls_sup": 72.0,
+            "ds0": 1e-1,
+            "ds_min": 1e-12,
+            "ds_max": 3e-1,
+            "sign_ds": 1,
+            "verbose": True,
+            "stepsizer": "myacceptance",
+            "predictor": "tangent",
+            # "reductors": [
+            #     {
+            #         "type": "globalHarmonic",
+            #         "nh_start": np.array([1]),
+            #         "err_admissible": 1e10,
+            #         "h_always_kept": np.array([1]),
+            #         "verbose": False,
+            #     },
+            #     {
+            #         "type": "AllgowerPreconditioner",
+            #     },
+            #     {
+            #         "type": "KrackPreconditioner",
+            #     },
+            # ],
+            "corrector": "arc_length",
+            "stopper": "bounds",
+            "solver": "scipyroot",
+            # "solver": "NewtonRaphson",
+        },
+    },
+}
+
+CONT_2 = {
+    "analysis": {
+        "CONT_2": {
+            "study": "frf",
+            "puls_inf": 70.0,
+            "puls_start": 72.0,
+            "puls_sup": 76.0,
+            "ds0": 5e-3,
+            "ds_min": 1e-12,
+            "ds_max": 5e-3,
+            "sign_ds": 1,
+            "verbose": True,
+            "stepsizer": "myacceptance",
+            "predictor": "tangent",
+            "corrector": "arc_length",
+            "stopper": "bounds",
+            "solver": "scipyroot",
+            # "solver": "NewtonRaphson",
+        },
+    },
+}
+
+# CONT_1 -> CONT_2 -> CONT_3      -> CONT_4          -> CONT_5
+# 1-70   -> 70-78  -> 78-loop-150 -> 150-s_shape-150 -> 150-300

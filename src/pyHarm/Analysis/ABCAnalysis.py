@@ -35,7 +35,7 @@ class ABCAnalysis(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def initialise(self, **kwargs):
+    def initialize(self, **kwargs):
         """Initialise step of the analysis."""
         pass
 

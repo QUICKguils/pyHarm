@@ -7,11 +7,14 @@ from pyHarm.StepSizeRules.ABCStepSizeRule import ABCStepSizeRule
 
 class StepSizeMyAcceptance(ABCStepSizeRule):
     """
-    Step size is divided if last solution is not accepted or multiplied if a number of consecutive accepted solutions is reached.
+    Step size is divided if last solution is not accepted or multiplied if a
+    number of consecutive accepted solutions is reached.
 
     Attributes:
-        default_options (dict): contains default step size options concerning consecutive_accept if not provided during creation.
-        consecutive_accept (int): number of consecutive accept before increasing step size.
+        default_options (dict): contains default step size options concerning
+          consecutive_accept if not provided during creation.
+        consecutive_accept (int): number of consecutive accept before
+          increasing step size.
     """
 
     name = "accepted step size adaptation"
@@ -36,7 +39,7 @@ class StepSizeMyAcceptance(ABCStepSizeRule):
             float: updated step size.
         """
         if (not sollist[-1].flag_accepted) and (ds > self.ds_min):
-            ds /= 6
+            ds /= 5
         try:
             acc = np.array(
                 [sol.flag_accepted for sol in sollist[-self.consecutive_accept : :]]

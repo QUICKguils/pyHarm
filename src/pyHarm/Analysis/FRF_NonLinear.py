@@ -27,8 +27,7 @@ from pyHarm.Systems.ABCSystem import ABCSystem
 
 
 class FRF_NonLinear(ABCAnalysis):
-    """
-    Nonlinear forced response analysis.
+    """Nonlinear forced response analysis.
 
     Predicts a starting point using the predictor and then solves the residual
     equations from the starting point.
@@ -129,13 +128,13 @@ class FRF_NonLinear(ABCAnalysis):
             self.analysis_options["reductors"], self.system._get_expl_dofs_into_solver()
         )
 
-    def initialise(self, x0=None, **kwargs):
+    def initialize(self, x0=None, **kwargs):
         """First Solve on the initial guess.
 
         Args:
             x0 (None|str|np.ndarray): if None x0 is the linear solution at
               initial angular frequency, if "null" x0 is null vector, otherwise
-              x0 is initialised using the provided array.
+              x0 is initialized using the provided array.
         """
         ### Some new arguments
         x0 = self._get_x0(x0)
@@ -286,15 +285,11 @@ class FRF_NonLinear(ABCAnalysis):
         # obtain the starting point
         self.ds = self.adaptstep.getStepSize(self.ds, self.SolList)
 
-        xpred_full, last_solution_pointer, sign_ds = self.predictor.predict(
-            self.SolList, self.ds
-        )
+        xpred_full, last_solution_pointer, sign_ds = self.predictor.predict(self.SolList, self.ds)
 
         ## update the reductor --> need to use old version of the reduce
-        xpred_red, _, output_expl_dofs = self._update_reductor(
-            xpred_full, last_solution_pointer
-        )  # update the reductor
-        ## end update reductor
+        xpred_red, _, output_expl_dofs = self._update_reductor(xpred_full, last_solution_pointer)
+
         sol = SystemSolution(xpred_red, last_solution_pointer)
         sol.ds = self.ds
         sol.sign_ds = sign_ds
@@ -308,7 +303,6 @@ class FRF_NonLinear(ABCAnalysis):
                 print(f"solution converged at om={sol.x[-1]}")
             else:
                 print(f"solution not accepted at om={sol.x[-1]}")
-        pass
 
     def Solve(self, x0=None, **kwargs):
         """
@@ -318,15 +312,14 @@ class FRF_NonLinear(ABCAnalysis):
         Args:
             x0 (None|str|np.ndarray): if None x0 is the linear solution at
             initial angular frequency, if "null" x0 is null vector, otherwise
-            x0 is initialised using the provided array.
+            x0 is initialized using the provided array.
         """
-        self.initialise(x0, **kwargs)
+        self.initialize(x0, **kwargs)
         k = 1
         while not self.stopper.getStopCriterionStatus(self.SolList[-1], self.SolList):
             self.makeStep(index_insolve=k)
             self.purge_jacobians()
             k += 1
-        pass
 
     def purge_jacobians(self):
         """Purge the Jacobians of Solutions that are no longer used."""
@@ -337,9 +330,9 @@ class FRF_NonLinear(ABCAnalysis):
                 sol.J_lu = None
                 sol.J_qr = None
                 sol.flag_J = False
-                sol.flag_J_qr = False  # Jacobian available with qr formalism of scipy.linalg.qr=[Q,R]
-                sol.flag_J_lu = False  # Jacobian available with lu formalism of scipy.linalg.lu=[P,L,U]
                 sol.flag_J_f = False  # Jacobian available full size
+                sol.flag_J_lu = False  # Jacobian available with lu formalism of scipy.linalg.lu=[P,L,U]
+                sol.flag_J_qr = False  # Jacobian available with qr formalism of scipy.linalg.qr=[Q,R]
 
         if not self.flag_purge:
             pass
