@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import abc
-import copy
 
 import numpy as np
 import pandas as pd
@@ -22,7 +21,7 @@ from pyHarm.CoordinateSystem import CoordinateSystem
 from pyHarm.DynamicOperator import compute_DFT, nabla
 
 """
-This file defines the main Abstract class for the Elements. 
+This file defines the main Abstract class for the Elements.
 Any ELement shall somehow inherit from this class.
 """
 
@@ -43,30 +42,38 @@ def ConstructorPslavemaster(nh, ndofi, nsub):
 class ABCElement(abc.ABC):
     """This is the abstract class ruling the element class.
 
-    An element consists in an elementary contribution to the residual equations.
+    An element consists in an elementary contribution to the residual
+    equations.
 
     Args:
         nh (int): number of harmonics.
         nti (int): number of time steps.
         name (str): name given to the kinematic condition.
-        data (dict): dictionary containing all the definition information of the kinematic condition.
-        CS (CoordinateSystem): local or global coordinate system the kinematic condition is defined on.
+        data (dict): dictionary containing all the definition information of
+          the kinematic condition.
+        CS (CoordinateSystem): local or global coordinate system the kinematic
+          condition is defined on.
 
     Attributes:
         flag_nonlinear (bool): if True, the element is nonlinear.
-        flag_AFT (bool): if True, the element requires an alternating frequency/time domain procedure for computing residuals.
+        flag_AFT (bool): if True, the element requires an alternating
+          frequency/time domain procedure for computing residuals.
         flag_extforcing (bool): if True, the element is an external forcing.
-        flag_DLFT (bool): if True, the element uses the dynamic Lagrangian method for computing the residuals.
+        flag_DLFT (bool): if True, the element uses the dynamic Lagrangian
+          method for computing the residuals.
         flag_adim (bool): if True, the element is adimentioned.
         nh (int): number of harmonics.
         nti (int): number of time steps.
-        D (dict[np.ndarray,np.ndarray]): Dynamic operators containing inverse discrete Fourier transform and discrete Fourier transform.
+        D (dict[np.ndarray,np.ndarray]): Dynamic operators containing inverse
+          discrete Fourier transform and discrete Fourier transform.
         nabla (np.ndarray): Derivation operator.
     """
 
     @property
     @abc.abstractmethod
-    def factory_keyword(self): ...
+    def factory_keyword(self) -> str:
+        """str: Concrete class name used by the factory to instantiate it."""
+        pass
 
     def __init__(self, nh: int, nti: int, name: str, data: dict, CS: CoordinateSystem):
         # flags #
@@ -77,9 +84,7 @@ class ABCElement(abc.ABC):
         self.__post_init__()
         self.__flag_update__()
 
-    def __init_flags__(
-        self,
-    ):
+    def __init_flags__(self):
         self.flag_nonlinear = False
         self.flag_AFT = False
         self.flag_extforcing = False
@@ -103,17 +108,22 @@ class ABCElement(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def __init_data__(self, name, data, CS): ...
+    def __init_data__(self, name, data, CS):
+        pass
 
     @abc.abstractmethod
-    def __str__(self): ...
+    def __str__(self):
+        pass
 
     @abc.abstractmethod
-    def generateIndices(self, expl_dofs: pd.DataFrame): ...
+    def generateIndices(self, expl_dofs: pd.DataFrame):
+        pass
 
     @abc.abstractmethod
     def adim(self, lc, wc):
-        """Modifies the element properties according to the characteristic length and angular frequency.
+        """
+        Modifies the element properties according to the characteristic length
+        and angular frequency.
 
         Args:
             lc (float): characteristic length value.

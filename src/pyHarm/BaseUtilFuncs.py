@@ -13,10 +13,13 @@
 # limitations under the License.
 
 """
-This file contains a set of general useful functions that are in use in most of pyHarm modules.
+This file contains a set of general useful functions that are in use in most of
+pyHarm modules.
 
 Attributes:
-    Dico_ABCClass_factory_keyword (dict): Dictionary linking the abstract classes defined in every available subpackages and their factory dictionary.
+    Dico_ABCClass_factory_keyword (dict): Dictionary linking the abstract
+      classes defined in every available subpackages and their factory
+      dictionary.
 """
 
 import copy
@@ -24,17 +27,33 @@ import copy
 import numpy as np
 import pandas as pd
 
+from pyHarm.Analysis.FactoryNonLinearStudy import ABCAnalysis, NonLinearStudy_kind
+from pyHarm.Correctors.FactoryCorrector import ABCCorrector, Corrector_dico
+from pyHarm.Elements.FactoryElements import ABCElement, ElementDictionary
+from pyHarm.KinematicConditions.FactoryKinematic import ABCKinematic, Kinematic_dico
+from pyHarm.NonLinearSolver.FactoryNonLinearSolver import ABCNLSolver, Solver_dico
+from pyHarm.Predictors.FactoryPredictor import ABCPredictor, Predictor_dico
+from pyHarm.Reductors.FactoryReductors import ABCReductor, Reductor_dico
+from pyHarm.StepSizeRules.FactoryStepSize import ABCStepSizeRule, StepSizer_dico
+from pyHarm.StopCriterion.FactoryStopCriterion import ABCStopCriterion, Stopper_dico
+from pyHarm.Substructures.FactorySubstructure import ABCSubstructure, SubstructureDico
+from pyHarm.Substructures.SubDataReader.FactoryReader import ABCReader, SubstructureReaderDictionary
+from pyHarm.Systems.FactorySystem import ABCSystem, System_dico
+
 
 def getCustomOptionDictionary(custom_options: dict, default_options: dict):
-    """Given a custom option dictionary and a default option dictionary,
-    returns a new dictionary containing all the custom information along with the missing mandatory ones from the default dictionary.
+    """
+    Given a custom option dictionary and a default option dictionary, returns a
+    new dictionary containing all the custom information along with the missing
+    mandatory ones from the default dictionary.
 
     Args:
         custom_options (dict): A dictionary containing custom options.
         default_options (dict): A dictionary containing default options.
 
     Returns:
-        dict: A new dictionary combining the custom options with the default options.
+        dict: A new dictionary combining the custom options with the default
+          options.
     """
     # Creation of the dictionary to return as a copy of the default one
     options = copy.copy(default_options)
@@ -46,16 +65,26 @@ def getCustomOptionDictionary(custom_options: dict, default_options: dict):
 def getIndexfromExpldofs(
     expl_dofs: pd.DataFrame, list_of_caracteristics: list[tuple[str, int, list[int]]]
 ):
-    """Uses an explicit dof vector and returns an array of indices corresponding to the required dofs.
-    Takes a list of tuples [(substructure_name[str], node_number[int], dir_num[list[int]]), ...].
-    If None is given as input for the directions, then all the dofs from the node are returned.
+    """
+    Uses an explicit dof vector and returns an array of indices corresponding
+    to the required dofs.
+    Takes a list of tuples [(substructure_name[str], node_number[int],
+    dir_num[list[int]]), ...].
+    If None is given as input for the directions, then all the dofs from the
+    node are returned.
 
     Args:
-        expl_dofs (pd.DataFrame): A DataFrame representing the explicit representation of the degree of freedom vector.
-        list_of_caracteristics (list[tuple[str,int,list[int]]]): A list of tuples specifying the substructure name, node number, and direction numbers.
+        expl_dofs (pd.DataFrame):
+          A DataFrame representing the explicit representation of the degree of
+          freedom vector.
+        list_of_caracteristics (list[tuple[str,int,list[int]]]):
+          A list of tuples specifying the substructure name, node number, and
+          direction numbers.
 
     Returns:
-        np.ndarray: An array of indices corresponding to the required dofs, sorted in ascending order.
+        np.ndarray:
+          An array of indices corresponding to the required dofs, sorted in
+          ascending order.
     """
     matching = pd.Series([False] * len(expl_dofs))
     for sub, node, list_dirs in list_of_caracteristics:
@@ -67,23 +96,6 @@ def getIndexfromExpldofs(
         matching += submatch * nodematch * dof_match
     return np.sort(expl_dofs[matching].index)
 
-
-# Plugin system for the ABCClasses present in pyHarm
-from pyHarm.Analysis.FactoryNonLinearStudy import ABCAnalysis, NonLinearStudy_kind
-from pyHarm.Correctors.FactoryCorrector import ABCCorrector, Corrector_dico
-from pyHarm.Elements.FactoryElements import ABCElement, ElementDictionary
-from pyHarm.KinematicConditions.FactoryKinematic import ABCKinematic, Kinematic_dico
-from pyHarm.NonLinearSolver.FactoryNonLinearSolver import ABCNLSolver, Solver_dico
-from pyHarm.Predictors.FactoryPredictor import ABCPredictor, Predictor_dico
-from pyHarm.Reductors.FactoryReductors import ABCReductor, Reductor_dico
-from pyHarm.StepSizeRules.FactoryStepSize import ABCStepSizeRule, StepSizer_dico
-from pyHarm.StopCriterion.FactoryStopCriterion import ABCStopCriterion, Stopper_dico
-from pyHarm.Substructures.FactorySubstructure import ABCSubstructure, SubstructureDico
-from pyHarm.Substructures.SubDataReader.FactoryReader import (
-    ABCReader,
-    SubstructureReaderDictionary,
-)
-from pyHarm.Systems.FactorySystem import ABCSystem, System_dico
 
 Dico_ABCClass_factory_keyword = {
     ABCAnalysis: NonLinearStudy_kind,
@@ -99,11 +111,17 @@ Dico_ABCClass_factory_keyword = {
     ABCSubstructure: SubstructureDico,
     ABCReader: SubstructureReaderDictionary,
 }
-"""dict: Dictionary linking the abstract classes defined in every available subpackages and their factory dictionary."""
+"""
+dict:
+  Dictionary linking the abstract classes defined in every available
+  subpackages and their factory dictionary.
+"""
 
 
 def pyHarm_plugin(cls):
-    """Plugin function for the pyHarm module. Allows registering a class in the pyHarm factories.
+    """Plugin function for the pyHarm module.
+
+    Allows registering a class in the pyHarm factories.
 
     Args:
         cls: A class to be registered in one of the pyHarm factories.
@@ -151,7 +169,7 @@ def pyHarm_plugin(cls):
 #                           in the general case, the number of dof per harmonic block of each tie needs to be substracted            #
 #       element["sub"].indices : vector gathering all harmonic dofs of each subsctructure, sorted in ascending order                 #
 #                                                                                                                                    #
-#   nonlinear element between mass 2 and mass 3 in (y,z) is defined in json as :                                                    #
+#   nonlinear element between mass 2 and mass 3 in (y,z) is defined in json as :                                                     #
 #       "nonlinearspring": {                                                                                                         #
 #           "dofs": {                                                                                                                #
 #                 "sub2": 1, 2                                                                                                       #

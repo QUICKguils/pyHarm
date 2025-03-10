@@ -18,7 +18,8 @@ from scipy.linalg import block_diag
 
 def compute_DFT(nti: int, nh: int) -> dict[str : np.ndarray]:
     """
-    Builds the Discrete Fourier Transform (DFT) operator adapted to the desired number of time samples and harmonics.
+    Builds the Discrete Fourier Transform (DFT) operator adapted to the desired
+    number of time samples and harmonics.
 
     Args:
         nti (int): Number of time steps.
@@ -72,8 +73,7 @@ def compute_DFT(nti: int, nh: int) -> dict[str : np.ndarray]:
 
 
 def nabla(nh: int) -> np.ndarray:
-    """
-    Builds the Derivation operator.
+    """Builds the Derivation operator.
 
     Args:
         nh (int): Number of harmonics.

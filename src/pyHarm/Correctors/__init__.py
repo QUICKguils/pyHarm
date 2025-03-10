@@ -13,5 +13,7 @@
 # limitations under the License.
 
 """
-This package includes all the modules that are present in pyHarm in order to include correction equation onto the angular frequency. It takes the form of a factory design pattern.
+This package includes all the modules that are present in pyHarm in order to
+include correction equation onto the angular frequency. It takes the form of a
+factory design pattern.
 """

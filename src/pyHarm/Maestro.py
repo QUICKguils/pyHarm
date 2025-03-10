@@ -24,15 +24,19 @@ from pyHarm.Systems.FactorySystem import generateSystem
 
 class Maestro:
     """
-    Class that reads and launches the pyHarm analysis contained in the provided input file.
+    Class that reads and launches the pyHarm analysis contained in the provided
+    input file.
 
-    The class is in charge of reading the input file and build the system and the analysis that are requested by the input file.
-    The class is in charge of loading the plugins beforehand if some plugins are requested by the input file.
-    When operated, the class runs a loop over the analysis required and solve them.
+    The class is in charge of reading the input file and build the system and
+    the analysis that are requested by the input file.
+    The class is in charge of loading the plugins beforehand if some plugins
+    are requested by the input file.
+    When operated, the class runs a loop over the analysis required and solve
+    them.
 
     Args:
-        idata (dict): input dictionary describing all the necessary component (analysis, system composition).
-
+        idata (dict): input dictionary describing all the necessary component
+          (analysis, system composition).
     """
 
     default = {"plugin": []}
@@ -63,10 +67,12 @@ class Maestro:
 
     def operate(self, x0=None, **kwargs):
         """
-        Loops over the analysis and runs the Solve method associated with the analysis.
+        Loops over the analysis and runs the Solve method associated with the
+        analysis.
 
         Args:
-            x0 (None | np.ndarray | str): initial point from which running the analysis.
+            x0 (None | np.ndarray | str): initial point from which running the
+              analysis.
             kwargs : additional keyword arguments.
 
         """
@@ -79,7 +85,8 @@ class Maestro:
 
     def getIndex(self, sub: str, node: int, dir_num: int) -> np.ndarray:
         """
-        From a substructure name, a node number, and a direction; returns the index of the required dof into the explicit dof vector of the system.
+        From a substructure name, a node number, and a direction; returns the
+        index of the required dof into the explicit dof vector of the system.
 
         Args:
             sub (str): name of the substructure.
@@ -87,7 +94,8 @@ class Maestro:
             dir_num (int): direction number.
 
         Returns :
-            np.ndarray : sorted array of the dof index associated with the input in the explicit dof DataFrame of the system.
+            np.ndarray : sorted array of the dof index associated with the
+              input in the explicit dof DataFrame of the system.
 
         """
         expl_dofs = self.system.expl_dofs

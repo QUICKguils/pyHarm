@@ -35,9 +35,7 @@ class ABCNLSolver(abc.ABC):
     @property
     @abc.abstractmethod
     def factory_keyword(self) -> str:
-        """
-        keyword that is used to call the creation of this class in the system factory.
-        """
+        """str: Concrete class name used by the factory to instantiate it."""
         pass
 
     def __init__(self, residual, jacobian, solver_options):

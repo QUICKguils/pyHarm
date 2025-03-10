@@ -16,7 +16,9 @@
 This module contains the factory of ABCNLSolver.
 
 Attributes:
-    Solver_dico (dict): Dictionary containing all the available ABCNLSolvers as values, and their factory_keyword attribute as key.
+    Solver_dico (dict):
+      Dictionary containing all the available ABCNLSolvers as values, and their
+      factory_keyword attribute as key.
 """
 
 from pyHarm.NonLinearSolver.ABCNonLinearSolver import ABCNLSolver
@@ -29,20 +31,23 @@ Solver_dico = {
     Solver_MoorePenrose.factory_keyword: Solver_MoorePenrose,
     Solver_NewtonRaphson.factory_keyword: Solver_NewtonRaphson,
 }
-"""dict: Dictionary containing all the available ABCNLSolvers as values, and their factory_keyword attribute as key."""
+"""dict:
+  Dictionary containing all the available ABCNLSolvers as values, and their
+  factory_keyword attribute as key.
+"""
 
 
 def generateNonLinearSolver(
     name_nonlinearsolver, residual, jacobian, nonlinearsolver_options
 ) -> ABCNLSolver:
-    """
-    Factory function that creates a ABCNLSolver object.
+    """Factory function that creates a ABCNLSolver object.
 
     Args:
         name_nonlinearsolver (str): type of nonlinear solver to instantiate.
         residual (Callable): function that returns the residual of the system.
         jacobian (Callable): function that returns the jacobians of the system.
-        nonlinearsolver_options (dict): dictionary containing the supplementary options for the nonlinear solver.
+        nonlinearsolver_options (dict): dictionary containing the supplementary
+          options for the nonlinear solver.
 
     Returns:
         ABCNLSolver: Instance of the required ABCNLSolver class.

@@ -19,10 +19,7 @@ class ABCBifurcator(abc.ABC):
     @property
     @abc.abstractmethod
     def factory_keyword(self) -> str:
-        """
-        Returns:
-            str: keyword that is used to call the creation of this class in the system factory.
-        """
+        """str: Concrete class name used by the factory to instantiate it."""
         pass
 
     default_options = {

@@ -34,7 +34,7 @@ class Solver_NewtonRaphson(ABCNLSolver):
     """
 
     factory_keyword: str = "NewtonRaphson"
-    """str: keyword that is used to call the creation of this class in the system factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
     default = {
         "tol_residual": 1e-8,

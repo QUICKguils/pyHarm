@@ -20,15 +20,17 @@ from pyHarm.Solver import SystemSolution
 
 
 class ABCCorrector(abc.ABC):
-    """This is the abstract class ruling the corrector class. The system is responsible for adding the correction residual equation to the augmented system."""
+    """This is the abstract class ruling the corrector class.
+
+    The system is responsible for adding the correction residual equation to
+    the augmented system.
+    """
 
     @property
     @abc.abstractmethod
     def factory_keyword(self) -> str:
-        """
-        str: name of the class to call in the factory in order to create an instance of the class.
-        """
-        ...
+        """str: Concrete class name used by the factory to instantiate it."""
+        pass
 
     def __init__(self, **kwargs):
         pass
@@ -41,8 +43,13 @@ class ABCCorrector(abc.ABC):
 
         Args:
             solx (np.ndarray): actual displacement vector.
-            sol (SystemSolution): actual SystemSolution that contains the starting point.
-            sollist (list[SystemSolution]): list of SystemSolutions from previous analysis steps.
+            sol (SystemSolution): actual SystemSolution that contains the
+              starting point.
+            sollist (list[SystemSolution]): list of SystemSolutions from
+              previous analysis steps.
+
+        Returns:
+            np.ndarray: Residual of the correction equation.
         """
         pass
 
@@ -56,5 +63,8 @@ class ABCCorrector(abc.ABC):
             solx (np.ndarray): actual displacement vector.
             sol (SystemSolution): actual SystemSolution that contains the starting point.
             sollist (list[SystemSolution]): list of SystemSolutions from previous analysis steps.
+
+        Returns:
+            tuple[np.ndarray,np.ndarray]: Jacobians of the correction equation.
         """
         pass

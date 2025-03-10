@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import abc
-import copy
 
 import numpy as np
 import pandas as pd
@@ -24,12 +23,16 @@ from pyHarm.DynamicOperator import compute_DFT, nabla
 
 def ConstructorPslavemaster(nsub, subs, nodes, sub_expl_dofs):
     """
-    Function that creates the selection matrices for the slave dofs and the master dofs.
+    Function that creates the selection matrices for the slave dofs and the
+    master dofs.
 
     Args:
-        nsub (int): number of substructures that are connected with the kinematic condition.
-        subs (list[str]): list containing the name of the sbstructures connected with the kinematic condition.
-        nodes (list[list[int]]): list of nodes list that are connected with the kinematic condition.
+        nsub (int): number of substructures that are connected with the
+          kinematic condition.
+        subs (list[str]): list containing the name of the sbstructures
+          connected with the kinematic condition.
+        nodes (list[list[int]]): list of nodes list that are connected with the
+          kinematic condition.
         sub_expl_dofs (pd.DataFrame): explicit dofs DataFrame.
 
     Returns:
@@ -67,33 +70,47 @@ def ConstructorPslavemaster(nsub, subs, nodes, sub_expl_dofs):
 
 
 class ABCKinematic(abc.ABC):
-    """This is the abstract class ruling the kinematic conditions class. The kinematic conditions are responsible to impose kinematic on dofs of the system and transfer the residuals.
+    """This is the abstract class ruling the kinematic conditions class.
+
+    The kinematic conditions are responsible to impose kinematic on dofs of the
+    system and transfer the residuals.
 
     Args:
         nh (int): number of harmonics.
         nti (int): number of time steps.
         name (str): name given to the kinematic condition.
-        data (dict): dictionary containing all the definition information of the kinematic condition.
-        CS (CoordinateSystem): local or global coordinate system the kinematic condition is defined on.
+        data (dict): dictionary containing all the definition information of
+          the kinematic condition.
+        CS (CoordinateSystem): local or global coordinate system the kinematic
+          condition is defined on.
 
     Attributes:
         nh (int): number of harmonics.
         nti (int): number of time steps.
-        D (dict[np.ndarray,np.ndarray]): Dynamic operators containing inverse discrete Fourier transform and discrete Fourier transform.
+        D (dict[np.ndarray,np.ndarray]): Dynamic operators containing inverse
+          discrete Fourier transform and discrete Fourier transform.
         nabla (np.ndarray): Derivation operator.
-        indices (np.ndarray): index of the dofs that the kinematic conditions needs.
-        Pdir (np.ndarray): a slice of first dimension is a transformation matrix to a direction in local coordinate system.
-        Pslave (np.ndarray): selection array that selects the slave dofs of the kinematic condition.
-        Pmaster (np.ndarray): selection array that selects the master dofs of the kinematic condition.
-        subs (list[str]): list containing the name of the substructures that are involved.
+        indices (np.ndarray): index of the dofs that the kinematic conditions
+          needs.
+        Pdir (np.ndarray): a slice of first dimension is a transformation
+          matrix to a direction in local coordinate system.
+        Pslave (np.ndarray): selection array that selects the slave dofs of the
+          kinematic condition.
+        Pmaster (np.ndarray): selection array that selects the master dofs of
+          the kinematic condition.
+        subs (list[str]): list containing the name of the substructures that
+          are involved.
         nbSub (int): number of substructure involved.
-        nodes (list[list]): list of list of nodes the kinematic conditions act on.
+        nodes (list[list]): list of list of nodes the kinematic conditions act
+          on.
         nbdofi (int): number of nodes involved per substructure.
     """
 
     @property
     @abc.abstractmethod
-    def factory_keyword(self): ...
+    def factory_keyword(self) -> str:
+        """str: Concrete class name used by the factory to instantiate it."""
+        pass
 
     def __init__(self, nh: int, nti: int, name: str, data: dict, CS: CoordinateSystem):
         # flags #
@@ -104,9 +121,7 @@ class ABCKinematic(abc.ABC):
         self.__post_init__()
         self.__flag_update__()
 
-    def __init_flags__(
-        self,
-    ):
+    def __init_flags__(self):
         pass
 
     def __init_harmonic_operators__(self, nh, nti):
@@ -158,16 +173,23 @@ class ABCKinematic(abc.ABC):
         pass
 
     def generateIndices(self, expl_dofs: pd.DataFrame):
-        """From the explicit dof DataFrame, generates the index of dofs concerned by the kinematic condition.
+        """
+        From the explicit dof DataFrame, generates the index of dofs concerned
+        by the kinematic condition.
 
         Args:
-            expl_dofs (pd.DataFrame): explicit dof DataFrame from the studied system.
+            expl_dofs (pd.DataFrame): explicit dof DataFrame from the studied
+              system.
 
         Attributes:
-            indices (np.ndarray): index of the dofs that the kinematic conditions needs.
-            Pdir (np.ndarray): a slice of first dimension is a transformation matrix to a direction in local coordinate system.
-            Pslave (np.ndarray): selection array that selects the slave dofs of the kinematic condition.
-            Pmaster (np.ndarray): selection array that selects the master dofs of the kinematic condition.
+            indices (np.ndarray): index of the dofs that the kinematic
+              conditions needs.
+            Pdir (np.ndarray): a slice of first dimension is a transformation
+              matrix to a direction in local coordinate system.
+            Pslave (np.ndarray): selection array that selects the slave dofs of
+              the kinematic condition.
+            Pmaster (np.ndarray): selection array that selects the master dofs
+              of the kinematic condition.
         """
         # discriminate subs from the explicit dof list :
         cs = pd.Series([False] * len(expl_dofs))
@@ -203,7 +225,8 @@ class ABCKinematic(abc.ABC):
 
     @abc.abstractmethod
     def adim(self, lc, wc):
-        """Using adim parameters, modifies the kinematic conditions accordingly.
+        """
+        Using adim parameters, modifies the kinematic conditions accordingly.
 
         Args:
             lc (float): characteristic length.
@@ -213,7 +236,9 @@ class ABCKinematic(abc.ABC):
 
     @abc.abstractmethod
     def complete_x(self, x, om):
-        """Returns a vector x_add of same size of x that completes the vector of displacement x = x + x_add.
+        """
+        Returns a vector x_add of same size of x that completes the vector of
+        displacement x = x + x_add.
 
         Args:
             x (np.ndarray): displacement vector.
@@ -223,7 +248,9 @@ class ABCKinematic(abc.ABC):
 
     @abc.abstractmethod
     def complete_R(self, R, x):
-        """Returns a vector R_add of same size of R that completes the vector of residual R = R + R_add
+        """
+         Returns a vector R_add of same size of R that completes the vector of
+         residual R = R + R_add.
 
         Args:
             R (np.ndarray): residual vector.
@@ -233,7 +260,9 @@ class ABCKinematic(abc.ABC):
 
     @abc.abstractmethod
     def complete_J(self, Jx, Jom, x):
-        """Returns a vector Jx_add and Jom_add of same size of Jx and Jom that completes the Jacobian
+        """
+        Returns a vector Jx_add and Jom_add of same size of Jx and Jom that
+        completes the Jacobian.
 
         Args:
             Jx (np.ndarray): jacobian matrix with respect to displacement.

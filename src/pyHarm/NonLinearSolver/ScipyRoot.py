@@ -35,7 +35,7 @@ class Solver_ScipyRoot(ABCNLSolver):
     """
 
     factory_keyword: str = "scipyroot"
-    """str: keyword that is used to call the creation of this class in the system factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
     name = "scipyroot solver"
 

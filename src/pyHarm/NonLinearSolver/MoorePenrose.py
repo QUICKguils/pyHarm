@@ -34,7 +34,7 @@ class Solver_MoorePenrose(ABCNLSolver):
     """
 
     factory_keyword: str = "MoorePenrose"
-    """str: keyword that is used to call the creation of this class in the system factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
     default = {"tol_residual": 1e-8, "tol_delta_x": 1e-8, "max_iter": 30}
     """dict: dictionary containing the default solver_options"""

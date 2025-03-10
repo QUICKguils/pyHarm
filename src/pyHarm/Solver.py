@@ -82,11 +82,11 @@ class SystemSolution:
 
     def _init_flags(self):
         """Initialise the different flag attributes of the class."""
-        self.flag_restart     = False  # This flags is set to True whenever its last_solution_point != index-1
-        self.flag_accepted    = False  # This flag is set by the solver, if the solution can be considered valid
-        self.flag_bifurcation = False  # This flags True when bifurcation has been detected at this point
-        self.flag_solved      = False  # this flag is set with method CheckComplete
-        self.flag_intosolver  = False  # this flag is set to True when the Solution went through the solver
+        self.flag_restart     = False  # Raised whenever its last_solution_point != index-1
+        self.flag_accepted    = False  # Raised by the solver, if the solution can be considered valid
+        self.flag_bifurcation = False  # Raised when a bifurcation has been detected
+        self.flag_solved      = False  # Raised with method `CheckComplete`
+        self.flag_intosolver  = False  # Raised when the solution went through the solver
         ### Residual flag
         self.flag_R = False  # Presence of a Residual result
         ### Jacobian flags
@@ -108,18 +108,18 @@ class SystemSolution:
             self.flag_solved = True
         return self.flag_solved
 
-    def SaveSolution(self, List: list):
+    def SaveSolution(self, SolList: list):
         """
         Saves the SystemSolution object in the provided list if it is complete.
 
         Args:
-            List (list): A list to save the SystemSolution object.
+            SolList (list): A list to save the SystemSolution object.
 
         Raises:
             ValueError: If the SystemSolution is not complete.
         """
         if self.CheckComplete():
-            List.append(self)
+            SolList.append(self)
         else:
             raise ValueError(
                 "The SystemSolution is not complete "
@@ -223,18 +223,17 @@ class SystemSolution:
         if dump:
             format_poss[format_in][0] = False
             format_poss[format_in][1] = None
-            if (format_in, format_out) == ("qr", "lu") or (format_in, format_out) == (
-                "lu",
-                "qr",
-            ):
+            if ((format_in, format_out) == ("qr", "lu")
+                or (format_in, format_out) == ("lu", "qr")):
                 format_poss["full"][0] = False
                 format_poss["full"][1] = None
         return format_poss[format_out]
 
 
 class FirstSolution(SystemSolution):
-    """Inherits from the SystemSolution class with one major difference: there is no previous SystemSolution point
-    for this class.
+    """
+    Inherits from the SystemSolution class with one major difference:
+    there is no previous SystemSolution point for this class.
 
     Args:
         xs (np.ndarray): An array representing the starting point.

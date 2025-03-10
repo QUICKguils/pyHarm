@@ -19,8 +19,9 @@ from pyHarm.Solver import SystemSolution
 
 ######## abstract Stopper ########
 class ABCStopCriterion(abc.ABC):
-    """Abstract class for the stopping criterion. Any stopping criterion code
-    shall inherit from this class.
+    """Abstract class for the stopping criterion.
+
+    Any stopping criterion code shall inherit from this class.
 
     Args:
         bounds (list[float, float]): A list of upper and lower bounds.
@@ -35,11 +36,8 @@ class ABCStopCriterion(abc.ABC):
     @property
     @abc.abstractmethod
     def factory_keyword(self) -> str:
-        """
-        Returns:
-            str: keyword that is used to call the creation of this class in the system factory.
-        """
-        ...
+        """str: Concrete class name used by the factory to instantiate it."""
+        pass
 
     def __init__(self, bounds: list[float, float], ds_min: float, **kwargs) -> None:
         self.puls_inf = bounds[0]

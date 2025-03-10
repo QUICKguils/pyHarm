@@ -19,8 +19,8 @@ def generateCoordinateSystem(dirs: list[list[float]]):
     """Generates a CoordinateSystem object based on the provided directions.
 
     Args:
-        dirs (list[list[float]]): A list of lists containing the directions relative to the global
-            coordinate system.
+        dirs (list[list[float]]): A list of lists containing the directions
+          relative to the global coordinate system.
 
     Returns:
         CoordinateSystem: A CoordinateSystem object.
@@ -29,13 +29,15 @@ def generateCoordinateSystem(dirs: list[list[float]]):
 
 
 class CoordinateSystem:
-    """Class that represents a coordinate system. It allows for generating local coordinate systems
-    to be attached to elements or substructures and transfering their residuals and Jacobians
-    to the global coordinate system.
+    """Class that represents a coordinate system.
+
+    It allows for generating local coordinate systems to be attached to
+    elements or substructures and transfering their residuals and Jacobians to
+    the global coordinate system.
 
     Args:
-        dirs (list[list[float]]): A list of lists containing the directions relative to the global
-            coordinate system.
+        dirs (list[list[float]]): A list of lists containing the directions
+          relative to the global coordinate system.
     """
 
     def __init__(self, dirs: list[list[float]]):
@@ -46,9 +48,7 @@ class CoordinateSystem:
         self.n_component = self.dirs.shape[1]
         self.checkOrthonormal()
 
-    def checkOrthonormal(
-        self,
-    ):
+    def checkOrthonormal(self):
         """Checks if the provided coordinate system is orthonormal.
 
         Raises:
@@ -58,7 +58,8 @@ class CoordinateSystem:
             pass
         else:
             raise ValueError(
-                f"The provided coordinate system is not orthonormal as P@P.T is not identity\n P@P.T={self.dirs @ self.dirs.T}"
+                "The provided coordinate system is not orthonormal "
+                f"as P@P.T is not identity\n P@P.T={self.dirs @ self.dirs.T}"
             )
         pass
 
@@ -81,8 +82,9 @@ class CoordinateSystem:
 
 
 class GlobalCoordinateSystem(CoordinateSystem):
-    """Subclass of CoordinateSystem that allows defining global coordinate systems.
-    The initialization is modified for ease of instantiation.
+    """
+    Subclass of CoordinateSystem that allows defining global coordinate
+    systems. The initialization is modified for ease of instantiation.
 
     Args:
         ndirs (int): The number of directions in the global coordinate system.

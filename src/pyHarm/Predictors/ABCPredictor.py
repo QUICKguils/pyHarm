@@ -29,23 +29,24 @@ class BifurcationType(Enum):
 
 
 class ABCPredictor(abc.ABC):
-    """Abstract class for the predictor: Any added predictor shall be constructed from this class.
+    """Abstract class for the predictor.
+
+    Any added predictor shall be constructed from this class.
 
     Args:
-        sign_ds (float): if -1 predict in the direction of decreasing angular frequency, if 1 the opposite direction
+        sign_ds (float): if -1 predict in the direction of decreasing angular
+          frequency, if 1 the opposite direction.
 
     Attributes:
         flag_print (bool): information are printed during the analysis if True.
-        predictor_options (dict): dictionary containing the kwargs and competed using the default options if the keywords are missing.
+        predictor_options (dict): dictionary containing the kwargs and competed
+          using the default options if the keywords are missing.
     """
 
     @property
     @abc.abstractmethod
     def factory_keyword(self) -> str:
-        """
-        Returns:
-            str: keyword that is used to call the creation of this class in the system factory.
-        """
+        """str: Concrete class name used by the factory to instantiate it."""
         pass
 
     default_options = {

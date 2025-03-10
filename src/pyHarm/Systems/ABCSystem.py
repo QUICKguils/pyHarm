@@ -28,27 +28,40 @@ from pyHarm.Substructures.FactorySubstructure import generate_substructure
 
 
 class ABCSystem(abc.ABC):
-    """This is the abstract class ruling the system class. The system is responsible for assembling the Residual and Jacobian of a list of elements.
+    """This is the abstract class ruling the system class.
+
+    The system is responsible for assembling the Residual and Jacobian of a
+    list of elements.
 
     Args:
-        idata (dict): A dictionary containing the system parameters, the local coordinate systems, the substructures the kinematic conditions and the connectors.
+        idata (dict): A dictionary containing the system parameters, the local
+          coordinate systems, the substructures the kinematic conditions and
+          the connectors.
 
     Attributes:
-        system_options (dict): dictionary containing other options for creation of the system class.
+        system_options (dict): dictionary containing other options for creation
+          of the system class.
         nh (int): number of harmonics.
         nti (int): number of time steps.
-        adim (bool): adimension the equations using the characteristic length and angular frequency.
-        adim_options (dict): contains the characteristic length and angular frequency.
+        adim (bool): adimension the equations using the characteristic length
+          and angular frequency.
+        adim_options (dict): contains the characteristic length and angular
+          frequency.
         lc (float): characteristic length.
         wc (float): characteristic angular frequency.
         ndofs (int): total number of degrees of freedom.
         LE (list[ABCElement]): list of elements.
         LC (lit[ABCKinematic]): list of kinematic conditions.
-        LE_extforcing (list[ABCElement]): list of elements of type external forcing.
-        LE_linear (list[ABCElement]): list of elements that are linear towards the displacement.
-        LE_nonlinear_dlft (list[ABCElement]): list of elements that are nonlinear while using DLFT formulation.
-        LE_nonlinear_nodlft (list[ABCElement]): list of elements that are nonlinear while not using DLFT formulation.
-        expl_dofs (pd.DataFrame): Dataframe that explicit the nature of the degrees of freedom vector.
+        LE_extforcing (list[ABCElement]): list of elements of type external
+          forcing.
+        LE_linear (list[ABCElement]): list of elements that are linear towards
+          the displacement.
+        LE_nonlinear_dlft (list[ABCElement]): list of elements that are
+          nonlinear while using DLFT formulation.
+        LE_nonlinear_nodlft (list[ABCElement]): list of elements that are
+          nonlinear while not using DLFT formulation.
+        expl_dofs (pd.DataFrame): Dataframe that explicit the nature of the
+          degrees of freedom vector.
         ndofs_solve (int): number of degree of freedom that are to be solved.
     """
 
@@ -57,7 +70,9 @@ class ABCSystem(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def factory_keyword(self): ...
+    def factory_keyword(self) -> str:
+        """str: Concrete class name used by the factory to instantiate it."""
+        pass
 
     def __init__(self, idata: dict) -> None:
         self._maincarateristics(idata)
@@ -85,11 +100,14 @@ class ABCSystem(abc.ABC):
             idata (dict): A dictionary containing the system parameters.
 
         Attributes:
-            system_options (dict): dictionary containing other options for creation of the system class.
+            system_options (dict): dictionary containing other options for
+              creation of the system class.
             nh (int): number of harmonics.
             nti (int): number of time steps.
-            adim (bool): adimension the equations using the characteristic length and angular frequency.
-            adim_options (dict): contains the characteristic length and angular frequency.
+            adim (bool): adimension the equations using the characteristic
+              length and angular frequency.
+            adim_options (dict): contains the characteristic length and angular
+              frequency.
             lc (float): characteristic length.
             wc (float): characteristic angular frequency.
         """
@@ -108,13 +126,14 @@ class ABCSystem(abc.ABC):
         self.lc = self.adim_options["lc"]
         self.wc = self.adim_options["wc"]
 
-    def _complete_expl_dofs(
-        self,
-    ) -> None:
-        """Modify the explicit dof vector according to the presence of kinematic conditions or non-linear connexions on certain dofs.
+    def _complete_expl_dofs(self) -> None:
+        """
+        Modify the explicit dof vector according to the presence of kinematic
+        conditions or non-linear connexions on certain dofs.
 
         Attributes:
-            expl_dofs (pd.DataFrame): Dataframe that explicit the nature of the degrees of freedom vector.
+            expl_dofs (pd.DataFrame): Dataframe that explicit the nature of the
+              degrees of freedom vector.
             ndofs_solve (int): number of degree of freedom that are to be solved.
         """
         # add a columns of bool into the explicit dof vector telling if a dof is coonected to a nonlinear element
@@ -139,10 +158,14 @@ class ABCSystem(abc.ABC):
         self.ndofs_solve = len(self.index_keep)
 
     def _buildElements(self, idata: dict) -> None:
-        """Build the elements of the system and the kinematic conditions using the factory functions.
+        """
+        Build the elements of the system and the kinematic conditions using the
+        factory functions.
 
         Args:
-            idata (dict): A dictionary containing the system parameters, the local coordinate systems, the substructures the kinematic conditions and the connectors.
+            idata (dict): A dictionary containing the system parameters, the
+              local coordinate systems, the substructures the kinematic
+              conditions and the connectors.
 
         Attributes:
             LE (list[ABCElement]): list of elements.
@@ -208,7 +231,9 @@ class ABCSystem(abc.ABC):
     def _get_expl_dofs_into_solver(
         self,
     ) -> pd.DataFrame:
-        """Returns the explicit dof DataFrame that has to be solved after applying the kinematic condtions.
+        """
+        Returns the explicit dof DataFrame that has to be solved after applying
+        the kinematic condtions.
 
         Returns:
             pd.DataFrame: Cut explicit dof DataFrame to be solved.
@@ -235,14 +260,17 @@ class ABCSystem(abc.ABC):
     def _complete_x(
         self, list_of_kine: list[ABCKinematic], x: np.ndarray, **kwargs
     ) -> np.ndarray:
-        """Apply the list of kinematic conditions and returns a vector of displacement to add to the full size displacement vector.
+        """
+        Apply the list of kinematic conditions and returns a vector of
+        displacement to add to the full size displacement vector.
 
         Args:
             list_of_kine (list[ABCKinematic]): List of kinematic conditions to be applied.
             x (np.ndarray): Full size displacement vector without kinematic conditions applied.
 
         Returns:
-            np.ndarray: vector of displacement to add in order to obtain the full size displacement vector with kinematic conditions.
+            np.ndarray: vector of displacement to add in order to obtain the
+              full size displacement vector with kinematic conditions.
         """
         xadd = np.zeros(self.ndofs + 1)
         for k in list_of_kine:
@@ -250,13 +278,17 @@ class ABCSystem(abc.ABC):
         return xadd
 
     def get_full_disp(self, q: np.ndarray) -> np.ndarray:
-        """Apply the full list of kinematic conditions and returns the displacement vector.
+        """
+        Apply the full list of kinematic conditions and returns the
+        displacement vector.
 
         Args:
-            q (list[ABCKinematic]): Reduced size displacement vector without kinematic conditions applied.
+            q (list[ABCKinematic]): Reduced size displacement vector without
+              kinematic conditions applied.
 
         Returns:
-            np.ndarray: Full size displacement vector with kinematic conditions applied.
+            np.ndarray: Full size displacement vector with kinematic conditions
+              applied.
         """
         x = self._expand_q(q)
         x += self._complete_x(self.LC, x)
@@ -265,7 +297,9 @@ class ABCSystem(abc.ABC):
     def _complete_R(
         self, list_of_kine: list[ABCKinematic], R, x, **kwargs
     ) -> np.ndarray:
-        """Apply the list of kinematic conditions and returns a vector of residual to add to the full size residual vector.
+        """
+        Apply the list of kinematic conditions and returns a vector of residual
+        to add to the full size residual vector.
 
         Args:
             list_of_kine (list[ABCKinematic]): List of kinematic conditions to be applied.
@@ -273,7 +307,8 @@ class ABCSystem(abc.ABC):
             x (np.ndarray): Full size displacement vector without kinematic conditions applied.
 
         Returns:
-            np.ndarray: vector of residuals to add in order to obtain the full size residual vector with kinematic conditions.
+            np.ndarray: vector of residuals to add in order to obtain the full
+              size residual vector with kinematic conditions.
         """
         Radd = np.zeros(self.ndofs)
         for k in list_of_kine:
@@ -283,16 +318,23 @@ class ABCSystem(abc.ABC):
     def _complete_J(
         self, list_of_kine: list[ABCKinematic], Jx, Jom, x, **kwargs
     ) -> tuple[np.ndarray]:
-        """Apply the list of kinematic conditions and returns a jacobian matrices to add to the full size jacobian matrices.
+        """
+        Apply the list of kinematic conditions and returns a jacobian matrices
+        to add to the full size jacobian matrices.
 
         Args:
-            list_of_kine (list[ABCKinematic]): List of kinematic conditions to be applied.
-            Jx (np.ndarray): Full size jacobian matrix with respect to displacement without kinematic conditions applied.
-            Jom (np.ndarray): Full size jacobian matrix with respect to angular frequency without kinematic conditions applied.
-            x (np.ndarray): Full size displacement vector without kinematic conditions applied.
+            list_of_kine (list[ABCKinematic]): List of kinematic conditions to
+              be applied.
+            Jx (np.ndarray): Full size jacobian matrix with respect to
+              displacement without kinematic conditions applied.
+            Jom (np.ndarray): Full size jacobian matrix with respect to angular
+              frequency without kinematic conditions applied.
+            x (np.ndarray): Full size displacement vector without kinematic
+              conditions applied.
 
         Returns:
-            tuple(np.ndarray): jacobian matrices to add in order to obtain the full size jacobian matrix with kinematic condtions.
+            tuple(np.ndarray): jacobian matrices to add in order to obtain the
+              full size jacobian matrix with kinematic condtions.
         """
         Jx_add = np.zeros((self.ndofs, self.ndofs))
         Jom_add = np.zeros((self.ndofs, 1))
@@ -302,17 +344,21 @@ class ABCSystem(abc.ABC):
             Jom_add += jom_add
         return Jx_add, Jom_add
 
-    def __post_init__(
-        self,
-    ) -> None:
-        """Method that can be complete in subclasses in order to facilitate a add during the instanciation of a class."""
+    def __post_init__(self) -> None:
+        """
+        Method that can be complete in subclasses in order to facilitate a add
+        during the instanciation of a class.
+        """
         pass
 
     def _residual(self, list_of_elems: list[ABCElement], x, **kwargs) -> np.ndarray:
-        """Compute the residual of a list of elements and add them in a full size residual vector.
+        """
+        Compute the residual of a list of elements and add them in a full size
+        residual vector.
 
         Args:
-            list_of_elems (list[ABCElement]): List of elements with a residual contribution.
+            list_of_elems (list[ABCElement]): List of elements with a residual
+              contribution.
             x (np.ndarray): Full size displacement vector.
 
         Returns:
@@ -326,7 +372,9 @@ class ABCSystem(abc.ABC):
     def _jacobian(
         self, list_of_elems: list[ABCElement], x, **kwargs
     ) -> tuple[np.ndarray]:
-        """Compute the jacobian matrices of a list of elements and add them in a full size residual vector.
+        """
+        Compute the jacobian matrices of a list of elements and add them in a
+        full size residual vector.
 
         Args:
             list_of_elems (list[ABCElement]): List of elements with a residual contribution.
@@ -345,7 +393,7 @@ class ABCSystem(abc.ABC):
         return dJdx, dJdom
 
     def _get_assembled_mass_matrix(self, x, **kwargs):
-        """Compute the mass matrix of the assembled system
+        """Compute the mass matrix of the assembled system.
 
         Args:
             x (np.ndarray): Full size displacement vector.
@@ -367,7 +415,7 @@ class ABCSystem(abc.ABC):
         return M_assembled
 
     def _get_assembled_stiffness_matrix(self, x, **kwargs):
-        """Compute the stiffness matrix of the assembled system
+        """Compute the stiffness matrix of the assembled system.
 
         Args:
             x (np.ndarray): Full size displacement vector.
@@ -388,10 +436,16 @@ class ABCSystem(abc.ABC):
 
     @abc.abstractmethod
     def Residual(self) -> np.ndarray:
-        """Abstract method that is completed in each subclass and responsible to compute the residual vector of the whole system."""
+        """
+        Abstract method that is completed in each subclass and responsible to
+        compute the residual vector of the whole system.
+        """
         pass
 
     @abc.abstractmethod
     def Jacobian(self) -> tuple[np.ndarray]:
-        """Abstract method that is completed in each subclass and responsible to compute the jacobian matrices of the whole system."""
+        """
+        Abstract method that is completed in each subclass and responsible to
+        compute the jacobian matrices of the whole system.
+        """
         pass

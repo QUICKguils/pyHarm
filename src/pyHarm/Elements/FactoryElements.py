@@ -16,8 +16,11 @@
 This module is the factory of the ABCElement excluding the Substructure kind.
 
 Attributes:
-    L_Elem (list[ABCElement]): List of available ABCElement subclasses available for creation.
-    ElementDictionary (dict[str, ABCElement]): Dictionary of available ABCElement as values and their factory_keyword as key.
+    L_Elem (list[ABCElement]):
+      List of available ABCElement subclasses available for creation.
+    ElementDictionary (dict[str, ABCElement]):
+      Dictionary of available ABCElement as values and their factory_keyword as
+      key.
 """
 
 from pyHarm.CoordinateSystem import CoordinateSystem
@@ -41,12 +44,8 @@ from pyHarm.Elements.NodeToNodeElements.Penalty3D import Penalty3D
 from pyHarm.Elements.NodeToNodeElements.PenaltyBilateralGap import PenaltyBilateralGap
 from pyHarm.Elements.NodeToNodeElements.PenaltyUnilateralGap import PenaltyUnilateralGap
 from pyHarm.Elements.NodeToNodeElements.SinusForcing import SinusForcing
-from pyHarm.Elements.SubstructureMatrixElements.GeneralOrderMatrixElement import (
-    GOMatrix,
-)
-from pyHarm.Elements.SubstructureMatrixElements.LinearHystMatrixElement import (
-    LinearHystMatrix,
-)
+from pyHarm.Elements.SubstructureMatrixElements.GeneralOrderMatrixElement import GOMatrix
+from pyHarm.Elements.SubstructureMatrixElements.LinearHystMatrixElement import LinearHystMatrix
 
 # --- SubstructureMatrixElements
 from pyHarm.Elements.SubstructureMatrixElements.Substructure import Substructure

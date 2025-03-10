@@ -20,25 +20,24 @@ from pyHarm.Solver import SystemSolution
 
 class Corrector_no_continuation(ABCCorrector):
     """
-    Corrector corresponding to the no continuation method where the equations are solved for a fixed angular frequency.
+    Corrector corresponding to the no continuation method where the equations
+    are solved for a fixed angular frequency.
     """
 
     factory_keyword: str = "nocontinuation"
-    """str: name of the class to call in the factory in order to create an instance of the class."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
     def ClosureEquation(
-        self,
-        solx: np.ndarray,
-        sol: SystemSolution,
-        sollist: list[SystemSolution],
-        **kwargs,
+        self, solx: np.ndarray, sol: SystemSolution, sollist: list[SystemSolution]
     ) -> np.ndarray:
         """Computes the residual contribution of the correction equation.
 
         Args:
             solx (np.ndarray): actual displacement vector.
-            sol (SystemSolution): actual SystemSolution that contains the starting point.
-            sollist (list[SystemSolution]): list of SystemSolutions from previous analysis steps.
+            sol (SystemSolution): actual SystemSolution that contains the
+              starting point.
+            sollist (list[SystemSolution]): list of SystemSolutions from
+              previous analysis steps.
 
         Returns:
             np.ndarray: Residual of the correction equation.
@@ -47,11 +46,7 @@ class Corrector_no_continuation(ABCCorrector):
         return R_cont
 
     def ClosureJacobian(
-        self,
-        solx: np.ndarray,
-        sol: SystemSolution,
-        sollist: list[SystemSolution],
-        **kwargs,
+        self, solx: np.ndarray, sol: SystemSolution, sollist: list[SystemSolution]
     ) -> tuple[np.ndarray, np.ndarray]:
         """Computes the jacobian contribution of the correction equation.
 

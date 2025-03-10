@@ -19,36 +19,32 @@ from pyHarm.Systems.ABCSystem import ABCSystem
 
 
 class ABCAnalysis(abc.ABC):
-    """This is the abstract class ruling the solver class. The system is responsible of solving the system starting at a given starting point."""
+    """This is the abstract class ruling the solver class.
+
+    The system is responsible of solving the system starting at a given
+    starting point.
+    """
 
     @property
     @abc.abstractmethod
-    def factory_keyword(self):
-        """
-        Class name for factory call during instantiation
-        """
-        ...
+    def factory_keyword(self) -> str:
+        """str: Concrete class name used by the factory to instantiate it."""
+        pass
 
     def __init__(self, inputData: dict, System: ABCSystem, ndofs: int, **kwargs):
         pass
 
     @abc.abstractmethod
     def initialise(self, **kwargs):
-        """
-        Initialise step of the analysis.
-        """
+        """Initialise step of the analysis."""
         pass
 
     @abc.abstractmethod
     def Solve(self, **kwargs):
-        """
-        Solving step of the analysis.
-        """
+        """Solving step of the analysis."""
         pass
 
     @abc.abstractmethod
     def makeStep(self, **kwargs):
-        """
-        Make a whole step of the analysis.
-        """
+        """Make a whole step of the analysis."""
         pass

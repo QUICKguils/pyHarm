@@ -17,26 +17,28 @@ from scipy import linalg
 
 from pyHarm.Analysis.ABCAnalysis import ABCAnalysis
 from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
-from pyHarm.Solver import FirstSolution, SystemSolution
+from pyHarm.Solver import FirstSolution
 from pyHarm.Systems.ABCSystem import ABCSystem
 
 
 class Linear_Analysis(ABCAnalysis):
-    """
-    Modal analysis and linear forced response analysis.
+    """Modal analysis and linear forced response analysis.
 
-    Performs a linear modal analysis and then proceeds to a linear FRF by using mode superposition
+    Performs a linear modal analysis and then proceeds to a linear FRF by using
+    mode superposition.
 
     Attributes:
         system (ABCSystem): ABCSystem associated with the analysis.
-        analysis_options (dict): input dictionary completed with the default values if keywords are missing.
+        analysis_options (dict): input dictionary completed with the default
+          values if keywords are missing.
         flag_print (bool): if True, prints a message after each Solve method.
         SolList (list[SystemSolution]): list of SystemSolution stored.
-        eigensol (dict): output dictionary containing the eigenfrequencies and the eigenvectors
+        eigensol (dict): output dictionary containing the eigenfrequencies and
+          the eigenvectors.
     """
 
     factory_keyword: str = "linear_analysis"
-    """str: keyword that is used to call the creation of this class in the system factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
     name = "Linear modal and FRF analysis"
 
@@ -58,12 +60,11 @@ class Linear_Analysis(ABCAnalysis):
         self.eigensol = {"eigenfrequencies": None, "eigenvectors": None}
 
     def initialise(self):
-        """
-        Retrieves the mass and stiffness matrix of the assembled system
+        """Retrieves the mass and stiffness matrix of the assembled system.
 
         Returns:
-            K_global (np.ndarray): full stiffness matrix of the system
-            M_global (np.ndarray): full mass matrix of the system
+            K_global (np.ndarray): full stiffness matrix of the system.
+            M_global (np.ndarray): full mass matrix of the system.
         """
         x0 = np.concatenate([np.zeros(self.system.ndofs_solve), np.array([0.0])])
         M_assembled = self.system._get_assembled_mass_matrix(x0)
@@ -83,15 +84,16 @@ class Linear_Analysis(ABCAnalysis):
 
     def modal_analysis(self, K, M):
         """
-        Eigenvalue analysis leading to the eigenfrequencies and the normalized right eigenvectors
+        Eigenvalue analysis leading to the eigenfrequencies and the normalized
+        right eigenvectors.
 
         Args:
-            K (np.ndarray): full stiffness matrix of the system
-            M (np.ndarray): full mass matrix of the system
+            K (np.ndarray): full stiffness matrix of the system.
+            M (np.ndarray): full mass matrix of the system.
 
         Returns:
-            omega (np.ndarray): eigenfrequencies in rad/s
-            phi (np.ndarray): normalized to unity right eigenvectors
+            omega (np.ndarray): eigenfrequencies in rad/s.
+            phi (np.ndarray): normalized to unity right eigenvectors.
         """
         w, phi = linalg.eig(K, M)
         omega = np.sort(np.sqrt(np.absolute(w)))
@@ -105,13 +107,12 @@ class Linear_Analysis(ABCAnalysis):
         return omega, phi
 
     def compute_linear_FRF(self, K, M, phi):
-        """
-        Linear frequency response function by means of mode superposition
+        """Linear frequency response function by means of mode superposition.
 
         Args:
-            K (np.ndarray): full stiffness matrix of the system
-            M (np.ndarray): full mass matrix of the system
-            phi (np.ndarray): normalized to unity right eigenvectors
+            K (np.ndarray): full stiffness matrix of the system.
+            M (np.ndarray): full mass matrix of the system.
+            phi (np.ndarray): normalized to unity right eigenvectors.
         """
         damping = self.analysis_options["damping"]
 
@@ -165,26 +166,23 @@ class Linear_Analysis(ABCAnalysis):
             isol = FirstSolution(X)
             self.SolList.append(isol)
 
-    def Solve(self, x0=None, **kwargs):
-        """
-        Solving step of the analysis.
-        """
+    def Solve(self, x0=None):
+        """Solving step of the analysis."""
         K, M = self.initialise()
         omega, phi = self.makeStep(K, M)
         self.eigensol["eigenfrequencies"] = omega / (2 * np.pi)
         self.eigensol["eigenvectors"] = phi
 
     def makeStep(self, K, M):
-        """
-        Makes a whole step of the analysis.
+        """Makes a whole step of the analysis.
 
         Args:
-            K (np.ndarray): full stiffness matrix of the system
-            M (np.ndarray): full mass matrix of the system
+            K (np.ndarray): full stiffness matrix of the system.
+            M (np.ndarray): full mass matrix of the system.
 
         Returns:
-            omega (np.ndarray): eigenfrequencies in rad/s
-            phi (np.ndarray): normalized to unity right eigenvectors
+            omega (np.ndarray): eigenfrequencies in rad/s.
+            phi (np.ndarray): normalized to unity right eigenvectors.
         """
         omega, phi = self.modal_analysis(K, M)
         self.compute_linear_FRF(K, M, phi)

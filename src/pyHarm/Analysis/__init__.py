@@ -13,5 +13,5 @@
 # limitations under the License.
 
 """
-Subpackage containing all the analysis available in pyHarm
+Subpackage containing all the analysis available in pyHarm.
 """

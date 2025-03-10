@@ -21,7 +21,11 @@ from pyHarm.Solver import SystemSolution
 
 ######## abstract StepSizer ########
 class ABCStepSizeRule(abc.ABC):
-    """This is the abstract class ruling the stepsize rules class. The step size rules are responsible for adjusting the step size of the analysis depending on the given inputs.
+    """
+    This is the abstract class ruling the stepsize rules class.
+
+    The step size rules are responsible for adjusting the step size of the
+    analysis depending on the given inputs.
 
     Args:
         bounds (list[float,float]): List containing the step size bounds [min_step, max_step].
@@ -34,11 +38,8 @@ class ABCStepSizeRule(abc.ABC):
     @property
     @abc.abstractmethod
     def factory_keyword(self) -> str:
-        """
-        Returns:
-            str: keyword that is used to call the creation of this class in the system factory.
-        """
-        ...
+        """str: Concrete class name used by the factory to instantiate it."""
+        pass
 
     def __init__(self, bounds: list[float, float], **kwargs):
         self.ds_min = bounds[0]

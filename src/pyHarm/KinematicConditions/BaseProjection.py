@@ -21,22 +21,28 @@ from pyHarm.KinematicConditions.ABCKinematic import ABCKinematic
 
 class BaseProjection(ABCKinematic):
     """Kinematic condition that imposes base projection between two substructures.
-    A linear transformation is imposed through base projection matrix in between a master substructure and the slave substructure.
-    Residual contribution computed on the slave substructure is projected back onto the master substructure.
+
+    A linear transformation is imposed through base projection matrix in
+    between a master substructure and the slave substructure. Residual
+    contribution computed on the slave substructure is projected back onto the
+    master substructure.
 
     Attributes:
-        factory_keyword (str): keyword that is used to call the creation of this class in the system factory.
-        default (dict): dictionary containing the default parameters for the kinematic condition.
-        phi (np.ndarray): transformation matrix that goes from master base to slave base.
-        phi_inv (np.ndarray): transpose of phi
+        factory_keyword (str): keyword that is used to call the creation of
+          this class in the system factory.
+        default (dict): dictionary containing the default parameters for the
+          kinematic condition.
+        phi (np.ndarray): transformation matrix that goes from master base to
+          slave base.
+        phi_inv (np.ndarray): transpose of phi.
     """
 
     factory_keyword: str = "BaseProjection"
+    """str: Concrete class name used by the factory to instantiate it."""
+
     default = {}
 
-    def __post_init__(
-        self,
-    ):
+    def __post_init__(self):
         self.data = getCustomOptionDictionary(self.data, self.default)
         self.phi = np.kron(np.eye(2 * self.nh + 1), self.data["phi"])
         if "phi_inv" not in self.data.keys():
@@ -58,28 +64,35 @@ class BaseProjection(ABCKinematic):
         )
 
     def complete_x(self, x):
-        """Returns a vector x_add of same size of x that completes the vector of displacement x = x + x_add such that the kinematic condition is verified.
+        """
+        Returns a vector x_add of same size of x that completes the vector of
+        displacement x = x + x_add such that the kinematic condition is
+        verified.
 
         Args:
             x (np.ndarray): displacement vector.
             om (float): angular frequency.
 
         Returns:
-            (np.ndarray): vector of displacement to add to the displacement vector in order to impose the kinematic condition.
+            (np.ndarray): vector of displacement to add to the displacement
+              vector in order to impose the kinematic condition.
         """
         xadd = np.zeros(x.shape)
         xadd[self.indices] += self.Pslave.T @ self.phi @ self.Pmaster @ x[self.indices]
         return xadd
 
     def complete_R(self, R, x):
-        """Computes the transfer of residual of the kinematicaly constrained dofs with respect to the displacement.
+        """
+        Computes the transfer of residual of the kinematicaly constrained dofs
+        with respect to the displacement.
 
         Args:
             R (np.ndarray): residual vector.
             x (np.ndarray): displacement vector.
 
         Returns:
-            (np.ndarray): vector of residual contributions to add to the residual vetor in order to impose the kinematic condition.
+            (np.ndarray): vector of residual contributions to add to the
+              residual vetor in order to impose the kinematic condition.
         """
         R_add = np.zeros(R.shape)
         R_add[self.indices] = (
@@ -88,7 +101,9 @@ class BaseProjection(ABCKinematic):
         return R_add
 
     def complete_J(self, Jx, Jom, x):
-        """Computes the transfer of jacobian of the kinematicaly constrained dofs with respect to the displacement.
+        """
+        Computes the transfer of jacobian of the kinematicaly constrained dofs
+        with respect to the displacement.
 
         Args:
             Jx (np.ndarray): jacobian matrix with respect to displacement.
@@ -96,7 +111,9 @@ class BaseProjection(ABCKinematic):
             x (np.ndarray): displacement vector.
 
         Returns:
-            (tuple[np.ndarray,np.ndarray]): tuple containing the jacobians contributions to add to the jacobians in order to impose the kinematic condition.
+            (tuple[np.ndarray,np.ndarray]): tuple containing the jacobians
+              contributions to add to the jacobians in order to impose the
+              kinematic condition.
         """
         Jx_add = np.zeros(Jx.shape)
         Jom_add = np.zeros(Jom.shape)

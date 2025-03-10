@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import copy
-
 import numpy as np
 
 from pyHarm.Analysis.ABCAnalysis import ABCAnalysis
@@ -32,7 +30,8 @@ class FRF_NonLinear(ABCAnalysis):
     """
     Nonlinear forced response analysis.
 
-    Predicts a starting point using the predictor and then solves the residual equations from the starting point.
+    Predicts a starting point using the predictor and then solves the residual
+    equations from the starting point.
 
     Attributes:
         flag_print (bool): if True, prints a message after each Solve method.
@@ -51,7 +50,7 @@ class FRF_NonLinear(ABCAnalysis):
     """
 
     factory_keyword: str = "frf"
-    """str: keyword that is used to call the creation of this class in the system factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
     name = "Nonlinear FRF analysis"
 
@@ -131,13 +130,14 @@ class FRF_NonLinear(ABCAnalysis):
         )
 
     def initialise(self, x0=None, **kwargs):
-        """
-        First Solve on the initial guess.
+        """First Solve on the initial guess.
 
         Args:
-            x0 (None|str|np.ndarray): if None x0 is the linear solution at initial angular frequency, if "null" x0 is null vector, otherwise x0 is initialised using the provided array.
+            x0 (None|str|np.ndarray): if None x0 is the linear solution at
+              initial angular frequency, if "null" x0 is null vector, otherwise
+              x0 is initialised using the provided array.
         """
-        ### Some new arguments :
+        ### Some new arguments
         x0 = self._get_x0(x0)
         self.x0, _, _ = self._update_reductor(x0)
         isol = FirstSolution(self.x0)
@@ -176,7 +176,8 @@ class FRF_NonLinear(ABCAnalysis):
 
     def CompleteSolution(self, sol: SystemSolution):
         """
-        Completes a SystemSolution informations that just went out of the Solve method.
+        Completes a SystemSolution informations that just went out of the Solve
+        method.
 
         Args:
             sol (SystemSolution): solution to the system.
@@ -190,8 +191,7 @@ class FRF_NonLinear(ABCAnalysis):
         sol.J_f = self.globalJacobian(sol.x, sol)
 
     def globalResidual(self, solx: np.ndarray, sol: SystemSolution):
-        """
-        Computes the residual of the whole system without the reducers.
+        """Computes the residual of the whole system without the reducers.
 
         Args:
             solx (np.ndarray): displacement vector for which residual is computed.
@@ -209,8 +209,7 @@ class FRF_NonLinear(ABCAnalysis):
         return Rg
 
     def globalJacobian(self, solx: np.ndarray, sol: SystemSolution):
-        """
-        Computes the jacobians of the whole system without the reducers.
+        """Computes the jacobians of the whole system without the reducers.
 
         Args:
             solx (np.ndarray): displacement vector for which residual is computed.
@@ -229,8 +228,7 @@ class FRF_NonLinear(ABCAnalysis):
         return Jg
 
     def globalJacobianwRed(self, solq: np.ndarray, sol: SystemSolution):
-        """
-        Computes the reduced jacobians of the whole system.
+        """Computes the reduced jacobians of the whole system.
 
         Args:
             solq (np.ndarray): reduced displacement vector for which residual is computed.
@@ -242,8 +240,7 @@ class FRF_NonLinear(ABCAnalysis):
         return Jg
 
     def globalResidualwRed(self, solq: np.ndarray, sol: SystemSolution):
-        """
-        Computes the reduced residuals of the whole system.
+        """Computes the reduced residuals of the whole system.
 
         Args:
             solq (np.ndarray): reduced displacement vector for which residual is computed.
@@ -255,17 +252,18 @@ class FRF_NonLinear(ABCAnalysis):
         return Rg
 
     def _update_reductor(self, xpred_full, last_solution_pointer=None):
-        """
-        Updates the reducers
+        """Updates the reducers.
 
         Args:
             xpred_full (np.ndarray): full starting displacement vector.
-            last_solution_pointer (SystemSolution): SystemSolution from which the prediction has been generated.
+            last_solution_pointer (SystemSolution): SystemSolution from which
+              the prediction has been generated.
 
         Returns:
             xpred_red (np.ndarray): reduced starting displacement vector.
             J_red (np.ndarray): reduced jacobian matrix.
-            output_expl_dofs (pd.DataFrame): DataFrame of the dofs after applying the reduction layers.
+            output_expl_dofs (pd.DataFrame): DataFrame of the dofs after
+              applying the reduction layers.
         """
         if last_solution_pointer is None:
             sol = FirstSolution(xpred_full)
@@ -282,7 +280,8 @@ class FRF_NonLinear(ABCAnalysis):
 
     def makeStep(self, **kwargs):
         """
-        Makes a step of solving : get a step size, generate a predicted point, solve the nonlinear system, save the solution.
+        Makes a step of solving : get a step size, generate a predicted point,
+        solve the nonlinear system, save the solution.
         """
         # obtain the starting point
         self.ds = self.adaptstep.getStepSize(self.ds, self.SolList)
@@ -313,10 +312,13 @@ class FRF_NonLinear(ABCAnalysis):
 
     def Solve(self, x0=None, **kwargs):
         """
-        Makes the whole analysis using continuation techniques until the stopping criterion is validated.
+        Makes the whole analysis using continuation techniques until the
+        stopping criterion is validated.
 
         Args:
-            x0 (None|str|np.ndarray): if None x0 is the linear solution at initial angular frequency, if "null" x0 is null vector, otherwise x0 is initialised using the provided array.
+            x0 (None|str|np.ndarray): if None x0 is the linear solution at
+            initial angular frequency, if "null" x0 is null vector, otherwise
+            x0 is initialised using the provided array.
         """
         self.initialise(x0, **kwargs)
         k = 1

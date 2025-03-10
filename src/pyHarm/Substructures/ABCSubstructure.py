@@ -13,8 +13,11 @@
 # limitations under the License.
 
 """ "
-This module is responsible for the definition of the Abstract based class ABCSubstructure defining the main interfaces charateristics of a substructure in pyHarm.
-The substructure shall be responsible for creating dofs through the generation of an explicit dof list describing which dofs are being created in the system.
+This module is responsible for the definition of the Abstract based class
+ABCSubstructure defining the main interfaces charateristics of a substructure
+in pyHarm.
+The substructure shall be responsible for creating dofs through the generation
+of an explicit dof list describing which dofs are being created in the system.
 """
 
 from abc import ABC, abstractmethod
@@ -27,7 +30,10 @@ from pyHarm.Substructures.SubDataReader.FactoryReader import generate_subreader
 
 class ABCSubstructure(ABC):
     """
-    This class defines a substructure. Its main responsability is to create dofs and put them in an explicit pandas DataFrame.
+    This class defines a substructure.
+
+    Its main responsability is to create dofs and put them in an explicit
+    pandas DataFrame.
 
     Args:
         nh (int): number of harmonics.
@@ -74,27 +80,29 @@ class ABCSubstructure(ABC):
     @property
     @abstractmethod
     def factory_keyword(self) -> str:
-        """ "
-        Property defining the factory_keyword to be used for instantiation of daughter class.
+        """
+        Property defining the factory_keyword to be used for instantiation of
+        daughter class.
 
         Returns:
             str: factory_keyword
         """
-        ...
+        pass
 
     @abstractmethod
     def _add_connectors(self) -> dict:
-        """ "
+        """
         Method that adds connectors depending on the type of substructure.
         """
-        ...
+        pass
 
     @abstractmethod
     def _add_kinematics(self) -> dict:
-        """ "
-        Method that adds kinematic conditions depending on the type of substructure.
         """
-        ...
+        Method that adds kinematic conditions depending on the type of
+        substructure.
+        """
+        pass
 
     def _gen_sub_col(self):
         col = [self.name] * self.total_dofs * (2 * self.nh + 1)

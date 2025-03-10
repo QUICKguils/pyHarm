@@ -15,7 +15,9 @@
 """This module is the factory of ABCAnalysis subclasses.
 
 Attributes:
-    NonLinearStudy_kind (dict[str, ABCAnalysis]): Dictionary containing ABCAnalysis subclasses as values and their factory_keyword attribute as key.
+    NonLinearStudy_kind (dict[str, ABCAnalysis]):
+    Dictionary containing ABCAnalysis subclasses as values and their
+    factory_keyword attribute as key.
 """
 
 from pyHarm.Analysis.ABCAnalysis import ABCAnalysis
@@ -27,14 +29,17 @@ NonLinearStudy_kind = {
     FRF_NonLinear.factory_keyword: FRF_NonLinear,
     Linear_Analysis.factory_keyword: Linear_Analysis,
 }
-"""dict[str, ABCAnalysis]: Dictionary containing ABCAnalysis subclasses as values and their factory_keyword attribute as key."""
+"""
+dict[str, ABCAnalysis]:
+  Dictionary containing ABCAnalysis subclasses as values and their
+  factory_keyword attribute as key.
+"""
 
 
 def generateNonLinearAnalysis(
     name_nonlinearstudy, datas: dict, system: ABCSystem, **kwargs
 ) -> ABCAnalysis:
-    """
-    Factory function that creates a ABCAnalysis object.
+    """Factory function that creates a ABCAnalysis object.
 
     Args:
         name_nonlinearstudy (str): type of ABCAnalysis to instantiate.
