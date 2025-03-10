@@ -4,8 +4,9 @@ import pathlib
 
 import numpy as np
 
-from StepSizeMyAcceptance import StepSizeMyAcceptance
 import pyHarm
+
+from .StepSizeMyAcceptance import StepSizeMyAcceptance
 
 MODEL_PATH = pathlib.Path(__file__).parent / "res"
 
