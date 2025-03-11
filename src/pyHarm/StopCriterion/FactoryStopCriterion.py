@@ -16,36 +16,40 @@
 Factory module responsible for creating the ABCStopCriterion needed.
 
 Attributes:
-    Stopper_dico (dict[str,ABCStopCriterion]): Dictionary containing all the StopCriterions available.
+    Stopper_dico (dict[str,ABCStopCriterion]):
+      Dictionary containing all the StopCriterions available.
 """
 
 from pyHarm.StopCriterion.ABCStopCriterion import ABCStopCriterion
 from pyHarm.StopCriterion.StopCriterionBounds import StopCriterionBounds
-from pyHarm.StopCriterion.StopCriterionBoundsOrSolNumber import (
-    StopCriterionBoundsOrSolNumber,
-)
+from pyHarm.StopCriterion.StopCriterionBoundsOrSolNumber import StopCriterionBoundsOrSolNumber
 
 Stopper_dico = {
     StopCriterionBounds.factory_keyword: StopCriterionBounds,
     StopCriterionBoundsOrSolNumber.factory_keyword: StopCriterionBoundsOrSolNumber,
 }
-"""dict[str,ABCStopCriterion]: Dictionary containing all the StopCriterions available."""
+"""
+dict[str,ABCStopCriterion]:
+  Dictionary containing all the StopCriterions available.
+"""
 
 
 def generateStopCriterion(
     name_stopcriterion: str,
     bounds: list[float, float],
     ds_min: float,
-    stopcriterion_options,
+    stopcriterion_options: dict,
 ) -> ABCStopCriterion:
     """
     Factory function that creates a ABCSystem object.
 
     Args:
-        name_stopcriterion (str): Type of the ABCStopCriterion object that is to be instantiated.
+        name_stopcriterion (str): Type of the ABCStopCriterion object that is
+          to be instantiated.
         bounds (list[float,float]): angular frequency bounds [puls_inf, puls_sup].
         ds_min (float): minimum step size.
-        stopcriterion_options (dict): dictionary containing options to pass to the instantiated ABCStopCriterion.
+        stopcriterion_options (dict): dictionary containing options to pass to
+          the instantiated ABCStopCriterion.
 
     Returns:
         ABCStopCriterion: Instance of the required ABCStopCriterion class.

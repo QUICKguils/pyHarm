@@ -15,8 +15,8 @@ PROBLEM = {
     "analysis": {},
     "system": {
         "type": "Base",
-        "nh": 5,
-        "nti": 1024,  # WARN: beware of fs >= 200*f
+        "nh": 6,
+        "nti": 1024,  # WARN: nlvib rule of thumb: fs >= 200*f
         "adim": {
             "status": True,
             "lc": 0.15e-3,  # Adim by the gap clearance
@@ -63,9 +63,13 @@ PROBLEM = {
     },
 }
 
+# Chained continuations
+# CONT_1 -> CONT_2 -> CONT_3      -> CONT_4          -> CONT_5  => CONT_LIST
+# 1-70   -> 70-78  -> 78-loop-150 -> 150-s_shape-150 -> 150-300
+
 CONT_1 = {
     "analysis": {
-        "CONT_1": {
+        "cont": {
             "study": "frf",
             "puls_inf": 1.0,
             "puls_start": 1.0,
@@ -88,9 +92,6 @@ CONT_1 = {
             #     {
             #         "type": "AllgowerPreconditioner",
             #     },
-            #     {
-            #         "type": "KrackPreconditioner",
-            #     },
             # ],
             "corrector": "arc_length",
             "stopper": "bounds",
@@ -102,14 +103,14 @@ CONT_1 = {
 
 CONT_2 = {
     "analysis": {
-        "CONT_2": {
+        "cont": {
             "study": "frf",
             "puls_inf": 70.0,
             "puls_start": 72.0,
             "puls_sup": 76.0,
             "ds0": 5e-3,
             "ds_min": 1e-12,
-            "ds_max": 5e-3,
+            "ds_max": 1e-2,
             "sign_ds": 1,
             "verbose": True,
             "stepsizer": "myacceptance",
@@ -117,10 +118,50 @@ CONT_2 = {
             "corrector": "arc_length",
             "stopper": "bounds",
             "solver": "scipyroot",
-            # "solver": "NewtonRaphson",
         },
     },
 }
 
-# CONT_1 -> CONT_2 -> CONT_3      -> CONT_4          -> CONT_5
-# 1-70   -> 70-78  -> 78-loop-150 -> 150-s_shape-150 -> 150-300
+CONT_3 = {
+    "analysis": {
+        "cont": {
+            "study": "frf",
+            "puls_inf": 76.0,
+            "puls_start": 76.0,
+            "puls_sup": 150.0,
+            "ds0": 1e-1,
+            "ds_min": 1e-12,
+            "ds_max": 3e-1,
+            "sign_ds": 1,
+            "verbose": True,
+            "stepsizer": "myacceptance",
+            "predictor": "tangent",
+            "corrector": "arc_length",
+            "stopper": "bounds",
+            "solver": "scipyroot",
+        },
+    },
+}
+
+CONT_4 = {
+    "analysis": {
+        "cont": {
+            "study": "frf",
+            "puls_inf": 76.0,
+            "puls_start": 76.0,
+            "puls_sup": 150.0,
+            "ds0": 1e-1,
+            "ds_min": 1e-12,
+            "ds_max": 3e-1,
+            "sign_ds": 1,
+            "verbose": True,
+            "stepsizer": "myacceptance",
+            "predictor": "tangent",
+            "corrector": "arc_length",
+            "stopper": "bounds",
+            "solver": "scipyroot",
+        },
+    },
+}
+
+CONT_LIST = [CONT_1, CONT_2]

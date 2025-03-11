@@ -8,7 +8,7 @@ from pyHarm.DynamicOperator import compute_DFT
 from pyHarm.Predictors.ABCPredictor import BifurcationType
 from pyHarm.Solver import SystemSolution
 
-from .buildSafranModel import PROBLEM, CONT_1, CONT_2
+from .buildSafranModel import PROBLEM, CONT_LIST
 from .mplrc import load_rcparams
 
 M_BASE = Maestro(PROBLEM)
@@ -92,11 +92,13 @@ def plot_orbit(SolList: list[SystemSolution], **kwargs) -> None:
     # Check inputs
     if len(SolList) == 0:
         print("Empty list of solution: unable to plot orbit")
+        return
     if not kwargs:
         print(
             "specify either an index `id` "
             "or an approximate curve point `om, ampl`"
         )
+        return
 
     # Get id, om, ampl
     omList = [sol.x[-1] for sol in SolList]
@@ -119,6 +121,10 @@ def plot_orbit(SolList: list[SystemSolution], **kwargs) -> None:
     dy = (SolList[id].x[idx_52] - SolList[id].x[idx_62]) @ DFTO["ft"]
     r = np.sqrt(dx**2 + dy**2)
     theta = np.arctan2(dy, dx)
+    if "scale" in kwargs:
+        scale = kwargs["scale"]
+        # r *= (r > ampl) * scale + (r < ampl) / scale
+        r += (r - ampl) * scale
 
     fig_orbit, ax_orbit = plt.subplots(subplot_kw={"projection": "polar"})
     ax_orbit.plot(
@@ -144,23 +150,23 @@ def plot_orbit(SolList: list[SystemSolution], **kwargs) -> None:
 def main() -> Maestro:
     load_rcparams()
 
+    # This try-except acts as an interactive StopCriterion
+    # FIX: pyHarm_plugin print warning each time a Maestro is created
     try:
-        M_1 = Maestro(PROBLEM | CONT_1)
-        M_1.operate()
-        x0_1 = M_1.nls["CONT_1"].SolList[-1].x[:-1]  # TODO: take the last *valid* solution
-        M_2 = Maestro(PROBLEM | CONT_2)
-        M_2.operate(x0_1)
+        M_LIST = [Maestro(PROBLEM | CONT) for CONT in CONT_LIST]
+        x0 = None
+        for M in M_LIST:
+            M.operate(x0)
+            x0 = M.nls["cont"].SolList[-1].x[:-1]  # TODO: take the last *valid* solution
     except KeyboardInterrupt:
-        # Sort of an interactive StopCriterion
         pass
 
-    SolList = M_1.nls["CONT_1"].SolList + M_2.nls["CONT_2"].SolList
+    SolList = [sol for M in M_LIST for sol in M.nls["cont"].SolList]
 
     (sol_accepted, sol_rejected) = extract_solution(SolList)
     (sol_bifurcation, sol_fold, sol_branching) = extract_bifurcation(sol_accepted)
 
     plot_nfrc(sol_accepted, sol_fold, sol_branching)
-    plot_orbit(sol_bifurcation, id=0)
 
     return locals()
 

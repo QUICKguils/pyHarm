@@ -21,10 +21,13 @@ from pyHarm.Systems.ABCSystem import ABCSystem
 
 
 class System(ABCSystem):
-    """Subclass of ABCSystem that is in charge of assembling the residual and jacobians contributions coming from the ABCElements."""
+    """
+    Subclass of ABCSystem that is in charge of assembling the residual and
+    jacobians contributions coming from the ABCElements.
+    """
 
     factory_keyword: str = "Base"
-    """str: keyword that is used to call the creation of this class in the system factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
     def Residual(self, q: np.ndarray) -> np.ndarray:
         """
@@ -55,10 +58,12 @@ class System(ABCSystem):
 
     def Jacobian(self, q: np.ndarray) -> tuple[np.ndarray]:
         """
-        Method that computes the jacobian matrices of the whole system when given a reduced size displacement vector.
+        Method that computes the jacobian matrices of the whole system when
+        given a reduced size displacement vector.
 
         Args:
-            q (np.ndarray): reduced size displacement vector (no kinematic conditions).
+            q (np.ndarray): reduced size displacement vector (no kinematic
+              conditions).
 
         Returns:
             tuple(np.ndarray): reduced size jacobian matrices.

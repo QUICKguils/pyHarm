@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" "
-This module is responsible for the creation of the ABCSubstructure instances used in pyHarm.
+"""
+This module is responsible for the creation of the ABCSubstructure instances
+used in pyHarm.
 """
 
 from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
@@ -25,12 +26,14 @@ SubstructureDico = {
     OnlyDofs.factory_keyword: OnlyDofs,
     Substructure.factory_keyword: Substructure,
 }
-"""dict[str,ABCSubstructure]: List of available ABCSubstructure subclasses available for creation."""
+"""
+dict[str,ABCSubstructure]:
+  List of available ABCSubstructure subclasses available for creation.
+"""
 
 
 def generate_substructure(nh, name, data) -> ABCSubstructure:
-    """
-    Factory function that creates an ABCSubstructure object.
+    """Factory function that creates an ABCSubstructure object.
 
     Args:
         nh (int): number of harmonics.
