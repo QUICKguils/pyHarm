@@ -10,19 +10,10 @@ MODEL_PATH = pathlib.Path(__file__).parent / "res"
 
 # Problem specification as a phHarm dictionary
 # NOTE: see SafranModel.py for the original problem specs.
-PROBLEM = {
+MODEL = {
     "plugin": [StepSizeMyAcceptance],
     "analysis": {},
-    "system": {
-        "type": "Base",
-        "nh": 6,
-        "nti": 1024,  # WARN: nlvib rule of thumb: fs >= 200*f
-        "adim": {
-            "status": True,
-            "lc": 0.15e-3,  # Adim by the gap clearance
-            "wc": 1.0,
-        },
-    },
+    "system": {},
     "substructures": {
         "linear_rotor": {  # Unforced, linear rotor toy model from Safran
             "filename": str(MODEL_PATH / "Jeffcott_asym.mat"),
@@ -63,11 +54,22 @@ PROBLEM = {
     },
 }
 
-# Chained continuations
-# CONT_1 -> CONT_2 -> CONT_3      -> CONT_4          -> CONT_5  => CONT_LIST
-# 1-70   -> 70-78  -> 78-loop-150 -> 150-s_shape-150 -> 150-300
+SYSTEM = {
+    "type": "Base",
+    "nh": 1,
+    "nti": 1024,
+    "adim": {
+        "status": True,
+        "lc": 0.15e-3,  # Adim by the gap clearance
+        "wc": 1.0,
+    },
+}
 
-CONT_1 = {
+# Chained continuations
+# CHUNCK_1 -> CHUNCK_2 -> CHUNCK_3    -> CHUNCK_4        -> CHUNCK_5  => CONT_LIST
+# 1-70     -> 70-78    -> 78-loop-150 -> 150-s_shape-150 -> 150-300
+
+CHUNCK_1 = {
     "analysis": {
         "cont": {
             "study": "frf",
@@ -77,6 +79,28 @@ CONT_1 = {
             "ds0": 1e-1,
             "ds_min": 1e-12,
             "ds_max": 3e-1,
+            "sign_ds": 1,
+            "verbose": True,
+            "stepsizer": "myacceptance",
+            "predictor": "tangent",
+            "corrector": "arc_length",
+            "stopper": "bounds",
+            "solver": "scipyroot",
+            # "solver": "NewtonRaphson",
+        },
+    },
+}
+
+CHUNCK_2 = {
+    "analysis": {
+        "cont": {
+            "study": "frf",
+            "puls_inf": 70.0,
+            "puls_start": 72.0,
+            "puls_sup": 76.0,
+            "ds0": 5e-3,
+            "ds_min": 1e-12,
+            "ds_max": 1e-2,
             "sign_ds": 1,
             "verbose": True,
             "stepsizer": "myacceptance",
@@ -96,33 +120,11 @@ CONT_1 = {
             "corrector": "arc_length",
             "stopper": "bounds",
             "solver": "scipyroot",
-            # "solver": "NewtonRaphson",
         },
     },
 }
 
-CONT_2 = {
-    "analysis": {
-        "cont": {
-            "study": "frf",
-            "puls_inf": 70.0,
-            "puls_start": 72.0,
-            "puls_sup": 76.0,
-            "ds0": 5e-3,
-            "ds_min": 1e-12,
-            "ds_max": 1e-2,
-            "sign_ds": 1,
-            "verbose": True,
-            "stepsizer": "myacceptance",
-            "predictor": "tangent",
-            "corrector": "arc_length",
-            "stopper": "bounds",
-            "solver": "scipyroot",
-        },
-    },
-}
-
-CONT_3 = {
+CHUNCK_3 = {
     "analysis": {
         "cont": {
             "study": "frf",
@@ -143,7 +145,7 @@ CONT_3 = {
     },
 }
 
-CONT_4 = {
+CHUNCK_3 = {
     "analysis": {
         "cont": {
             "study": "frf",
@@ -164,4 +166,4 @@ CONT_4 = {
     },
 }
 
-CONT_LIST = [CONT_1, CONT_2]
+CHUNCK_LIST = [CHUNCK_1, CHUNCK_2]

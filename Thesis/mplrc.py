@@ -53,7 +53,6 @@ def load_rcparams(style="running") -> None:
         UCOLOR["Yellow"], # C5
         UCOLOR["Red"], # C6
         UCOLOR["GrayDark"], # C7
-
     ])
     mpl.rcParams["axes.prop_cycle"] = mpl.cycler(custom_colorcycler)
 
