@@ -8,24 +8,13 @@ from .StepSizeMyAcceptance import StepSizeMyAcceptance
 linsys = dict()
 linsys["M"] = np.array([1])
 linsys["C"] = np.array([0.05])
-# linsys["C"] = np.array([0.3])  # Damping used in tuto1
 linsys["K"] = np.array([1])
 linsys["G"] = 0 * linsys["M"]
 
-PROBLEM = {
+MODEL = {
     "plugin": [StepSizeMyAcceptance],
     "analysis": {},
-    "system": {
-        "type": "Base",
-        "nh": 17,
-        # NOTE: bcs of cubic nl, nti should be > 2(3*nh)+1 = 73
-        "nti": 2048,
-        "adim": {
-            "status": False,
-            "lc": 1.0,
-            "wc": 1.0,
-        }
-    },
+    "system": {},
     "substructures": {
         "duffing": {
             "matrix": linsys,
@@ -48,7 +37,19 @@ PROBLEM = {
     },
 }
 
-CONT = {
+# The "nh" field need to be completed
+# on the corresponding solving file.
+SYSTEM = {
+    "type": "Base",
+    "nti": 2048,
+    "adim": {
+        "status": False,
+        "lc": 1.0,
+        "wc": 1.0,
+    }
+}
+
+CHUNCK_1 = {
     "analysis": {
         "cont": {
             "study": "frf",
@@ -62,18 +63,6 @@ CONT = {
             "verbose": True,
             "stepsizer": "myacceptance",
             "predictor": "tangent",
-            # "reductors": [
-            #     {
-            #         "type": "globalHarmonic",
-            #         "nh_start": np.array([1]),
-            #         "err_admissible": 1e10,
-            #         "h_always_kept": np.array([1]),
-            #         "verbose": False,
-            #     },
-            #     {
-            #         "type": "AllgowerPreconditioner",
-            #     },
-            # ],
             "corrector": "arc_length",
             "stopper": "bounds",
             "solver": "scipyroot",
@@ -81,4 +70,4 @@ CONT = {
     },
 }
 
-CONT_LIST = [CONT]
+CHUNCK_LIST = [CHUNCK_1]
