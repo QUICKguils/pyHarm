@@ -29,7 +29,8 @@ class ABCStopCriterion(abc.ABC):
         **kwargs: Additional keyword arguments.
 
     Raises:
-        NotImplementedError: If the subclass lacks the factory_keyword class attribute.
+        NotImplementedError: If the subclass lacks the factory_keyword class
+          attribute.
         TypeError: If the factory_keyword is not a string value.
     """
 

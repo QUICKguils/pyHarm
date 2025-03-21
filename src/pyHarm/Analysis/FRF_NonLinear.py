@@ -58,6 +58,7 @@ class FRF_NonLinear(ABCAnalysis):
         "solver": "scipyroot",
         "predictor": "tangent",
         "corrector": "arc_length",
+        # FIX: I think "preconditioner" key is never used
         "preconditioner": "nopreconditioner",
         "reductors": [{"type": "noreductor"}],
         "stepsizer": "acceptance",

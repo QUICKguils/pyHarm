@@ -19,19 +19,16 @@ from pyHarm.Elements.NodeToNodeElements.GeneralOrderElement import GeneralOrderE
 
 
 class LinearDamper(GeneralOrderElement):
-    """
-    This element is the linear damper element.
+    """This element is the linear damper element.
 
     Attributes:
         k (float): linear factor to apply.
     """
 
     factory_keyword: str = "LinearDamper"
-    """str: keyword that is used to call the creation of this class in the system factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
-    def __post_init__(
-        self,
-    ):
+    def __post_init__(self):
         self.dto = 1
         self.xo = 1
         self.k = self.data["k"]

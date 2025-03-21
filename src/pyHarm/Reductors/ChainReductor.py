@@ -16,7 +16,6 @@ import copy
 
 import numpy as np
 
-from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
 from pyHarm.Reductors.ABCReductor import ABCReductor
 from pyHarm.Reductors.FactoryReductors import generateReductor
 
@@ -51,16 +50,21 @@ class ChainReductor(ABCReductor):
         Loops over the reducers in the list and update them.
 
         Args:
-            xpred (np.ndarray): point predicted as the new starting point for the next iteration of the analysis process.
-            J_f (np.ndarray): full jacobian with respect to displacement and angular frequency (contains the correction equation residual).
-            expl_dofs (pd.DataFrame): explicit dof DataFrame created by the ABCSystem studied.
+            xpred (np.ndarray): point predicted as the new starting point for
+              the next iteration of the analysis process.
+            J_f (np.ndarray): full jacobian with respect to displacement and
+              angular frequency (contains the correction equation residual).
+            expl_dofs (pd.DataFrame): explicit dof DataFrame created by the
+              ABCSystem studied.
             system (ABCSystem): System studied.
 
         Returns:
-            np.ndarray: same displacement vector given as input after passing through the reductor
-            np.ndarray: same jacobian matrix given as input after passing through the reductor
-            pd.DataFrame: same explicit dof DataFrame after passing through the reductor
-
+            np.ndarray: same displacement vector given as input after passing
+              through the reductor.
+            np.ndarray: same jacobian matrix given as input after passing
+              through the reductor.
+            pd.DataFrame: same explicit dof DataFrame after passing through the
+              reductor.
         """
         xpred_red = copy.copy(xpred)
         J_f_red = copy.copy(J_f)
@@ -73,13 +77,15 @@ class ChainReductor(ABCReductor):
 
     def expand(self, q: np.ndarray) -> np.ndarray:
         """
-        Expands the reduced dof vector by looping over the reducers contained in the list.
+        Expands the reduced dof vector by looping over the reducers contained
+        in the list.
 
         Args:
             q (np.ndarray): vector of reduced displacement.
 
         Returns:
-            np.ndarray: vector of original displacement with the linear dof being exact solution.
+            np.ndarray: vector of original displacement with the linear dof
+              being exact solution.
         """
         x = copy.copy(q)
         for red in self.reductors[-1::-1]:
@@ -88,7 +94,8 @@ class ChainReductor(ABCReductor):
 
     def reduce_vectorx(self, x: np.ndarray) -> np.ndarray:
         """
-        Reduces the displacement vector by applying the chain of reductor methods.
+        Reduces the displacement vector by applying the chain of reductor
+        methods.
 
         Args:
             x (np.ndarray): vector of displacement.
@@ -118,13 +125,16 @@ class ChainReductor(ABCReductor):
 
     def reduce_matrix(self, dJdxom: np.ndarray, *args) -> np.ndarray:
         """
-        From original jacobian, performs the reduction by applying the chain of reduction.
+        From original jacobian, performs the reduction by applying the chain of
+        reduction.
 
         Args:
-            dJdxom (np.ndarray): full size jacobian matrix with respect to displacement and angular frequency.
+            dJdxom (np.ndarray): full size jacobian matrix with respect to
+              displacement and angular frequency.
 
         Returns:
-            np.ndarray: reduced jacobian matrix with respect to displacement and angular frequency.
+            np.ndarray: reduced jacobian matrix with respect to displacement
+              and angular frequency.
         """
         dJdxom_red = copy.copy(dJdxom)
         for red in self.reductors:

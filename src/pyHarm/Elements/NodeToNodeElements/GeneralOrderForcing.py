@@ -44,24 +44,23 @@ def GOFJacobian(x, om, loadvec, Pdir, Pslave, dto, nabo, amp):
 
 
 class GeneralOrderForcing(NodeToNodeElement):
-    """
-    This element is the general polynomial external forcing.
+    """This element is the general polynomial external forcing.
 
-    A forcing is an element that cannot be applied in between substructures (only considers the first entry in "connect" keyword).
+    A forcing is an element that cannot be applied in between substructures
+    (only considers the first entry in "connect" keyword).
 
     Attributes:
         dto (int): order of the time derivative.
         ho (int): order of the harmonic where the forcing is applied.
-        phi (float): phase lag to apply between the cosine and sine term (0 = pure cosinus forcing).
+        phi (float): phase lag to apply between the cosine and sine term (0 =
+          pure cosinus forcing).
         amp (float): amplitude of the forcing.
     """
 
     factory_keyword: str = "GOForcing"
-    """str: keyword that is used to call the creation of this class in the system factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
-    def __post_init__(
-        self,
-    ):
+    def __post_init__(self):
         self.dto = self.data["dto"]
         self.ho = self.data["ho"]
         if "phi" not in self.data.keys():
@@ -76,9 +75,7 @@ class GeneralOrderForcing(NodeToNodeElement):
     def __flag_update__(self):
         self.flag_extforcing = True
 
-    def _loadingdofs(
-        self,
-    ):
+    def _loadingdofs(self):
         loadvec = np.zeros((2 * self.nh + 1,))
         if self.ho == 0:
             loadvec[0] = 1
@@ -99,11 +96,14 @@ class GeneralOrderForcing(NodeToNodeElement):
         )
 
     def adim(self, lc, wc):
-        """Modifies the element properties according to the characteristic length and angular frequency.
+        """
+        Modifies the element properties according to the characteristic length
+        and angular frequency.
 
         Attributes:
-            amp (float): modified amplitude according to the characteristic parameters.
-            flag_adim (bool): True if equations are to be adimensionalized
+            amp (float): modified amplitude according to the characteristic
+              parameters.
+            flag_adim (bool): True if equations are to be adimensionalized.
         """
         self.amp = self.amp * (wc**self.dto)
         self.flag_adim = True

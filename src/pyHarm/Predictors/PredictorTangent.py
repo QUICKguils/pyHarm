@@ -39,9 +39,11 @@ class PredictorTangent(ABCPredictor):
         """Predicts the next starting point using the tangent.
 
         Args:
-            sollist (list[SystemSolution]): list of SystemSolution already solved during the analysis.
+            sollist (list[SystemSolution]): list of SystemSolution already
+              solved during the analysis.
             ds (float): step size for the prediction.
-            k_imposed (None | int): if not None, uses the k_imposed as the index of the last solution pointer.
+            k_imposed (None | int): if not None, uses the k_imposed as the
+              index of the last solution pointer.
 
         Returns:
             np.ndarray: next predicted starting point.
@@ -58,9 +60,7 @@ class PredictorTangent(ABCPredictor):
         lstpt.J_x_T_qr = spl.qr(np.transpose(lstpt.J_f[:-1, :]))
         lstpt.flag_J_x_T_qr = True
         # det_Q,det_R = spl.det(lstpt.J_x_T_qr[0]),spl.det(lstpt.J_x_T_qr[1][:-1,:])
-        dir = (
-            np.sign(lstpt.J_x_T_qr[0][-1, -1]) * lstpt.J_x_T_qr[0][:, -1]
-        )  # no normalisation needed already normalized to norm=1
+        dir = np.sign(lstpt.J_x_T_qr[0][-1, -1]) * lstpt.J_x_T_qr[0][:, -1]  # no normalisation needed already normalized to norm=1
         dir = self.norm_dir(dir) * np.sign(dir[-1])
         xpred = lstpt.x + dir * ds * self.sign_ds
         ## write some stuff in the solution

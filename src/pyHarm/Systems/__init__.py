@@ -13,5 +13,6 @@
 # limitations under the License.
 
 """
-Package containing modules for the creation of System objects in the form of a factory design pattern.
+Package containing modules for the creation of System objects in the form of a
+factory design pattern.
 """

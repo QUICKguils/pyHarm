@@ -13,8 +13,10 @@
 # limitations under the License.
 
 """
-This module contains the basic NodeToNodeElement class being a abstract class derived from the ABCElement class
-It mostly implements a part of the required abstract methods : the methods that generates the indices from the input datas.
+This module contains the basic NodeToNodeElement class being a abstract class
+derived from the ABCElement class.
+It mostly implements a part of the required abstract methods : the methods that
+generates the indices from the input datas.
 """
 
 import copy
@@ -27,12 +29,16 @@ from pyHarm.Elements.ABCElement import ABCElement
 
 def ConstructorPslavemaster(nsub, subs, nodes, sub_expl_dofs):
     """
-    Function that creates the selection matrices for the slave dofs and the master dofs.
+    Function that creates the selection matrices for the slave dofs and the
+    master dofs.
 
     Args:
-        nsub (int): number of substructures that are connected with the kinematic condition.
-        subs (list[str]): list containing the name of the substructures connected with the kinematic condition.
-        nodes (list[list[int]]): list of nodes list that are connected with the kinematic condition.
+        nsub (int): number of substructures that are connected with the
+          kinematic condition.
+        subs (list[str]): list containing the name of the substructures
+          connected with the kinematic condition.
+        nodes (list[list[int]]): list of nodes list that are connected with the
+          kinematic condition.
         sub_expl_dofs (pd.DataFrame): explicit dofs DataFrame.
 
     Returns:
@@ -71,36 +77,47 @@ def ConstructorPslavemaster(nsub, subs, nodes, sub_expl_dofs):
 
 class NodeToNodeElement(ABCElement):
     """
-    Abstract ABCElement subclass that implements some of the methods in order to help building a node to node connector.
+    Abstract ABCElement subclass that implements some of the methods in order
+    to help building a node to node connector.
 
     Args:
         nh (int): number of harmonics.
         nti (int): number of time steps.
         name (str): name given to the kinematic condition.
-        data (dict): dictionary containing all the definition information of the kinematic condition.
-        CS (CoordinateSystem): local or global coordinate system the kinematic condition is defined on.
+        data (dict): dictionary containing all the definition information of
+          the kinematic condition.
+        CS (CoordinateSystem): local or global coordinate system the kinematic
+          condition is defined on.
 
     Attributes:
-        indices (np.ndarray): index of the dofs that the kinematic conditions needs.
-        Pdir (np.ndarray): a slice of first dimension is a transformation matrix to a direction in local coordinate system.
-        Pslave (np.ndarray): selection array that selects the slave dofs of the kinematic condition.
-        Pmaster (np.ndarray): selection array that selects the master dofs of the kinematic condition.
-        subs (list[str]): list containing the name of the substructures tht are involved.
+        indices (np.ndarray): index of the dofs that the kinematic conditions
+          needs.
+        Pdir (np.ndarray): a slice of first dimension is a transformation
+          matrix to a direction in local coordinate system.
+        Pslave (np.ndarray): selection array that selects the slave dofs of the
+          kinematic condition.
+        Pmaster (np.ndarray): selection array that selects the master dofs of
+          the kinematic condition.
+        subs (list[str]): list containing the name of the substructures tht are
+          involved.
         nbSub (int): number of substructure involved.
-        nodes (list[list]): list of list of nodes the kinematic conditions act on.
+        nodes (list[list]): list of list of nodes the kinematic conditions act
+          on.
         nbdofi (int): number of nodes involved per substructure.
     """
 
     def __init_data__(self, name, data, CS):
-        """ "
-        Method that interprets and deals with the input dictionary by creating some of the essential attributes.
+        """
+        Method that interprets and deals with the input dictionary by creating
+        some of the essential attributes.
 
         Attributes:
-            subs (list[str]): list containing the name of the substructures tht are involved.
+            subs (list[str]): list containing the name of the substructures tht
+              are involved.
             nbSub (int): number of substructure involved.
-            nodes (list[list]): list of list of nodes the kinematic conditions act on.
+            nodes (list[list]): list of list of nodes the kinematic conditions
+              act on.
             nbdofi (int): number of nodes involved per substructure.
-
         """
         self.indices = []
         self.name = name
@@ -132,16 +149,22 @@ class NodeToNodeElement(ABCElement):
         )
 
     def generateIndices(self, expl_dofs: pd.DataFrame):
-        """From the explicit dof DataFrame, generates the index of dofs concerned by the connector.
+        """
+        From the explicit dof DataFrame, generates the index of dofs concerned
+        by the connector.
 
         Args:
-            expl_dofs (pd.DataFrame): explicit dof DataFrame from the studied system.
+            expl_dofs (pd.DataFrame): explicit dof DataFrame from the studied
+              system.
 
         Attributes:
             indices (np.ndarray): index of the dofs that the connector needs.
-            Pdir (np.ndarray): a slice of first dimension is a transformation matrix to a direction in local coordinate system.
-            Pslave (np.ndarray): selection array that selects the slave dofs of the connector.
-            Pmaster (np.ndarray): selection array that selects the master dofs of the connector.
+            Pdir (np.ndarray): a slice of first dimension is a transformation
+              matrix to a direction in local coordinate system.
+            Pslave (np.ndarray): selection array that selects the slave dofs of
+              the connector.
+            Pmaster (np.ndarray): selection array that selects the master dofs
+              of the connector.
         """
         # discriminate subs from the explicit dof list :
         cs = pd.Series([False] * len(expl_dofs))

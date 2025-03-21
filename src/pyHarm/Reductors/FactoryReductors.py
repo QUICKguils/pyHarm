@@ -16,7 +16,8 @@
 Module that contains the factory of reducers.
 
 Attributes:
-    Reductor_dico (dict): Dictionary containing available ABCReductors as values and their factoryu keyword as key.
+    Reductor_dico (dict): Dictionary containing available ABCReductors as
+      values and their factory keyword as key.
 """
 
 import pandas as pd
@@ -39,16 +40,17 @@ Reductor_dico = {
     AllgowerPreconditioner.factory_keyword: AllgowerPreconditioner,
     KrackPreconditioner.factory_keyword: KrackPreconditioner,
 }
-"""dict: Dictionary containing availabe ABCReductors as values and their factoryu keyword as key."""
+"""dict: Dictionary containing availabe ABCReductors as values and their factory keyword as key."""
 
 
 def generateReductor(data: dict, expl_dofs: pd.DataFrame) -> ABCReductor:
-    """
-    Factory function that creates a ABCReductor object.
+    """Factory function that creates a ABCReductor object.
 
     Args:
-        expl_dofs (pd.DataFrame): explicit dofs DataFrame built by the ABCSystem.
-        data (dict): dictionary containing the inputs that are needed to create a system.
+        expl_dofs (pd.DataFrame): explicit dofs DataFrame built by the
+          ABCSystem.
+        data (dict): dictionary containing the inputs that are needed to create
+          a system.
 
     Returns:
         ABCReductor: Instance of the required ABCReductor class.

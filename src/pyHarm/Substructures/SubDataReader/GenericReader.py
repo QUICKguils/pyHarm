@@ -16,18 +16,21 @@ from pyHarm.Substructures.SubDataReader.ABCReader import ABCReader
 
 
 class GenericReader(ABCReader):
-    """
-    Generic read is the basic substructure reader in pyHarm. It can read '.mat', '.h5' files and complete the input dictionary as well as reading already completed input dictionary (containing all the matrices)
+    """Generic read is the basic substructure reader in pyHarm.
+
+    It can read '.mat', '.h5' files and complete the input dictionary as well
+    as reading already completed input dictionary (containing all the
+    matrices).
 
     Attributes:
-        factory_keyword (str): keyword to be called when instantiating the object through the factory.
+        factory_keyword (str): keyword to be called when instantiating the
+          object through the factory.
     """
 
     factory_keyword = "generic"
 
     def data_complete(self, data: dict) -> dict:
-        """
-        Reads and completes the input dictionary from the file.
+        """Reads and completes the input dictionary from the file.
 
         Args:
             data (dict): input dictionary.
@@ -62,7 +65,8 @@ class GenericReader(ABCReader):
 
     def read_and_complete_matrix(self, data):
         """
-        Reads and completes the 'matrix' input dictionary value from the input dictionary.
+        Reads and completes the 'matrix' input dictionary value from the input
+        dictionary.
 
         Args:
             data (dict): input dictionary.
@@ -84,7 +88,8 @@ class GenericReader(ABCReader):
 
     def read_mat_files(self, filename, data):
         """
-        Reads and completes the 'matrix' input dictionary value from the input dictionary when a .mat file is required to be read.
+        Reads and completes the 'matrix' input dictionary value from the input
+        dictionary when a .mat file is required to be read.
 
         Args:
             data (dict): input dictionary.
@@ -100,7 +105,8 @@ class GenericReader(ABCReader):
 
     def read_h5_files(self, filename, data):
         """
-        Reads and completes the 'matrix' input dictionary value from the input dictionary when a .h5 file is required to be read.
+        Reads and completes the 'matrix' input dictionary value from the input
+        dictionary when a .h5 file is required to be read.
 
         Args:
             data (dict): input dictionary.

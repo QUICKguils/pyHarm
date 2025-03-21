@@ -21,17 +21,23 @@ from pyHarm.StepSizeRules.ABCStepSizeRule import ABCStepSizeRule
 
 class StepSizeAcceptance(ABCStepSizeRule):
     """
-    Step size is divided by 2 if last solution is not accepted or multiplied by 2 if a number of consecutive accepted solutions is reached.
+    Step size is divided by 2 if last solution is not accepted or multiplied by
+    2 if a number of consecutive accepted solutions is reached.
 
     Attributes:
-        default_options (dict): contains default step size options concerning consecutive_accept if not provided during creation.
-        consecutive_accept (int): number of consecutive accept before increasing step size.
-
+        default_options (dict): contains default step size options concerning
+          consecutive_accept if not provided during creation.
+        consecutive_accept (int): number of consecutive accept before
+          increasing step size.
     """
 
     name = "accepted step size adaptation"
+
     factory_keyword: str = "acceptance"
+    """str: Concrete class name used by the factory to instantiate it."""
+
     default_options = {"consecutive_accept": 5}
+    """dict: dictionary containing default parameters."""
 
     def __init__(self, bounds: list[float, float], **kwargs):
         super().__init__(bounds)
@@ -41,11 +47,14 @@ class StepSizeAcceptance(ABCStepSizeRule):
         self.consecutive_accept = self.stepsize_options["consecutive_accept"]
 
     def getStepSize(self, ds: float, sollist: list[SystemSolution], **kwargs) -> float:
-        """Returns the step size to be used for the prediction step of the analysis.
+        """
+        Returns the step size to be used for the prediction step of the
+        analysis.
 
         Args:
             ds (float): Current step size.
-            sollist (list[SystemSolution]): list of SystemSolution returned during the analysis.
+            sollist (list[SystemSolution]): list of SystemSolution returned
+              during the analysis.
 
         Returns:
             float: updated step size.

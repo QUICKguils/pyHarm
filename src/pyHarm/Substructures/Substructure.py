@@ -22,7 +22,8 @@ class Substructure(ABCSubstructure):
         """Method that adds a substructure Element.
 
         Returns:
-            dict: Containing one connector with key of the same name that of the defined substructure.
+            dict: Containing one connector with key of the same name that of
+              the defined substructure.
         """
         con = {
             self.name: {

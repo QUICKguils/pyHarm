@@ -22,19 +22,24 @@ from pyHarm.Reductors.ABCReductor import ABCReductor
 
 class KrackPreconditioner(ABCReductor):
     """
-    This Reductor is a preconditioner that does not reduce the system size but preconditions the system to make it easier to solve for the solvers.
+    This Reductor is a preconditioner that does not reduce the system size but
+    preconditions the system to make it easier to solve for the solvers.
 
-    This reductor is based on the preconditioning proposal made in Krack et al. book named :
+    This reductor is based on the preconditioning proposal made in Krack et al.
+    book named:
         - Harmonic Balance for Nonlinear Vibration Problems
-    It uses displacement vector and tries to normalise the values to 1. as long as the values remains under a certain threshold.
+    It uses displacement vector and tries to normalise the values to 1. as long
+    as the values remains under a certain threshold.
 
     Attributes :
-        data (dict): input dictionary + default parameters when not provided as input
-        cut_off (float): value of the displacement where the scaling to 1e0 displacement is no more made to avoid numerical errors.
+        data (dict): input dictionary + default parameters when not provided as
+          input.
+        cut_off (float): value of the displacement where the scaling to 1e0
+          displacement is no more made to avoid numerical errors.
     """
 
     factory_keyword: str = "KrackPreconditioner"
-    """str: keyword that is used to call the creation of this class in the factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
     default = {"cut_off": 1e-7}
     """dict: dictionary containing default parameters."""
@@ -46,17 +51,22 @@ class KrackPreconditioner(ABCReductor):
 
     def update_reductor(self, xpred, J_f, *args):
         """
-        Computes a preconditionning scaling matrix based on the QR decomposition of the jacobian.
+        Computes a preconditionning scaling matrix based on the QR
+        decomposition of the jacobian.
 
         Args:
-            xpred (np.ndarray): point predicted as the new starting point for the next iteration of the analysis process.
-            J_f (np.ndarray): full jacobian with respect to displacement and angular frequency (contains the correction equation residual).
+            xpred (np.ndarray): point predicted as the new starting point for
+              the next iteration of the analysis process.
+            J_f (np.ndarray): full jacobian with respect to displacement and
+              angular frequency (contains the correction equation residual).
 
         Returns:
-            np.ndarray: modified displacement vector given as input after passing through the reductor
-            np.ndarray: modified jacobian matrix given as input after passing through the reductor
-            pd.DataFrame: modified explicit dof DataFrame after passing through the reductor
-
+            np.ndarray: modified displacement vector given as input after
+              passing through the reductor.
+            np.ndarray: modified jacobian matrix given as input after passing
+              through the reductor.
+            pd.DataFrame: modified explicit dof DataFrame after passing through
+              the reductor.
         """
         scaling = copy.deepcopy(xpred)
         scaling[np.abs(scaling) <= self.cut_off] = 1.0
@@ -71,8 +81,7 @@ class KrackPreconditioner(ABCReductor):
         )
 
     def expand(self, q: np.ndarray) -> np.ndarray:
-        """
-        Unscales the displacement vector.
+        """Unscales the displacement vector.
 
         Args:
             q (np.ndarray): vector of scaled displacement.
@@ -84,8 +93,7 @@ class KrackPreconditioner(ABCReductor):
         return x
 
     def reduce_vector_x(self, x: np.ndarray) -> np.ndarray:
-        """
-        Scales the displacement vector.
+        """Scales the displacement vector.
 
         Args:
             x (np.ndarray): vector of displacement.
@@ -97,8 +105,7 @@ class KrackPreconditioner(ABCReductor):
         return q
 
     def reduce_vector(self, R: np.ndarray) -> np.ndarray:
-        """
-        Applies the scaling matrix to the residual vector.
+        """Applies the scaling matrix to the residual vector.
 
         Args:
             R (np.ndarray): residual vector.
@@ -111,24 +118,25 @@ class KrackPreconditioner(ABCReductor):
 
     def reduce_matrix(self, dJdxom: np.ndarray, *args) -> np.ndarray:
         """
-        From original matrix, performs the transformation to get the preconditioned matrix.
+        From original matrix, performs the transformation to get the
+        preconditioned matrix.
 
         Args:
-            dJdxom (np.ndarray): full size jacobian matrix with respect to displacement and angular frequency.
+            dJdxom (np.ndarray): full size jacobian matrix with respect to
+              displacement and angular frequency.
 
         Returns:
-            np.ndarray: preconditioned jacobian matrix with respect to displacement and angular frequency.
+            np.ndarray: preconditioned jacobian matrix with respect to
+              displacement and angular frequency.
         """
         return dJdxom @ self.phi_expand
 
-    def _get_output_expl_dofs(
-        self,
-    ):
+    def _get_output_expl_dofs(self):
         """
         Returns the explicit dof list after transformation by the reducer.
 
         Returns:
-            pd.DataFrame: reduced explicit dof DataFrame after passing through the reducer.
-
+            pd.DataFrame: reduced explicit dof DataFrame after passing through
+              the reducer.
         """
         return self.expl_dofs

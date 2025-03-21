@@ -16,7 +16,6 @@ import copy
 
 import numpy as np
 
-from pyHarm.Elements.ABCElement import ABCElement
 from pyHarm.Systems.ABCSystem import ABCSystem
 
 
@@ -31,10 +30,12 @@ class System(ABCSystem):
 
     def Residual(self, q: np.ndarray) -> np.ndarray:
         """
-        Method that computes the residual vector of the whole system when given a reduced size displacement vector.
+        Method that computes the residual vector of the whole system when given
+        a reduced size displacement vector.
 
         Args:
-            q (np.ndarray): reduced size displacement vector (no kinematic conditions).
+            q (np.ndarray): reduced size displacement vector (no kinematic
+              conditions).
 
         Returns:
             np.ndarray: reduced size residual vector.

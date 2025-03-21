@@ -1,16 +1,19 @@
 import abc
 
+import numpy as np
+
 from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
+from pyHarm.Solver import SystemSolution
 
 
 class ABCBifurcator(abc.ABC):
     """Abstract class for the bifurcation detectors.
 
-    An `ABCBifurcator` handles 
+    An `ABCBifurcator` handles bifurcation detection, localization and tracking.
 
     Attributes:
         predictor_options (dict):
-          dictionary containing the kwargs and competed using the default
+          dictionary containing the kwargs and completed using the default
           options if the keywords are missing.
         flag_print (bool):
           information are printed during the analysis if True.
@@ -37,13 +40,17 @@ class ABCBifurcator(abc.ABC):
         self.flag_print = self.bifurcator_options["verbose"]
 
     @abc.abstractmethod
-    def detect(self):
+    def detect(
+        self, sollist: list[SystemSolution], ds: float, k_imposed=None
+    ) -> tuple[np.ndarray, SystemSolution, float]:
         pass
 
     @abc.abstractmethod
-    def localize(self):
+    def localize(
+        self, sollist: list[SystemSolution], ds: float, k_imposed=None
+    ) -> tuple[np.ndarray, SystemSolution, float]:
         pass
 
     @abc.abstractmethod
-    def switch(self):
+    def track(self):
         pass

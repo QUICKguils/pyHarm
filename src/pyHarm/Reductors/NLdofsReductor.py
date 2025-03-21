@@ -20,21 +20,29 @@ from pyHarm.Reductors.ABCReductor import ABCReductor
 
 class NLdofsReductor(ABCReductor):
     """
-    The nonlinear dofs reductor is a reductor aiming at reducing the system to the nonlinear dofs only while using a linear solver to obtain the solution for the linear dofs.
+    The nonlinear dofs reductor is a reductor aiming at reducing the system to
+    the nonlinear dofs only while using a linear solver to obtain the solution
+    for the linear dofs.
 
-    The reduction method is inspired by the PhD of Colaitis but adapted to the closure equation included in pyHarm before the reduction layer.
-        - Expansion solve the linear problem associated in order to return the solutions for the linear dofs based on the values of the nonlinear dofs
-        - Jacobian matrix is completed with the contribution of linear dofs for the closure equation and the rest of the Jacobian by solving two linear problems
+    The reduction method is inspired by the PhD of Colaitis but adapted to the
+    closure equation included in pyHarm before the reduction layer.
+        - Expansion solve the linear problem associated in order to return the
+          solutions for the linear dofs based on the values of the nonlinear
+          dofs.
+        - Jacobian matrix is completed with the contribution of linear dofs for
+          the closure equation and the rest of the Jacobian by solving two
+          linear problems.
 
     Attributes :
-        factory_keyword (str): name to use as input when willing to create an instance of this object.
+        factory_keyword (str): name to use as input when willing to create an
+          instance of this object.
         solve (Callable): solve from scipy.linalg module.
         lu_factor (Callable): lu_factor from scipy.linalg module.
         lu_solve (Callable): lu_solve from scipy.linalg module.
     """
 
     factory_keyword: str = "NLdofs"
-    """str: keyword that is used to call the creation of this class in the factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
     default = {}
     """dict: dictionary containing default parameters."""
@@ -54,19 +62,25 @@ class NLdofsReductor(ABCReductor):
         Updates the reducer for the new point.
 
         Args:
-            xpred (np.ndarray): point predicted as the new starting point for the next iteration of the analysis process.
-            J_f (np.ndarray): full jacobian with respect to displacement and angular frequency (contains the correction equation residual).
-            expl_dofs (pd.DataFrame): explicit dof DataFrame created by the ABCSystem studied.
+            xpred (np.ndarray): point predicted as the new starting point for
+              the next iteration of the analysis process.
+            J_f (np.ndarray): full jacobian with respect to displacement and
+              angular frequency (contains the correction equation residual).
+            expl_dofs (pd.DataFrame): explicit dof DataFrame created by the
+              ABCSystem studied.
             system (ABCSystem): System studied.
 
         Attributes:
-            J_add (np.ndarray): Updated jacobian to add onto the non-linear dofs.
+            J_add (np.ndarray): Updated jacobian to add onto the non-linear
+            dofs.
 
         Returns:
-            np.ndarray: same displacement vector given as input after passing through the reductor
-            np.ndarray: same jacobian matrix given as input after passing through the reductor
-            pd.DataFrame: same explicit dof DataFrame after passing through the reductor
-
+            np.ndarray: same displacement vector given as input after passing
+              through the reductor.
+            np.ndarray: same jacobian matrix given as input after passing
+              through the reductor.
+            pd.DataFrame: same explicit dof DataFrame after passing through the
+              reductor.
         """
         self._init_dofs(expl_dofs, system)
         self.J_add = self._update_J_add(J_f)
@@ -74,13 +88,15 @@ class NLdofsReductor(ABCReductor):
 
     def expand(self, q: np.ndarray) -> np.ndarray:
         """
-        Makes a linear solve onto the linear part of the residual and jacobian in order to give the necessary displacement on the linear dofs.
+        Makes a linear solve onto the linear part of the residual and jacobian
+        in order to give the necessary displacement on the linear dofs.
 
         Args:
             q (np.ndarray): vector of reduced displacement.
 
         Returns:
-            np.ndarray: vector of original displacement with the linear dof being exact solution.
+            np.ndarray: vector of original displacement with the linear dof
+              being exact solution.
         """
         x = np.zeros(len(self.expl_dofs) + 1)
         x[self.nl_dofs] = q[:-1]
@@ -147,23 +163,28 @@ class NLdofsReductor(ABCReductor):
 
     def reduce_matrix(self, dJdxom: np.ndarray, *args) -> np.ndarray:
         """
-        From original jacobian, performs the transformation to get the reduced matrix while adding the linear influence.
+        From original jacobian, performs the transformation to get the reduced
+        matrix while adding the linear influence.
 
         Args:
-            dJdxom (np.ndarray): full size jacobian matrix with respect to displacement and angular frequency.
+            dJdxom (np.ndarray): full size jacobian matrix with respect to
+              displacement and angular frequency.
 
         Returns:
-            np.ndarray: reduced jacobian matrix with respect to displacement and angular frequency.
+            np.ndarray: reduced jacobian matrix with respect to displacement
+              and angular frequency.
         """
         self.J_add = self._update_J_add(dJdxom)
         return self.phi_reduce @ dJdxom @ self.phi_reduce.T - self.J_add
 
     def _update_J_add(self, dJdxom):
         """
-        Updates the jacobian block to add corresponding to the linear influence.
+        Updates the jacobian block to add corresponding to the linear
+        influence.
 
         Args:
-            dJdxom (np.ndarray): full size jacobian matrix with respect to displacement and angular frequency.
+            dJdxom (np.ndarray): full size jacobian matrix with respect to
+              displacement and angular frequency.
 
         Returns:
             np.ndarray: jacobian to add corresponding to the linear influence.
@@ -189,28 +210,31 @@ class NLdofsReductor(ABCReductor):
             Aij (np.ndarray): rectangle matrix block of the jacobian.
 
         Returns:
-            np.ndarray: linear solution to Aii.T,Aij.T and transpose the results.
+            np.ndarray: linear solution to Aii.T,Aij.T and transpose the
+              results.
         """
         C = np.linalg.solve(Aii.T, Aij.T)
         return np.transpose(C)
 
     def _get_AijAiim1LU(self, AiiTLU, Aij):
         """
-        Obtains the linear solution to Aii.T,Aij.T and transposes the results but uses the LU decomposition of Aii.
+        Obtains the linear solution to Aii.T,Aij.T and transposes the results
+        but uses the LU decomposition of Aii.
 
         Args:
-            AiiTLU (np.ndarray): LU matrix decomposition of a square transpose block of the jacobian.
+            AiiTLU (np.ndarray): LU matrix decomposition of a square transpose
+              block of the jacobian.
             Aij (np.ndarray): rectangle matrix block of the jacobian.
 
         Returns:
-            np.ndarray: linear solution to AiiTLU,Aij.T and transpose the results.
+            np.ndarray: linear solution to AiiTLU,Aij.T and transpose the
+              results.
         """
         C = self.lu_solve(AiiTLU, Aij.T)
         return np.transpose(C)
 
     def _get_mshg(self, lines, columns):
-        """
-        Obtains the meshgrid for getting the block of matrix.
+        """Obtains the meshgrid for getting the block of matrix.
 
         Args:
             lines (np.ndarray): indexes of lines.
@@ -222,14 +246,14 @@ class NLdofsReductor(ABCReductor):
         return tuple(np.meshgrid(lines, columns, indexing="ij"))
 
     def _add_omega(self, J, Jom, Cn, Cw):
-        """
-        Constructs a matrix by blocks.
+        """Constructs a matrix by blocks.
 
         Args:
             J (np.ndarray): jacobian with respect to displacement.
             Jom (np.ndarray): jacobian with respect to angular frequency.
             Cn (np.ndarray): correction jacobian with respect to displacement.
-            Cw (np.array): correction jacobian with respect to angular frequency.
+            Cw (np.array): correction jacobian with respect to angular
+              frequency.
 
         Returns:
             np.ndarray: matrix built with the provided blocks.
@@ -238,24 +262,18 @@ class NLdofsReductor(ABCReductor):
         return J_add
 
     def _add_omega_vec(self, R):
-        """
-        Extends a residual vector by adding a 0 at the end.
+        """Extends a residual vector by adding a 0 at the end.
 
         Args:
             R (np.ndarray): residual vector.
-            Cw (np.array): correction jacobian with respect to angular frequency.
+            Cw (np.array): correction jacobian with respect to angular
+              frequency.
 
         Returns:
-            np.ndarray: residual vector augmented with a component of 0 at the end.
+            np.ndarray: residual vector augmented with a component of 0 at the
+              end.
         """
-        R_add = np.block(
-            [
-                R,
-                np.zeros(
-                    1,
-                ),
-            ]
-        )
+        R_add = np.block([R, np.zeros(1,),])
         return R_add
 
     def _init_dofs(self, expl_dofs, system):
@@ -263,12 +281,15 @@ class NLdofsReductor(ABCReductor):
         Constructs the phi matrix that suppresses the linear dofs when applied.
 
         Args:
-            expl_dofs (pd.DataFrame): explicit dof DataFrame created by the ABCSystem studied.
+            expl_dofs (pd.DataFrame): explicit dof DataFrame created by the
+              ABCSystem studied.
             system (ABCSystem): System studied.
 
         Attributes:
-            init_dofs (bool): initialisation of the indexes of linear and non-linear dof done.
-            phi_reduce (np.ndarray): transformation matrix that cuts the linear dofs.
+            init_dofs (bool): initialisation of the indexes of linear and
+              non-linear dof done.
+            phi_reduce (np.ndarray): transformation matrix that cuts the linear
+              dofs.
         """
         if not self.init_dofs:
             self.system = system
@@ -284,16 +305,14 @@ class NLdofsReductor(ABCReductor):
         else:
             pass
 
-    def _get_output_expl_dofs(
-        self,
-    ):
+    def _get_output_expl_dofs(self):
         """
-        Obtains the modified explicit dof DataFrame after passing through the reducer.
+        Obtains the modified explicit dof DataFrame after passing through the
+        reducer.
 
         Returns:
-            np.ndarray: Modified explicit dof DataFrame after passing through the reducer.
+            np.ndarray: Modified explicit dof DataFrame after passing through
+              the reducer.
         """
-        output_expl_dofs = self.expl_dofs[self.expl_dofs["NL"] == 1].reset_index(
-            drop=True
-        )
+        output_expl_dofs = self.expl_dofs[self.expl_dofs["NL"] == 1].reset_index(drop=True)
         return output_expl_dofs

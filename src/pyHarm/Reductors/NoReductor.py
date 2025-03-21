@@ -18,28 +18,27 @@ from pyHarm.Reductors.ABCReductor import ABCReductor
 
 
 class NoReductor(ABCReductor):
-    """
-    This Reductor does nothing.
-    """
+    """This Reductor does nothing."""
 
     factory_keyword: str = "noreductor"
-    """str: keyword that is used to call the creation of this class in the factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
     def update_reductor(self, xpred, J_f, *args):
-        """
-        Nothing is done here.
+        """Nothing is done here.
 
         Returns:
-            np.ndarray: modified displacement vector given as input after passing through the reductor
-            np.ndarray: modified jacobian matrix given as input after passing through the reductor
-            pd.DataFrame: modified explicit dof DataFrame after passing through the reductor
+            np.ndarray: modified displacement vector given as input after
+              passing through the reductor.
+            np.ndarray: modified jacobian matrix given as input after passing
+              through the reductor.
+            pd.DataFrame: modified explicit dof DataFrame after passing through
+              the reductor.
 
         """
         return xpred, J_f, self.expl_dofs
 
     def expand(self, q: np.ndarray) -> np.ndarray:
-        """
-        Does nothing.
+        """Does nothing.
 
         Args:
             q (np.ndarray): vector of displacement.
@@ -50,8 +49,7 @@ class NoReductor(ABCReductor):
         return q
 
     def reduce_vector(self, x: np.ndarray) -> np.ndarray:
-        """
-        Does nothing.
+        """Does nothing.
 
         Args:
             R (np.ndarray): residual vector.
@@ -62,22 +60,19 @@ class NoReductor(ABCReductor):
         return x
 
     def reduce_matrix(self, dJdx: np.ndarray, *args) -> np.ndarray:
-        """
-        Does nothing.
+        """Does nothing.
 
         Args:
-            dJdxom (np.ndarray): full size jacobian matrix with respect to displacement and angular frequency.
+            dJdxom (np.ndarray): full size jacobian matrix with respect to
+              displacement and angular frequency.
 
         Returns:
             np.ndarray: same matrix.
         """
         return dJdx
 
-    def _get_output_expl_dofs(
-        self,
-    ):
-        """
-        Does nothing.
+    def _get_output_expl_dofs(self):
+        """Does nothing.
 
         Returns:
             pd.DataFrame: reduced explicit dof DataFrame given as input.

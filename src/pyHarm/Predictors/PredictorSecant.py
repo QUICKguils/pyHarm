@@ -19,7 +19,12 @@ from pyHarm.Solver import FirstSolution, SystemSolution
 
 
 class PredictorSecant(PredictorTangent):
-    """Define the Secant predictor. From the last two solution points, generates the adequate direction. When only one solution point is available, makes use of the tangent predictor."""
+    """Define the Secant predictor.
+
+    From the last two solution points, generates the adequate direction.
+    When only one solution point is available, makes use of the tangent
+    predictor.
+    """
 
     predictor_name = "Secant Predictor"
     """str: keyword that is used to call the creation of this class in the system factory."""

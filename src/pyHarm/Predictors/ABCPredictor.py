@@ -39,8 +39,8 @@ class ABCPredictor(abc.ABC):
 
     Attributes:
         flag_print (bool): information are printed during the analysis if True.
-        predictor_options (dict): dictionary containing the kwargs and competed
-          using the default options if the keywords are missing.
+        predictor_options (dict): dictionary containing the kwargs and
+          completed using the default options if the keywords are missing.
     """
 
     @property

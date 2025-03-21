@@ -16,15 +16,10 @@ import copy
 
 import numpy as np
 from jax import jacfwd, jit
-from numba import njit
 
 from pyHarm.Elements.NodeToNodeElements.DLFTElements.DLFTElement import DLFTElement
-from pyHarm.Elements.NodeToNodeElements.DLFTElements.DLFTFriction import (
-    DLFTFrictionResidual_jax,
-)
-from pyHarm.Elements.NodeToNodeElements.DLFTElements.DLFTUniGap import (
-    DLFTUniGapResidual_jax,
-)
+from pyHarm.Elements.NodeToNodeElements.DLFTElements.DLFTFriction import DLFTFrictionResidual_jax
+from pyHarm.Elements.NodeToNodeElements.DLFTElements.DLFTUniGap import DLFTUniGapResidual_jax
 
 
 @jit
@@ -40,19 +35,8 @@ def evalResidual_jax(
 
     # Tangential contact
     R_T, _ = DLFTFrictionResidual_jax(
-        x,
-        om,
-        Rlin,
-        nbSub,
-        Pdir[[1, 2], :, :],
-        Pslave,
-        Pmaster,
-        mu,
-        N0,
-        eps,
-        DFT,
-        DTF,
-        f_time_n,
+        x, om, Rlin, nbSub, Pdir[[1, 2], :, :], Pslave, Pmaster,
+        mu, N0, eps, DFT, DTF, f_time_n,
     )
 
     return R_N + R_T
@@ -65,22 +49,22 @@ jaxf = jit(jaxf)
 
 class DLFT3D(DLFTElement):
     """
-    This element is a combination of the unilateral DFLT gap element and the DLFT friction element in the perpendicular directions.
+    This element is a combination of the unilateral DFLT gap element and the
+    DLFT friction element in the perpendicular directions.
 
     Attributes:
         N0 (float): normal force applied at contact.
         g (float): gap value.
         eps (foat): penalty parameter of the DLFT method.
         mu (foat): friction coefficient.
-        jac (str): if "analytical" uses analytical expression of jacobian, if "jax" uses automatic differentiation, if "DF" uses finite difference.
+        jac (str): if "analytical" uses analytical expression of jacobian, if
+          "jax" uses automatic differentiation, if "DF" uses finite difference.
     """
 
     factory_keyword: str = "DLFT3D"
-    """str: keyword that is used to call the creation of this class in the system factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
-    def __post_init__(
-        self,
-    ):
+    def __post_init__(self):
         self.mu = self.data["mu"]
         self.N0 = self.data["N0"]
         self.eps = self.data["eps"]
@@ -88,12 +72,16 @@ class DLFT3D(DLFTElement):
         self.nabo = np.linalg.matrix_power(self.nabla, 0)
 
     def adim(self, lc, wc):
-        """Modifies the element properties according to the characteristic length and angular frequency.
+        """
+        Modifies the element properties according to the characteristic length
+        and angular frequency.
 
         Attributes:
-            eps (float): modified penalty coefficient to apply according to the characteristic parameters.
-            g (float): modified gap value according to the characteristic parameters.
-            flag_adim (bool): True if equations are to be adimensionalized
+            eps (float): modified penalty coefficient to apply according to the
+              characteristic parameters.
+            g (float): modified gap value according to the characteristic
+              parameters.
+            flag_adim (bool): True if equations are to be adimensionalized.
         """
         self.eps = self.eps * lc
         self.g = self.g / lc
@@ -105,7 +93,8 @@ class DLFT3D(DLFTElement):
         Args:
             xg (np.ndarray): full displacement vector.
             om (float): angular frequency value.
-            Rglin (np.ndarray): Residual vector of all the linear element contributions.
+            Rglin (np.ndarray): Residual vector of all the linear element
+              contributions.
 
         Returns:
             np.ndarray: residual vector.
@@ -113,48 +102,23 @@ class DLFT3D(DLFTElement):
         x = xg[self.indices]
         Rlin = Rglin[self.indices]
         self.R = evalResidual_jax(
-            x,
-            om,
-            Rlin,
-            float(self.nbSub),
-            self.Pdir,
-            self.Pslave,
-            self.Pmaster,
-            self.mu,
-            self.N0,
-            self.g,
-            self.eps,
-            self.D["ft"],
-            self.D["tf"],
+            x, om, Rlin, float(self.nbSub), self.Pdir, self.Pslave,
+            self.Pmaster, self.mu, self.N0, self.g, self.eps,
+            self.D["ft"], self.D["tf"],
         )
         _, f_time_n = DLFTUniGapResidual_jax(
-            x,
-            om,
-            Rlin,
-            float(self.nbSub),
-            self.Pdir[[0], :, :],
-            self.Pslave,
-            self.Pmaster,
-            self.g,
-            self.eps,
-            self.D["ft"],
-            self.D["tf"],
+            x, om, Rlin, float(self.nbSub), self.Pdir[[0], :, :],
+            self.Pslave, self.Pmaster,
+            self.g, self.eps,
+            self.D["ft"], self.D["tf"],
             self.N0,
         )
         self.sep = (f_time_n - self.N0) > 0
         _, slip = DLFTFrictionResidual_jax(
-            x,
-            om,
-            Rlin,
-            float(self.nbSub),
-            self.Pdir[[1, 2], :, :],
-            self.Pslave,
-            self.Pmaster,
-            self.mu,
-            self.N0,
-            self.eps,
-            self.D["ft"],
-            self.D["tf"],
+            x, om, Rlin, float(self.nbSub), self.Pdir[[1, 2], :, :],
+            self.Pslave, self.Pmaster,
+            self.mu, self.N0, self.eps,
+            self.D["ft"], self.D["tf"],
             f_time_n,
         )
         self.slip = slip
@@ -165,19 +129,10 @@ class DLFT3D(DLFTElement):
         Rlin = Rglin[self.indices]
         dJdom = np.zeros((len(x),))
         dJdx = jaxf(
-            x,
-            om,
-            Rlin,
-            float(self.nbSub),
-            self.Pdir,
-            self.Pslave,
-            self.Pmaster,
-            self.mu,
-            self.N0,
-            self.g,
-            self.eps,
-            self.D["ft"],
-            self.D["tf"],
+            x, om, Rlin, float(self.nbSub), self.Pdir,
+            self.Pslave, self.Pmaster,
+            self.mu, self.N0, self.g, self.eps,
+            self.D["ft"], self.D["tf"],
         )
         self.J = copy.copy(dJdx)
         self.dJdom = copy.copy(dJdom)
@@ -189,9 +144,12 @@ class DLFT3D(DLFTElement):
         Args:
             xg (np.ndarray): full displacement vector.
             om (float): angular frequency value.
-            Rglin (np.ndarray): Residual vector of all the linear element contributions.
-            dJgdxlin (np.ndarray): Jacobian with respect to displacement of all the linear element contributions.
-            dJgdomlin (np.ndarray): Jacobian with respect to angular frequency of all the linear element contributions.
+            Rglin (np.ndarray): Residual vector of all the linear element
+              contributions.
+            dJgdxlin (np.ndarray): Jacobian with respect to displacement of all
+              the linear element contributions.
+            dJgdomlin (np.ndarray): Jacobian with respect to angular frequency
+              of all the linear element contributions.
 
         Returns:
             np.ndarray: Jacobian with respect to displacement.

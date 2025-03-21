@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-This module is the factory of the Substructure Readers.
+"""This module is the factory of the Substructure Readers.
 
 Attributes:
-    SubstructureReaderDictionary (dict[str, ABCReader]): Dictionary of available Substructure reader subclasses as values and their factory_keyword as key.
+    SubstructureReaderDictionary (dict[str, ABCReader]): Dictionary of
+      available Substructure reader subclasses as values and their
+      factory_keyword as key.
 """
 
 from pyHarm.Substructures.SubDataReader.ABCReader import ABCReader
@@ -29,8 +30,7 @@ SubstructureReaderDictionary = {
 
 
 def generate_subreader(data: dict) -> ABCReader:
-    """
-    Function responsible for the instantiation of ABCReader objects.
+    """Function responsible for the instantiation of ABCReader objects.
 
     Args:
         data (dict): input dictionary

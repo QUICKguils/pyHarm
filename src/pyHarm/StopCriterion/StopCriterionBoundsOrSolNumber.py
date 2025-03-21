@@ -19,15 +19,18 @@ from pyHarm.StopCriterion.StopCriterionBounds import StopCriterionBounds
 
 class StopCriterionBoundsOrSolNumber(StopCriterionBounds):
     """
-    Subclass of ABCStopCriterion : Stopper based on the number of solutions found.
+    Subclass of ABCStopCriterion.
 
-
-
+    Stopper based on the number of solutions found.
     """
 
     name = "Stop criterion when out of angular frequency bounds"
+
     factory_keyword: str = "solnumber"
+    """str: Concrete class name used by the factory to instantiate it."""
+
     default = {"max_solutions": 100}
+    """dict: dictionary containing default parameters."""
 
     def __init__(self, bounds: list[float, float], ds_min, **kwargs):
         super().__init__(bounds, ds_min, **kwargs)
@@ -40,12 +43,13 @@ class StopCriterionBoundsOrSolNumber(StopCriterionBounds):
         """Returns True if the number of solutions in the list is reached.
 
         Args:
-          sol (SystemSolution): Actual SystemSolution out of the solver process.
-          sollist (list[SystemSolution]): List containing all previous SystemSolution.
+          sol (SystemSolution): Actual SystemSolution out of the solver
+            process.
+          sollist (list[SystemSolution]): List containing all previous
+            SystemSolution.
 
         Returns:
           bool: True if the number of solutions is reached.
-
         """
         if super().getStopCriterionStatus(sol, sollist, **kwargs):
             return True

@@ -39,7 +39,8 @@ class ABCSubstructure(ABC):
         nh (int): number of harmonics.
         nti (int): number of time steps.
         name (str): name given to the kinematic condition.
-        data (dict): dictionary containing all the definition information of the substructure.
+        data (dict): dictionary containing all the definition information of
+          the substructure.
 
     Attributes:
         nh (int): number of harmonics.
@@ -48,8 +49,10 @@ class ABCSubstructure(ABC):
         nmodes (int): number of modes.
         ndofs (int): number of dofs per node.
         edf (pd.DataFrame): DataFrame describing the created dofs.
-        connectors (dict): dictionary containing the added Elements to the system.
-        kinematics (dict): dictionary containing the added Kinematic Conditions to the system.
+        connectors (dict): dictionary containing the added Elements to the
+          system.
+        kinematics (dict): dictionary containing the added Kinematic Conditions
+          to the system.
     """
 
     flag_substructure = True
@@ -80,13 +83,7 @@ class ABCSubstructure(ABC):
     @property
     @abstractmethod
     def factory_keyword(self) -> str:
-        """
-        Property defining the factory_keyword to be used for instantiation of
-        daughter class.
-
-        Returns:
-            str: factory_keyword
-        """
+        """str: Concrete class name used by the factory to instantiate it."""
         pass
 
     @abstractmethod

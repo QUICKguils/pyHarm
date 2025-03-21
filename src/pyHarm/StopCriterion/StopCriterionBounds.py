@@ -17,15 +17,16 @@ from pyHarm.StopCriterion.ABCStopCriterion import ABCStopCriterion
 
 
 class StopCriterionBounds(ABCStopCriterion):
-    """
-    Subclass of ABCStopCriterion : Stopper based on the angular frequency bounds given, the computation stops once a solution is found outside of the bounds.
+    """Subclass of ABCStopCriterion.
 
-
-
+    Stopper based on the angular frequency bounds given, the computation stops
+    once a solution is found outside of the bounds.
     """
 
     name = "Stop criterion when out of angular frequency bounds"
+
     factory_keyword: str = "bounds"
+    """str: Concrete class name used by the factory to instantiate it."""
 
     def getStopCriterionStatus(
         self, sol: SystemSolution, sollist: list[SystemSolution], **kwargs
@@ -33,11 +34,14 @@ class StopCriterionBounds(ABCStopCriterion):
         """Returns True if the bounds are reached by the solution.
 
         Args:
-          sol (SystemSolution): Actual SystemSolution out of the solver process.
-          sollist (list[SystemSolution]): List containing all previous SystemSolution.
+          sol (SystemSolution): Actual SystemSolution out of the solver
+            process.
+          sollist (list[SystemSolution]): List containing all previous
+            SystemSolution.
 
         Returns:
-          bool: True if the solution is out of the bounds or if the minimum step size is reached for at least two solutions.
+          bool: True if the solution is out of the bounds or if the minimum
+            step size is reached for at least two solutions.
 
         """
         if len(sollist) >= 2:

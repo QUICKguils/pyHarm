@@ -91,7 +91,7 @@ def PenalGapJacobian(x, om, Pdir, Pslave, Pmaster, g, k, DFT, DTF, N0=0.0):
     x_d = np.zeros((Pdir.shape[0], nti))
     for dir1 in range(Pdir.shape[0]):
         x_d[dir1, :] = (Pdir[dir1, :, :] @ (Pslave - Pmaster) @ x) @ DFT
-    r = np.sqrt(np.sum(x_d**2, axis=0))
+    r = np.sqrt(np.sum(x_d**2, axis=0))  # XXX: r is never used
     for dir1 in range(Pdir.shape[0]):
         x_k = x_d[dir1, :]
         if N0 == 0.0:

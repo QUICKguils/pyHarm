@@ -20,14 +20,15 @@ from pyHarm.Reductors.ABCReductor import ABCReductor
 
 class StaticReductor(ABCReductor):
     """
-    This reductor applies a provided static transformation matrix in order to reduce the system.
+    This reductor applies a provided static transformation matrix in order to
+    reduce the system.
 
     Attributes :
         phi (np.ndarray): transformation matrix
     """
 
     factory_keyword: str = "static"
-    """str: keyword that is used to call the creation of this class in the factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
     def __post_init__(self, *args):
         phi_x = self.data["phi"]
@@ -41,14 +42,15 @@ class StaticReductor(ABCReductor):
     def update_reductor(
         self, xpred: np.ndarray, J_f: np.ndarray, *args
     ) -> tuple[np.ndarray, np.ndarray, pd.DataFrame]:
-        """
-        Does nothing as the transformation is taken as static.
+        """Does nothing as the transformation is taken as static.
 
         Returns:
-            np.ndarray: same displacement vector given as input after passing through the reductor
-            np.ndarray: same jacobian matrix given as input after passing through the reductor
-            pd.DataFrame: same explicit dof DataFrame after passing through the reductor
-
+            np.ndarray: same displacement vector given as input after passing
+              through the reductor.
+            np.ndarray: same jacobian matrix given as input after passing
+              through the reductor.
+            pd.DataFrame: same explicit dof DataFrame after passing through the
+              reductor.
         """
         return (
             self.reduce_vector_x(xpred),
@@ -57,8 +59,7 @@ class StaticReductor(ABCReductor):
         )
 
     def expand(self, q: np.ndarray) -> np.ndarray:
-        """
-        Inverse transforms the displacement vector.
+        """Inverse transforms the displacement vector.
 
         Args:
             q (np.ndarray): vector of transformed displacement.
@@ -70,8 +71,7 @@ class StaticReductor(ABCReductor):
         return x
 
     def reduce_vector_x(self, x: np.ndarray) -> np.ndarray:
-        """
-        Transforms the displacement vector.
+        """Transforms the displacement vector.
 
         Args:
             x (np.ndarray): vector of displacement.
@@ -83,8 +83,7 @@ class StaticReductor(ABCReductor):
         return q
 
     def reduce_vector(self, R: np.ndarray) -> np.ndarray:
-        """
-        Transforms the residual vector.
+        """Transforms the residual vector.
 
         Args:
             R (np.ndarray): vector of residuals.
@@ -97,24 +96,24 @@ class StaticReductor(ABCReductor):
 
     def reduce_matrix(self, dJdxom: np.ndarray, *args) -> np.ndarray:
         """
-        From original matrix, performs the transformation to get the transformed matrix.
+        From original matrix, performs the transformation to get the
+        transformed matrix.
 
         Args:
-            dJdxom (np.ndarray): full size jacobian matrix with respect to displacement and angular frequency.
+            dJdxom (np.ndarray): full size jacobian matrix with respect to
+              displacement and angular frequency.
 
         Returns:
-            np.ndarray: transformed jacobian matrix with respect to displacement and angular frequency.
+            np.ndarray: transformed jacobian matrix with respect to
+              displacement and angular frequency.
         """
         return self.phi.T @ dJdxom @ self.phi
 
-    def _get_output_expl_dofs(
-        self,
-    ):
-        """
-        This is not well implemented => this has to be redone !!.
+    def _get_output_expl_dofs(self):
+        """This is not well implemented => this has to be redone !!.
 
         Returns:
-            pd.DataFrame: reduced explicit dof DataFrame after passing through the reducer.
-
+            pd.DataFrame: reduced explicit dof DataFrame after passing through
+              the reducer.
         """
         return self.expl_dofs

@@ -13,7 +13,9 @@
 # limitations under the License.
 
 """
-Subpackage that contains the factory design pattern allowing to create Reducers.
+Subpackage that contains the factory design pattern allowing to create
+Reducers.
 
-The reducers are used in order to reduce the size of the problem to be solved by the solvers using state of the art methodologies and results.
+The reducers are used in order to reduce the size of the problem to be solved
+by the solvers using state of the art methodologies and results.
 """

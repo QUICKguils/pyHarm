@@ -20,18 +20,17 @@ from pyHarm.Elements.NodeToNodeElements.GeneralOrderForcing import GeneralOrderF
 
 class CosinusForcing(GeneralOrderForcing):
     """
-    This element is an external forcing that applies a pure cosine signal onto the first harmonic.
+    This element is an external forcing that applies a pure cosine signal onto
+    the first harmonic.
 
     Attributes:
         amp (float): amplitude value of the forcing.
     """
 
     factory_keyword: str = "CosinusForcing"
-    """str: keyword that is used to call the creation of this class in the system factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
-    def __post_init__(
-        self,
-    ):
+    def __post_init__(self):
         self.dto = 0
         self.ho = 1
         self.phi = 0.0

@@ -15,12 +15,13 @@ Bifurcator_dico = {
 
 
 def generateBifurcator(name_bifurcator, bifurcator_options) -> ABCBifurcator:
-    """
-    Factory function that creates an ABCBifurcator object.
+    """Factory function that creates an ABCBifurcator object.
 
     Args:
-        name_bifurcator (str): Type of the ABCBifurcator object that is to be instantiated.
-        bifurcator_options (dict): dictionary containing supplementary options for the branching to be instantiated.
+        name_bifurcator (str): Type of the ABCBifurcator object that is to be
+          instantiated.
+        bifurcator_options (dict): dictionary containing supplementary options
+          for the branching to be instantiated.
 
     Returns:
         ABCBifurcator: Instance of the required ABCBifurcator class.

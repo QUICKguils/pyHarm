@@ -12,10 +12,11 @@ The **ABCBifurcator** class is an abstract class defining the essential
 components of any bifurcation detection method.
 The interface of this abstract class is composed of the following methods:
 
-| Methods  | Use |
-| :-       | :-  |
-| `detect` | TBD |
-| `switch` | TBD |
+| Methods    | Use |
+| :-         | :-  |
+| `detect`   | TBD |
+| `localize` | TBD |
+| `track`    | TBD |
 
 The parameters associated with the branch detectors are the following :
 
@@ -29,21 +30,24 @@ To be created, an `ABCBifurcator` subclass needs its abstract method to be defin
 ```python
 class FakeBif(ABCBifurcator):  # inherits from abstract class
     factory_keyword = "fakebifurcator"  # mandatory to define
-    def predict(
-            self, sollist: list[SystemSolution], ds :float, k_imposed=None
-    ) -> tuple[np.ndarray,SystemSolution,float]:
-        # code the way to get the predicted point,
-        # the last SystemSolution point that is linked to the prediction
-        # and the direction of the prediction that has been used depending if the angular frequency increases or decreases
-        return xpred, lstpt, self.sign_ds
+
+    def predict():
+        # your implementation
+
+    def localize():
+        # your implementation
+
+    def track():
+        # your implementation
+
 
 INP = {
     "analysis":{
         "FRF":{
             "study":"frf",
             ...,
-            "predictor": "fakebifurcator",  # call the criterion using factory_keyword.
-            "predictor_options":{"verbose": False},
+            "bifurcator": "fakebifurcator",  # call the criterion using factory_keyword.
+            "bifurcator_options":{"verbose": True},
             ...,
         },
         ...,
@@ -55,8 +59,8 @@ INP = {
 
 ## FactoryBifurcator
 
-This file contains the dictionary of all the predictors that are available as
-well as the function `generateBifurcator` that creates the predictor object.
+This file contains the dictionary of all the bifurcators that are available as
+well as the function `generateBifurcator` that creates the bifurcator object.
 
 ## HillBifurcator `hill`
 

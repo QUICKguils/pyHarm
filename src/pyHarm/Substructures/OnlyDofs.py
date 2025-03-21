@@ -16,11 +16,12 @@ from pyHarm.Substructures.ABCSubstructure import ABCSubstructure
 
 
 class OnlyDofs(ABCSubstructure):
+
     factory_keyword = "onlydofs"
+    """str: Concrete class name used by the factory to instantiate it."""
 
     def _add_connectors(self, data: dict):
-        """ "
-        Method that adds no connectors.
+        """Method that adds no connectors.
 
         Returns :
             dict: empty dictionary
@@ -28,8 +29,7 @@ class OnlyDofs(ABCSubstructure):
         return dict()
 
     def _add_kinematics(self, data: dict):
-        """ "
-        Method that adds no kinematic conditions.
+        """Method that adds no kinematic conditions.
 
         Returns :
             dict: empty dictionary

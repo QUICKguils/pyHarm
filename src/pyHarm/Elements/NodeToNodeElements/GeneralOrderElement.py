@@ -98,7 +98,8 @@ def GOEJacobian_AFT(x, om, Pdir, Pslave, Pmaster, dto, xo, nabo, k, DFT, DTF):
 
 class GeneralOrderElement(NodeToNodeElement):
     """
-    This element is the general polynomial element, it can apply any required polynomial link in displacement and in derivative order.
+    This element is the general polynomial element, it can apply any required
+    polynomial link in displacement and in derivative order.
 
     Attributes:
         dto (int): order of the time derivative.
@@ -107,11 +108,9 @@ class GeneralOrderElement(NodeToNodeElement):
     """
 
     factory_keyword: str = "GOElement"
-    """str: keyword that is used to call the creation of this class in the system factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
-    def __post_init__(
-        self,
-    ):
+    def __post_init__(self):
         self.dto = self.data["dto"]
         self.xo = self.data["xo"]
         self.k = self.data["k"]
@@ -185,10 +184,13 @@ class GeneralOrderElement(NodeToNodeElement):
         return dJdx, dJdom
 
     def adim(self, lc, wc):
-        """Modifies the element properties according to the characteristic length and angular frequency.
+        """
+        Modifies the element properties according to the characteristic length
+        and angular frequency.
 
         Attributes:
-            k (float): modified linear coefficient to apply according to the characteristic parameters.
+            k (float): modified linear coefficient to apply according to the
+              characteristic parameters.
             flag_adim (bool): True if equations are to be adimensionalized.
         """
         self.k = self.k * (lc**self.xo) * (wc**self.dto)

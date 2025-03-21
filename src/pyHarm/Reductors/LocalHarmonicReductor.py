@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import numpy as np
-import pandas as pd
 
 from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
 from pyHarm.Reductors.FactoryReductors import GlobalHarmonicReductor
@@ -21,28 +20,40 @@ from pyHarm.Reductors.FactoryReductors import GlobalHarmonicReductor
 
 class LocalHarmonicReductor(GlobalHarmonicReductor):
     """
-    The local harmonic reductor is a reductor (inheriting from the global Harmonic reductor) aiming at reducing the number of harmonics considered in the problem while solving.
+    The local harmonic reductor is a reductor (inheriting from the global
+    Harmonic reductor) aiming at reducing the number of harmonics considered in
+    the problem while solving.
 
-    Hence in linear situation, it is expected that the problem is gonna be reduced solely to the harmonics being involved in the forcing.
+    Hence in linear situation, it is expected that the problem is gonna be
+    reduced solely to the harmonics being involved in the forcing.
     The reduction method is based on Gastaldi et al. proposal in :
-        - A method to solve the efficiency-accuracy trade-off of multi-harmonic balance calculation of structures with friction contacts.
-    This Reductor is local in the sense that it keeps only the higher harmonic numbers for the needed dofs
+        - A method to solve the efficiency-accuracy trade-off of multi-harmonic
+          balance calculation of structures with friction contacts.
+    This Reductor is local in the sense that it keeps only the higher harmonic
+    numbers for the needed dofs.
 
     Attributes :
-        factory_keyword (str): name to use as input when willing to create an instance of this object.
+        factory_keyword (str): name to use as input when willing to create an
+          instance of this object.
         default (dict): dictionary of default reducer options.
         max_nh (int): maximum number of harmonics.
-        data (dict): dictionary of input + missing parameters from default dictionary.
+        data (dict): dictionary of input + missing parameters from default
+          dictionary.
         tot_dofs (int): total number of dofs.
-        disp_cut_off (float): displacement cut off parameter used to put compute the criterion
-        err_admissible (float): admissible error commited on the representation of the input displacement using limited amount of harmonics
-        h_always_kept (np.ndarray): harmonic numbers that shall be kept in any condition
-        verbose (bool): parameter to display info at each update of the number of harmonics
-        tol_update (float): tolerance over the jacobian that tells if an update of the number of harmonics might be necessary
+        disp_cut_off (float): displacement cut off parameter used to put
+          compute the criterion.
+        err_admissible (float): admissible error commited on the representation
+          of the input displacement using limited amount of harmonics
+        h_always_kept (np.ndarray): harmonic numbers that shall be kept in any
+          condition.
+        verbose (bool): parameter to display info at each update of the number
+          of harmonics.
+        tol_update (float): tolerance over the jacobian that tells if an update
+          of the number of harmonics might be necessary.
     """
 
     factory_keyword: str = "localHarmonic"
-    """str: keyword that is used to call the creation of this class in the factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
     def __post_init__(self, *args):
         self.max_nh = np.max(self.expl_dofs["harm"])
@@ -60,25 +71,32 @@ class LocalHarmonicReductor(GlobalHarmonicReductor):
         pass
 
     def update_reductor(self, xpred, J_f, expl_dofs, *args):
-        """
-        Updates the number of harmonics to be solved.
+        """Updates the number of harmonics to be solved.
 
         The update is made according to Gastaldi et al. paper named :
-        - A method to solve the efficiency-accuracy trade-off of multi-harmonic balance calculation of structures with friction contacts (2017)
-        A tolerance on the change of the Jacobian has been added in order to avoid costly update if the Jacobian remains identical to previous update.
+        - A method to solve the efficiency-accuracy trade-off of multi-harmonic
+          balance calculation of structures with friction contacts (2017).
+        A tolerance on the change of the Jacobian has been added in order to
+        avoid costly update if the Jacobian remains identical to previous
+        update.
 
         Args:
-            xpred (np.ndarray): point predicted as the new starting point for the next iteration of the analysis process.
-            J_f (np.ndarray): full jacobian with respect to displacement and angular frequency (contains the correction equation residual).
+            xpred (np.ndarray): point predicted as the new starting point for
+              the next iteration of the analysis process.
+            J_f (np.ndarray): full jacobian with respect to displacement and
+              angular frequency (contains the correction equation residual).
 
         Attributes:
-            phi (np.ndarray): Updated transformation matrix generated depending on the number of harmonics to keep.
+            phi (np.ndarray): Updated transformation matrix generated depending
+              on the number of harmonics to keep.
 
         Returns:
-            np.ndarray: same displacement vector given in input after passing through the reductor
-            np.ndarray: same jacobian matrix given in input after passing through the reductor
-            pd.DataFrame: same explicit dof DataFrame after passing through the reductor
-
+            np.ndarray: same displacement vector given in input after passing
+              through the reductor.
+            np.ndarray: same jacobian matrix given in input after passing
+              through the reductor.
+            pd.DataFrame: same explicit dof DataFrame after passing through the
+              reductor.
         """
         self.expl_dofs = expl_dofs
         self.tot_dofs = len(self.expl_dofs)
@@ -95,10 +113,12 @@ class LocalHarmonicReductor(GlobalHarmonicReductor):
 
     def build_phi(self, nh_kept, local=False):
         """
-        Creates the masking phi matrix based on the harmonic numbers that are to be kept.
+        Creates the masking phi matrix based on the harmonic numbers that are
+        to be kept.
 
         Args:
-            nh_kept (np.ndarray): Harmonic numbers to keep in the reduced vector.
+            nh_kept (np.ndarray): Harmonic numbers to keep in the reduced
+              vector.
 
         Attributes:
             phi (np.nd.array): Updated transformation matrix.
@@ -115,12 +135,14 @@ class LocalHarmonicReductor(GlobalHarmonicReductor):
         pass
 
     def _harmonic_selection(self, criterion):
-        """ "
-        Based on the criterion values and the harmonics that are set to be kept all the time,
-        creates the array with all the harmonics to keep in the calculation for each dof.
+        """
+        Based on the criterion values and the harmonics that are set to be kept
+        all the time, creates the array with all the harmonics to keep in the
+        calculation for each dof.
 
         Args:
-            criterion (np.ndarray[bool]): array of booleans that indicates if the criterion is verified.
+            criterion (np.ndarray[bool]): array of booleans that indicates if
+              the criterion is verified.
 
         Returns:
             np.ndarray: array of harmonic numbers to keep.
@@ -142,14 +164,14 @@ class LocalHarmonicReductor(GlobalHarmonicReductor):
         harmonic_to_keep = np.unique(np.concatenate([atomatic_kept, criterion_kept]))
         return harmonic_to_keep
 
-    def _get_output_expl_dofs(
-        self,
-    ):
+    def _get_output_expl_dofs(self):
         """
-        Obtains the modified explicit dof DataFrame after passing through the reducer.
+        Obtains the modified explicit dof DataFrame after passing through the
+        reducer.
 
         Returns:
-            np.ndarray: Modified explicit dof DataFrame after passing through the reducer.
+            np.ndarray: Modified explicit dof DataFrame after passing through
+              the reducer.
         """
         output_expl_dofs = self.expl_dofs.loc[
             np.where(self.phi[:-1, :-1] != 0)[0]

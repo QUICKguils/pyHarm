@@ -13,7 +13,9 @@
 # limitations under the License.
 
 """
-This module contains the factory of ChainReductor objects that is a specific kind of ABCReductors chaining reducing methods in series allowing to use simultaneously multiple reduction layers.
+This module contains the factory of ChainReductor objects that is a specific
+kind of ABCReductors chaining reducing methods in series allowing to use
+simultaneously multiple reduction layers.
 """
 
 from pyHarm.Reductors.ChainReductor import ChainReductor
@@ -24,8 +26,10 @@ def generateChainReductor(data, expl_dofs):
     Factory function that creates a ChainReductor object.
 
     Args:
-        expl_dofs (pd.DataFrame): explicit dofs DataFrame built by the ABCSystem.
-        data (dict): dictionary containing the inputs that are needed to create a ChainReductor, including the list of reductors to instantiate.
+        expl_dofs (pd.DataFrame): explicit dofs DataFrame built by the
+          ABCSystem.
+        data (dict): dictionary containing the inputs that are needed to create
+          a ChainReductor, including the list of reductors to instantiate.
 
     Returns:
         ChainReductor: Instance of the required ChainReductor class.

@@ -21,38 +21,40 @@ from pyHarm.Elements.NodeToNodeElements.NodeToNodeElement import NodeToNodeEleme
 
 class DLFTElement(NodeToNodeElement):
     """
-    This element is modification of the ABCElement in order to take into account the required modifications needed when using DLFT elements.
+    This element is modification of the ABCElement in order to take into
+    account the required modifications needed when using DLFT elements.
 
     Attributes:
         flag_nonlinear (bool): if True, the element is nonlinear.
-        flag_AFT (bool): if True, the element requires an alternating frequency/time domain procedure for computing residuals.
-        flag_DLFT (bool): if True, the element uses the dynamic Lagrangian method for computing the residuals.
+        flag_AFT (bool): if True, the element requires an alternating
+          frequency/time domain procedure for computing residuals.
+        flag_DLFT (bool): if True, the element uses the dynamic Lagrangian
+          method for computing the residuals.
     """
 
     factory_keyword: str = "DLFTElement"
-    """str: keyword that is used to call the creation of this class in the system factory."""
+    """str: Concrete class name used by the factory to instantiate it."""
 
-    def __flag_update__(
-        self,
-    ):
+    def __flag_update__(self):
         self.flag_nonlinear = True
         self.flag_AFT = True
         self.flag_DLFT = True
 
-    def adim(
-        self,
-    ):
+    def adim(self):
         pass
 
     def _evalJaco_DF(self, xg, om, Rglin, dJgdxlin, dJgdomlin, step):
-        """Computes the jacobian using finite difference method for DLFT Elements.
+        """
+        Computes the jacobian using finite difference method for DLFT Elements.
 
         Args:
             xg (np.ndarray): full displacement vector.
             om (float): angular frequency value.
             Rglin (float): Residual of all the linear contributions.
-            dJgdxlin (float): Jacobian with respect to displacement of all the linear contributions.
-            dJgdomlin (float): Jacobian with respect to angular frequency of all the linear contributions.
+            dJgdxlin (float): Jacobian with respect to displacement of all the
+              linear contributions.
+            dJgdomlin (float): Jacobian with respect to angular frequency of
+              all the linear contributions.
             step (float): step size for the finite difference method.
 
         Returns:
