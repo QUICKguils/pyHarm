@@ -78,23 +78,15 @@ class FRF_NonLinear(ABCAnalysis):
         self.analysis_options = getCustomOptionDictionary(inputData, self.default)
         self.flag_print = self.analysis_options["verbose"]
         self.flag_purge = self.analysis_options["purge_jacobians"]
-        if (
-            "puls_start" not in self.analysis_options
-        ):  # set the puls_start if not given to puls_inf or puls_sup depending on the sign ds
+        # Set the puls_start if not given to puls_inf or puls_sup, depending on the sign of ds.
+        if ("puls_start" not in self.analysis_options):
             self.analysis_options["puls_start"] = (
-                1
-                / 2.0
-                * (self.analysis_options["sign_ds"] + 1)
-                * self.analysis_options["puls_inf"]
-                - 1
-                / 2.0
-                * (self.analysis_options["sign_ds"] - 1)
-                * self.analysis_options["puls_sup"]
+                1 / 2.0 * (self.analysis_options["sign_ds"] + 1) * self.analysis_options["puls_inf"]
+                - 1 / 2.0 * (self.analysis_options["sign_ds"] - 1) * self.analysis_options["puls_sup"]
             )
 
         self.ds = self.analysis_options["ds0"]
         self.SolList = []
-        ### Base objects :
         self.system = System
         self.adaptstep = generateStepSizeRule(
             self.analysis_options["stepsizer"],
@@ -133,15 +125,15 @@ class FRF_NonLinear(ABCAnalysis):
         """First Solve on the initial guess.
 
         Args:
-            x0 (None|str|np.ndarray): if None x0 is the linear solution at
-              initial angular frequency, if "null" x0 is null vector, otherwise
-              x0 is initialized using the provided array.
+            x0 (None|str|np.ndarray): if None x0 is the linear solution at initial angular
+              frequency, if "null" x0 is null vector, otherwise x0 is initialized using the provided
+              array.
         """
         ### Some new arguments
         x0 = self._get_x0(x0)
         self.x0, _, _ = self._update_reductor(x0)
         isol = FirstSolution(self.x0)
-        self.solver.Solve(isol, self.SolList)
+        self.solver.Solve(isol)
         isol.index_insolve = 0
         self.CompleteSolution(isol)
         isol.SaveSolution(self.SolList)
@@ -175,9 +167,7 @@ class FRF_NonLinear(ABCAnalysis):
         return x0
 
     def CompleteSolution(self, sol: SystemSolution):
-        """
-        Completes a SystemSolution informations that just went out of the Solve
-        method.
+        """Completes a SystemSolution informations that just went out of the Solve method.
 
         Args:
             sol (SystemSolution): solution to the system.
@@ -186,7 +176,6 @@ class FRF_NonLinear(ABCAnalysis):
         sol.flag_R = True
         sol.flag_J = True
         sol.flag_J_f = True
-        dR_change = None
         sol.R = self.globalResidual(sol.x, sol)
         sol.J_f = self.globalJacobian(sol.x, sol)
 
@@ -222,9 +211,7 @@ class FRF_NonLinear(ABCAnalysis):
             [dRdx, dRdom] = self.corrector_init.ClosureJacobian(solx, sol, self.SolList)
         else:
             [dRdx, dRdom] = self.corrector.ClosureJacobian(solx, sol, self.SolList)
-        Jg = np.block(
-            [[dJdx, dJdom], [np.reshape(dRdx, (1, dJdx.shape[0])), np.asarray([dRdom])]]
-        )
+        Jg = np.block([[dJdx, dJdom], [np.reshape(dRdx, (1, dJdx.shape[0])), np.asarray([dRdom])]])
         return Jg
 
     def globalJacobianwRed(self, solq: np.ndarray, sol: SystemSolution):
@@ -268,9 +255,7 @@ class FRF_NonLinear(ABCAnalysis):
         if last_solution_pointer is None:
             sol = FirstSolution(xpred_full)
         else:
-            sol = SystemSolution(
-                xpred_full, last_solution_pointer
-            )  # fake SystemSolution
+            sol = SystemSolution(xpred_full, last_solution_pointer)  # fake SystemSolution
         J_f = self.globalJacobian(xpred_full, sol)
         xpred_red, J_red, output_expl_dofs = self.reductor.update_reductor(
             xpred_full, J_f, self.system._get_expl_dofs_into_solver(), self.system
@@ -293,8 +278,9 @@ class FRF_NonLinear(ABCAnalysis):
 
         sol = SystemSolution(xpred_red, last_solution_pointer)
         sol.ds = self.ds
+        sol.dir = dir
         sol.sign_ds = sign_ds
-        sol = self.solver.Solve(sol, self.SolList)
+        self.solver.Solve(sol)
         self.CompleteSolution(sol)
         if "index_insolve" in kwargs:
             sol.index_insolve = kwargs["index_insolve"]
@@ -307,13 +293,13 @@ class FRF_NonLinear(ABCAnalysis):
 
     def Solve(self, x0=None, **kwargs):
         """
-        Makes the whole analysis using continuation techniques until the
-        stopping criterion is validated.
+        Makes the whole analysis using continuation techniques
+        until the stopping criterion is validated.
 
         Args:
-            x0 (None|str|np.ndarray): if None x0 is the linear solution at
-            initial angular frequency, if "null" x0 is null vector, otherwise
-            x0 is initialized using the provided array.
+            x0 (None|str|np.ndarray): if None x0 is the linear solution at initial angular
+              frequency, if "null" x0 is null vector, otherwise x0 is initialized using the provided
+              array.
         """
         self.initialize(x0, **kwargs)
         k = 1
@@ -338,13 +324,7 @@ class FRF_NonLinear(ABCAnalysis):
         if not self.flag_purge:
             pass
         else:
-            acc_sols = [
-                sol for sol in self.SolList if ((sol.flag_accepted) and (sol.flag_J))
-            ]
-            nonacc_sols = [
-                sol
-                for sol in self.SolList
-                if ((not sol.flag_accepted) and (sol.flag_J))
-            ]
+            acc_sols = [sol for sol in self.SolList if ((sol.flag_accepted) and (sol.flag_J))]
+            nonacc_sols = [sol for sol in self.SolList if ((not sol.flag_accepted) and (sol.flag_J))]
             purge(acc_sols[:-2])
             purge(nonacc_sols)
