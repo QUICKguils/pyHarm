@@ -2,7 +2,6 @@
 
 from typing import NamedTuple
 
-from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -21,35 +20,49 @@ class Continuation(NamedTuple):
     chunk_list: list[dict]  # "analysis" keys of all the continuation chuncks.
 
 
-def _get_dof(M: Maestro):
-    """Get indexes of relevant dofs and associated harmonics."""
-    return M.getIndex("duffing", 0, 0)  # DOF 0, dir 0 of subsystem "duffing"
+def _get_dof_idx(M: Maestro):
+    """Get SystemSolution indexes of the required dof.
+
+    Here, it just returns all the indexes, as there is only one DOF
+    in this simple Duffing oscillator.
+    """
+    return M.getIndex("duffing", 0, 0)  # node 0, dir 0 of subsystem "duffing"
 
 
-def _filter_harm(dof: np.ndarray[int], ih: list[int]) -> np.ndarray[int]:
-    expl_ih = np.array([], dtype=int)
-    for i in ih:
-        expl_ih = np.append(expl_ih, [(2*i-1), 2*i])
-    expl_ih = expl_ih[expl_ih>=0]  # filter -1 generated for 0-harm
+def _filter_harm(idx: np.ndarray[int], ih: list[int]) -> np.ndarray[int]:
+    """Filter a SystemSolution index vector, to select only the desired harmonics."""
+    expl_ih = np.array([[2 * i - 1, 2 * i] for i in ih], dtype=int).ravel()
+    expl_ih = expl_ih[expl_ih >= 0]  # remove the -1 generated for potential 0-harm
 
-    filtered = np.zeros(dof.shape, dtype=int)
-    for i in expl_ih:
-        filtered[i] = dof[i]
+    filtered = np.zeros(idx.shape, dtype=int)
+    filtered[expl_ih] = idx[expl_ih]
 
     return filtered
 
 
-def compute_amplitude(cont: Continuation, ih=None) -> np.ndarray[float]:
+def _spot_solution(cont: Continuation, om: float, ampl: float) -> SystemSolution:
+    """Get a SystemSolution near the specified point (om, ampl) of the continuation curve."""
+    om_list = [sol.x[-1] for sol in cont.sol_list]
+    ampl_list = compute_amplitude(cont)
+    curve_sdist = np.array(  # square distance from the continuation curve
+        [(om_i - om) ** 2 + (ampl_i - ampl) ** 2 for (om_i, ampl_i) in zip(om_list, ampl_list)]
+    )
+    id = np.argmin(curve_sdist)
+
+    return cont.sol_list[id]
+
+
+def compute_amplitude(cont: Continuation, ih=None, pred=False) -> np.ndarray[float]:
     """Compute max. amplitude of given continuation, for specified harmonics."""
     DFTO = compute_DFT(cont.M.system.nti, cont.M.system.nh)
-    dof = _get_dof(cont.M)
+    idx = _get_dof_idx(cont.M)
 
-    if ih is None:
-        filtered = dof
-    else:
-        filtered = _filter_harm(dof, ih)
+    filtered = idx if ih is None else _filter_harm(idx, ih)
 
-    return np.array([np.max(sol.x[filtered] @ DFTO["ft"]) for sol in cont.sol_list])
+    def select_pred(sol: SystemSolution):
+        return sol.x_pred if pred else sol.x
+
+    return np.array([np.max(select_pred(sol)[filtered] @ DFTO["ft"]) for sol in cont.sol_list])
 
 
 def extract_accepted(cont: Continuation):
@@ -75,15 +88,15 @@ def extract_bifurcation(cont: Continuation):
     cont_fold = Continuation(
         M=cont.M,
         sol_list=[
-            sol for sol in cont_bifurcation.sol_list
-            if sol.bifurcation_type is BifurcationType.FOLD
+            sol for sol in cont_bifurcation.sol_list if sol.bifurcation_type is BifurcationType.FOLD
         ],
         chunk_list=cont.chunk_list,
     )
     cont_branching = Continuation(
         M=cont.M,
         sol_list=[
-            sol for sol in cont_bifurcation.sol_list
+            sol
+            for sol in cont_bifurcation.sol_list
             if sol.bifurcation_type is BifurcationType.BRANCHING
         ],
         chunk_list=cont.chunk_list,
@@ -94,23 +107,28 @@ def extract_bifurcation(cont: Continuation):
 
 def continuation_plotter():
     fig, ax = plt.subplots()
-    fold_style      = {"color": "C1", "s": 50, "zorder": 2.5, "marker": "x"}
+    fold_style = {"color": "C1", "s": 50, "zorder": 2.5, "marker": "x"}
     branching_style = {"color": "C6", "s": 50, "zorder": 2.5, "marker": "x"}
     ax.scatter([], [], **fold_style, label="fold bifurcation")
     ax.scatter([], [], **branching_style, label="branching point")
 
-    def plot(cont: Continuation, ih=None):
+    def plot(cont: Continuation, ih=None, pred=False):
         cont_accepted, cont_rejected = extract_accepted(cont)
         cont_bifurcation, cont_fold, cont_branching = extract_bifurcation(cont_accepted)
 
         if len(cont_accepted) != 0:
             om_accepted = [sol.x[-1] for sol in cont_accepted.sol_list]
             ampl_accepted = compute_amplitude(cont_accepted, ih)
+            if pred:
+                pred_style = {"color": "C2", "zorder": 2.5, "marker": "."}
+                om_pred_accepted = [sol.x_pred[-1] for sol in cont_accepted.sol_list]
+                ampl_pred_accepted = compute_amplitude(cont_accepted, ih, pred)
+                ax.scatter(om_pred_accepted, ampl_pred_accepted, **pred_style, label="prediction")
             if ih is None:
                 label = f"nh = {cont.M.system.nh}"
             else:
                 label = f"ih = {ih}"
-            ax.plot(om_accepted, ampl_accepted, label=label)
+            ax.plot(om_accepted, ampl_accepted, label=label, marker=".")
 
         if len(cont_fold) != 0:
             om_fold = [sol.x[-1] for sol in cont_fold.sol_list]
@@ -139,9 +157,7 @@ def solve(nh_list: list[tuple[int, int]], chunck_list: list[dict]) -> list[Conti
         for chunck in chunck_list:
             M = Maestro(MODEL | hb_params | chunck)
             M.operate(x0)
-            x0 = (
-                M.nls["cont"].SolList[-1].x[:-1]
-            )  # TODO: take the last *valid* solution
+            x0 = M.nls["cont"].SolList[-1].x[:-1]  # TODO: take the last *valid* solution
             M_chunck_list.append(M)
         cont_list.append(
             Continuation(
@@ -156,7 +172,7 @@ def solve(nh_list: list[tuple[int, int]], chunck_list: list[dict]) -> list[Conti
 def main():
     load_rcparams()
 
-    nh_list = [17]
+    nh_list = [5]
     chunck_list = CHUNCK_LIST
 
     cont_list = solve(nh_list, chunck_list)

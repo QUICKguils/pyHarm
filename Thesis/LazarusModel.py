@@ -46,19 +46,25 @@ SYSTEM = {
         "status": False,
         "lc": 1.0,
         "wc": 1.0,
-    }
+    },
 }
 
-CHUNCK_1 = {
+CHUNCK_ALL = {
     "analysis": {
         "cont": {
             "study": "frf",
             "puls_inf": 0.01,
             "puls_start": 0.1,
             "puls_sup": 5.0,
-            "ds0": 1e-3,
-            "ds_min": 1e-12,
-            "ds_max": 5e-3,
+
+            "ds0": 1e-2,
+            "ds_min": 1e-8,
+            "ds_max": 5e-2,
+
+            # "ds0": 2e-1,
+            # "ds_min": 1e-3,
+            # "ds_max": 5e-1,
+
             "sign_ds": 1,
             "verbose": True,
             "stepsizer": "myacceptance",
@@ -70,4 +76,4 @@ CHUNCK_1 = {
     },
 }
 
-CHUNCK_LIST = [CHUNCK_1]
+CHUNCK_LIST = [CHUNCK_ALL]

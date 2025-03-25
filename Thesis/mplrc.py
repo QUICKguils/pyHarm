@@ -44,16 +44,18 @@ def load_rcparams(style="running") -> None:
     # higher dpi values should be used (e.g., 250dpi).
     mpl.rcParams["figure.dpi"] = 109  # qhd 27in = 109 dpi
 
-    custom_colorcycler = mpl.cycler(color=[
-        UCOLOR["TealDark"], # C0
-        UCOLOR["OrangeDark"], # C1
-        UCOLOR["BlueLight"], # C2
-        UCOLOR["PurpleLight"], # C3
-        UCOLOR["GreenLight"], # C4
-        UCOLOR["Yellow"], # C5
-        UCOLOR["Red"], # C6
-        UCOLOR["GrayDark"], # C7
-    ])
+    custom_colorcycler = mpl.cycler(
+        color=[
+            UCOLOR["TealDark"],  # C0
+            UCOLOR["OrangeDark"],  # C1
+            UCOLOR["BlueLight"],  # C2
+            UCOLOR["PurpleLight"],  # C3
+            UCOLOR["GreenLight"],  # C4
+            UCOLOR["Yellow"],  # C5
+            UCOLOR["Red"],  # C6
+            UCOLOR["GrayDark"],  # C7
+        ]
+    )
     mpl.rcParams["axes.prop_cycle"] = mpl.cycler(custom_colorcycler)
 
     # Running figures
@@ -71,9 +73,7 @@ def load_rcparams(style="running") -> None:
         # mpl.rcParams['font.serif'] = ['STIX Two Text'] + mpl.rcParams['font.serif']
         # mpl.rcParams['font.size'] = 11
 
-        mpl.rcParams["font.sans-serif"] = ["Noto Sans"] + mpl.rcParams[
-            "font.sans-serif"
-        ]
+        mpl.rcParams["font.sans-serif"] = ["Noto Sans"] + mpl.rcParams["font.sans-serif"]
         mpl.rcParams["font.size"] = 11
 
         # Those sizes are relative to font.size
@@ -86,9 +86,7 @@ def load_rcparams(style="running") -> None:
     if style == "slide":
         mpl.rcParams["mathtext.fontset"] = "stixsans"
         mpl.rcParams["font.family"] = "sans-serif"
-        mpl.rcParams["font.sans-serif"] = ["Noto Sans"] + mpl.rcParams[
-            "font.sans-serif"
-        ]
+        mpl.rcParams["font.sans-serif"] = ["Noto Sans"] + mpl.rcParams["font.sans-serif"]
         mpl.rcParams["font.size"] = 15
 
         # Those sizes are relative to font.size
