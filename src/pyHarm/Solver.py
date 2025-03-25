@@ -22,12 +22,11 @@ class SystemSolution:
     """
     Class that represents a solution of the system to be solved.
 
-    This class is the main object that transits in the analysis process while
-    solving a problem.
-    The object contains information about its starting point, the previous
-    SystemSolution it is linked to and the actual point the solver is studying.
-    Once the solver has converged, the values of the residual and the solution
-    point are stored in some of the attributes.
+    This class is the main object that transits in the analysis process while solving a problem.
+    The object contains information about its starting point, the previous SystemSolution it is
+    linked to and the actual point the solver is studying.
+    Once the solver has converged, the values of the residual and the solution point are stored in
+    some of the attributes.
 
     Args:
         xs (np.ndarray): An array representing the starting point.
@@ -67,7 +66,7 @@ class SystemSolution:
         self.index_insolve = 0
         self.niter = 0
         self.ds = 0.0
-        self.sign_ds = 1.0
+        self.sign_ds = 1
         # The variable points of the SystemSolution
         self.x_start = xs
         self.x = copy.deepcopy(xs)
@@ -82,23 +81,21 @@ class SystemSolution:
 
     def _init_flags(self):
         """Initialise the different flag attributes of the class."""
-        self.flag_restart     = False  # Raised whenever its last_solution_point != index-1
-        self.flag_accepted    = False  # Raised by the solver, if the solution can be considered valid
+        self.flag_restart = False  # Raised whenever its last_solution_point != index-1
+        self.flag_accepted = False  # Raised by the solver, if the solution can be considered valid
         self.flag_bifurcation = False  # Raised when a bifurcation has been detected
-        self.flag_solved      = False  # Raised with method `CheckComplete`
-        self.flag_intosolver  = False  # Raised when the solution went through the solver
+        self.flag_solved = False  # Raised with method `CheckComplete`
+        self.flag_intosolver = False  # Raised when the solution went through the solver
         ### Residual flag
         self.flag_R = False  # Presence of a Residual result
         ### Jacobian flags
-        self.flag_J    = False  # Presence of a Jacobian result
+        self.flag_J = False  # Presence of a Jacobian result
         self.flag_J_qr = False  # Jacobian available with qr formalism of scipy.linalg.qr = [Q,R]
         self.flag_J_lu = False  # Jacobian available with lu formalism of scipy.linalg.lu = [P,L,U]
-        self.flag_J_f  = False  # Jacobian available full size
+        self.flag_J_f = False  # Jacobian available full size
 
     def CheckComplete(self) -> bool:
-        """
-        Checks if all elements required to proceed are present in the
-        SystemSolution object.
+        """Checks if all elements required to proceed are present in the SystemSolution object.
 
         Returns:
             bool: True if the solution is considered valid.
@@ -109,8 +106,7 @@ class SystemSolution:
         return self.flag_solved
 
     def SaveSolution(self, SolList: list):
-        """
-        Saves the SystemSolution object in the provided list if it is complete.
+        """Saves the SystemSolution object in the provided list if it is complete.
 
         Args:
             SolList (list): A list to save the SystemSolution object.
@@ -122,8 +118,7 @@ class SystemSolution:
             SolList.append(self)
         else:
             raise ValueError(
-                "The SystemSolution is not complete "
-                "and thus cannot be saved in the provided list"
+                "The SystemSolution is not complete and thus cannot be saved in the provided list"
             )
 
     def getJacobian(self, format="full", dump=False) -> np.ndarray:
@@ -223,8 +218,7 @@ class SystemSolution:
         if dump:
             format_poss[format_in][0] = False
             format_poss[format_in][1] = None
-            if ((format_in, format_out) == ("qr", "lu")
-                or (format_in, format_out) == ("lu", "qr")):
+            if (format_in, format_out) == ("qr", "lu") or (format_in, format_out) == ("lu", "qr"):
                 format_poss["full"][0] = False
                 format_poss["full"][1] = None
         return format_poss[format_out]

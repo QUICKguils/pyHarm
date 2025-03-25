@@ -14,10 +14,7 @@ def test_StepSizeAcceptance() -> None:
     SSR = StepSizeAcceptance(BOUNDS)
     assert StepSizeAcceptance.factory_keyword == "acceptance"
     assert SSR.stepsize_options == StepSizeAcceptance.default_options
-    assert (
-        SSR.consecutive_accept
-        == StepSizeAcceptance.default_options["consecutive_accept"]
-    )
+    assert SSR.consecutive_accept == StepSizeAcceptance.default_options["consecutive_accept"]
     kwargs = {"stepsize_options": {"consecutive_accept": 2}}
     SSR = StepSizeAcceptance(BOUNDS, **kwargs)
     assert SSR.consecutive_accept == kwargs["stepsize_options"]["consecutive_accept"]
@@ -31,9 +28,7 @@ def test_StepSizeAcceptance() -> None:
     assert SSR.getStepSize(DS, [sol_notacc]) == DS / 2.0
     # case 2  : last solution not accepted
     assert (
-        SSR.getStepSize(
-            DS, [sol_accept] * kwargs["stepsize_options"]["consecutive_accept"]
-        )
+        SSR.getStepSize(DS, [sol_accept] * kwargs["stepsize_options"]["consecutive_accept"])
         == DS * 2.0
     )
     # case 3 : not enough solutions :

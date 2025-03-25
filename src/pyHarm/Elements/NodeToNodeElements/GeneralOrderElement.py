@@ -57,9 +57,7 @@ def GOEJacobian_noAFT(x, om, Pdir, Pslave, Pmaster, dto, xo, nabo, k):
 def GOEResidual_AFT(x, om, Pdir, Pslave, Pmaster, dto, xo, nabo, k, DFT, DTF):
     R = np.zeros((len(x),))
     for direction in range(Pdir.shape[0]):
-        dofs_t = (
-            (om**dto * nabo) @ (Pdir[direction, :, :] @ (Pslave - Pmaster) @ x)
-        ) @ DFT
+        dofs_t = ((om**dto * nabo) @ (Pdir[direction, :, :] @ (Pslave - Pmaster) @ x)) @ DFT
         force_t = k * dofs_t**xo
         f_harm = (Pslave - Pmaster).T @ Pdir[direction, :, :].T @ (force_t @ DTF)
         R += f_harm
@@ -71,9 +69,7 @@ def GOEJacobian_AFT(x, om, Pdir, Pslave, Pmaster, dto, xo, nabo, k, DFT, DTF):
     dJdx = np.zeros((len(x), len(x)))
     dJdom = np.zeros((len(x),))
     for direction in range(Pdir.shape[0]):
-        dofs_t = (
-            (om**dto * nabo) @ (Pdir[direction, :, :] @ (Pslave - Pmaster) @ x)
-        ) @ DFT
+        dofs_t = ((om**dto * nabo) @ (Pdir[direction, :, :] @ (Pslave - Pmaster) @ x)) @ DFT
         djdx = (
             (Pslave - Pmaster).T
             @ Pdir[direction, :, :].T
@@ -83,13 +79,10 @@ def GOEJacobian_AFT(x, om, Pdir, Pslave, Pmaster, dto, xo, nabo, k, DFT, DTF):
         )
         if dto != 0:
             omderiv_dofs_t = (
-                (dto * om ** (dto - 1.0) * nabo)
-                @ (Pdir[direction, :, :] @ (Pslave - Pmaster) @ x)
+                (dto * om ** (dto - 1.0) * nabo) @ (Pdir[direction, :, :] @ (Pslave - Pmaster) @ x)
             ) @ DFT
             djdom = (
-                (Pslave - Pmaster).T
-                @ Pdir[direction, :, :].T
-                @ ((k * omderiv_dofs_t**xo) @ DTF)
+                (Pslave - Pmaster).T @ Pdir[direction, :, :].T @ ((k * omderiv_dofs_t**xo) @ DTF)
             )
             dJdom += djdom
         dJdx += djdx
@@ -128,15 +121,7 @@ class GeneralOrderElement(NodeToNodeElement):
     def _evalResidual(self, x, om):
         if not self.flag_AFT:
             R = GOEResidual_noAFT(
-                x,
-                om,
-                self.Pdir,
-                self.Pslave,
-                self.Pmaster,
-                self.dto,
-                self.xo,
-                self.nabo,
-                self.k,
+                x, om, self.Pdir, self.Pslave, self.Pmaster, self.dto, self.xo, self.nabo, self.k
             )
         elif self.flag_AFT:
             R = GOEResidual_AFT(
@@ -157,15 +142,7 @@ class GeneralOrderElement(NodeToNodeElement):
     def _evalJacobian(self, x, om):
         if not self.flag_AFT:
             dJdx, dJdom = GOEJacobian_noAFT(
-                x,
-                om,
-                self.Pdir,
-                self.Pslave,
-                self.Pmaster,
-                self.dto,
-                self.xo,
-                self.nabo,
-                self.k,
+                x, om, self.Pdir, self.Pslave, self.Pmaster, self.dto, self.xo, self.nabo, self.k
             )
         elif self.flag_AFT:
             dJdx, dJdom = GOEJacobian_AFT(

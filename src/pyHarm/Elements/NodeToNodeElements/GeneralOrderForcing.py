@@ -34,10 +34,7 @@ def GOFJacobian(x, om, loadvec, Pdir, Pslave, dto, nabo, amp):
     dJdom = np.zeros((len(x),))
     for direction in range(Pdir.shape[0]):
         djdom = (
-            (Pslave).T
-            @ Pdir[direction, :, :].T
-            @ (dto * om ** (dto - 1) * nabo)
-            @ (amp * loadvec)
+            (Pslave).T @ Pdir[direction, :, :].T @ (dto * om ** (dto - 1) * nabo) @ (amp * loadvec)
         )
         dJdom -= djdom
     return dJdx, dJdom

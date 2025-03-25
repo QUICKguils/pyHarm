@@ -153,9 +153,7 @@ class LocalHarmonicReductor(GlobalHarmonicReductor):
         df_crit = self.expl_dofs[criterion]
         df_matching = self.expl_dofs[
             self.expl_dofs[["sub", "harm", "node_num", "dof_num"]]
-            .isin(
-                df_crit[["sub", "harm", "node_num", "dof_num"]].to_dict(orient="list")
-            )
+            .isin(df_crit[["sub", "harm", "node_num", "dof_num"]].to_dict(orient="list"))
             .all(axis=1)
         ]
         matching_indices = df_matching.index.tolist()
@@ -173,7 +171,7 @@ class LocalHarmonicReductor(GlobalHarmonicReductor):
             np.ndarray: Modified explicit dof DataFrame after passing through
               the reducer.
         """
-        output_expl_dofs = self.expl_dofs.loc[
-            np.where(self.phi[:-1, :-1] != 0)[0]
-        ].reset_index(drop=True)
+        output_expl_dofs = self.expl_dofs.loc[np.where(self.phi[:-1, :-1] != 0)[0]].reset_index(
+            drop=True
+        )
         return output_expl_dofs

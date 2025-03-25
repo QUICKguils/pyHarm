@@ -50,9 +50,7 @@ def DLFTFrictionResidualCorLoop_jax(lambda_opt_t, lambda_pre_t, limit_friction_f
                 lambda_pre_t[:, t],
             )
         )
-        lambda_pre_t = lambda_pre_t.at[:, tp1].set(
-            lambda_opt_t[:, tp1] - lambda_cor_t[:, t]
-        )
+        lambda_pre_t = lambda_pre_t.at[:, tp1].set(lambda_opt_t[:, tp1] - lambda_cor_t[:, t])
         slip = jnp.sqrt(jnp.sum(lambda_pre_t[:, tp1] ** 2)) >= limit_friction_force[tp1]
         return (lambda_cor_t, lambda_pre_t, slip)
 
@@ -119,9 +117,7 @@ def DLFTFrictionResidualCorLoop(lambda_opt_t, lambda_pre_t, mu, N0):
 
 
 @njit(cache=True)
-def DLFTFrictionResidual(
-    x, om, Rlin, nbSub, Pdir, Pslave, Pmaster, mu, N0, eps, DFT, DTF
-):
+def DLFTFrictionResidual(x, om, Rlin, nbSub, Pdir, Pslave, Pmaster, mu, N0, eps, DFT, DTF):
     R = np.zeros((len(x),))
     EPS = 1e-12
     nti = DFT.shape[1]
@@ -133,9 +129,7 @@ def DLFTFrictionResidual(
             + eps * (Pdir[dir_k, :, :] @ (Pslave - Pmaster) @ x)
         ) @ DFT
     lambda_pre_t = lambda_opt_t - np.zeros((Pdir.shape[0], nti))
-    lambda_cor_t, lambda_pre_t = DLFTFrictionResidualCorLoop(
-        lambda_opt_t, lambda_pre_t, mu, N0
-    )
+    lambda_cor_t, lambda_pre_t = DLFTFrictionResidualCorLoop(lambda_opt_t, lambda_pre_t, mu, N0)
     lambda_t = lambda_opt_t - lambda_cor_t
     for dir_k in range(Pdir.shape[0]):
         R += (Pslave - Pmaster).T @ Pdir[dir_k, :, :].T @ (lambda_t[dir_k, :] @ DTF)
@@ -171,9 +165,7 @@ def DLFTFrictionJacobianCorLoop(
                     sum_directions_ss = (
                         lambda_pre_t[:, t] @ dlamdx_pre_t_ss[dir_k, :, :, t]
                     ).reshape(1, -1)
-                    lambda_pre_nicelyshaped = np.expand_dims(
-                        lambda_pre_t[:, t], axis=-1
-                    )
+                    lambda_pre_nicelyshaped = np.expand_dims(lambda_pre_t[:, t], axis=-1)
                     dlamdx_cor_t_ss[dir_k, :, :, t] = (
                         dlamdx_cor_t_ss[dir_k, :, :, t - 1]
                         + dlamdx_pre_t_ss[dir_k, :, :, t]
@@ -202,8 +194,7 @@ def DLFTFrictionJacobianCorLoop(
 
                 dlamdom_cor_t[:, t] = (
                     dlamdom_cor_t[:, t - 1]
-                    + dlamdom_pre_t[:, t]
-                    * (1 - mu * N0 / np.sqrt(np.sum(lambda_pre_t[:, t] ** 2)))
+                    + dlamdom_pre_t[:, t] * (1 - mu * N0 / np.sqrt(np.sum(lambda_pre_t[:, t] ** 2)))
                     + mu
                     * N0
                     * lambda_pre_t[:, t]
@@ -268,19 +259,13 @@ def DLFTFrictionJacobian(
         for dir_j in range(Pdir.shape[0]):
             dlam_h_ss = (
                 Pdir[dir_k, :, :].T
-                @ (
-                    dlamdx_opt_t_ss[dir_k, dir_j, :, :]
-                    - dlamdx_cor_t_ss[dir_k, dir_j, :, :]
-                )
+                @ (dlamdx_opt_t_ss[dir_k, dir_j, :, :] - dlamdx_cor_t_ss[dir_k, dir_j, :, :])
                 @ DTF
                 @ Pdir[dir_j, :, :]
             )
             dlam_h_sm = (
                 Pdir[dir_k, :, :].T
-                @ (
-                    dlamdx_opt_t_ms[dir_k, dir_j, :, :]
-                    - dlamdx_cor_t_ms[dir_k, dir_j, :, :]
-                )
+                @ (dlamdx_opt_t_ms[dir_k, dir_j, :, :] - dlamdx_cor_t_ms[dir_k, dir_j, :, :])
                 @ DTF
                 @ Pdir[dir_j, :, :]
             )

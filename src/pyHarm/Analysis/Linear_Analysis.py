@@ -155,14 +155,10 @@ class Linear_Analysis(ABCAnalysis):
             self.analysis_options["num_linear_puls"],
         )
         for omega in om:
-            Z = (
-                Kg - omega**2 * Mg + (1j) * omega * Cg
-            )  # Inverse of FRF or transfer function
+            Z = Kg - omega**2 * Mg + (1j) * omega * Cg  # Inverse of FRF or transfer function
             Q = np.linalg.inv(Z) @ (phi.T @ F)
             X = phi @ np.reshape(Q, (len(Q),))
-            X = np.concatenate(
-                (np.abs(X).reshape(-1, 1), np.asarray(omega).reshape(-1, 1))
-            )
+            X = np.concatenate((np.abs(X).reshape(-1, 1), np.asarray(omega).reshape(-1, 1)))
             isol = FirstSolution(X)
             self.SolList.append(isol)
 

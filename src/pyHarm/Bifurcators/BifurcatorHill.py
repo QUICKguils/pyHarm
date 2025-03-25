@@ -1,8 +1,9 @@
 from enum import Enum
 
 import numpy as np
-import scipy.linalg as spl
+from scipy import linalg
 
+from pyHarm.DynamicOperator import nabla
 from pyHarm.Bifurcators.ABCBifurcator import ABCBifurcator
 from pyHarm.Solver import FirstSolution, SystemSolution
 
@@ -15,6 +16,7 @@ class BifurcationType(Enum):
 
 class BifurcatorHill(ABCBifurcator):
     """Branching predictions through the Hill's method."""
+
     # TODO: better docstring
 
     bifurcator_name = "Hill's method"
@@ -37,10 +39,10 @@ class BifurcatorHill(ABCBifurcator):
             bifurcation_type (BifurcationType): Attribute is assigned if a
               bifurcation is detected.
         """
-        Jaco = lstpt.getJacobian("full")
+        J = lstpt.getJacobian("full")
         # XXX: heavy to compute dets. Consider bordering techniques
-        det_J_f = spl.det(Jaco)
-        det_J_x = spl.det(Jaco[:-1, :-1])
+        det_J_f = linalg.det(J)
+        det_J_x = linalg.det(J[:-1, :-1])
         lstpt.det_J_f = det_J_f
         lstpt.det_J_x = det_J_x
         if isinstance(lstpt, FirstSolution):
@@ -68,3 +70,14 @@ class BifurcatorHill(ABCBifurcator):
 
     def track(self):
         pass
+
+    def _compute_Hill_matrix(self, last_point: SystemSolution):
+        J = last_point.getJacobian("full")
+        h_z = J[:-1, :-1]
+        delta_1 = np.kron(Om * nabla(), 2 * M) + np.kron(np.eye(2 * nh + 1), C)
+        delta_2 = np.kron(np.eye(2 * nh + 1), M)
+        delta_2_inv = linalg.inv(delta_2)
+
+        return np.array(
+            [[delta_2_inv * delta_1, delta_2_inv * h_z], [np.eye(2 * nh + 1), np.zeros(2 * nh + 1)]]
+        )

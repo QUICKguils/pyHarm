@@ -18,8 +18,8 @@ from scipy.linalg import block_diag
 
 def compute_DFT(nti: int, nh: int) -> dict[str : np.ndarray]:
     """
-    Builds the Discrete Fourier Transform (DFT) operator adapted to the desired
-    number of time samples and harmonics.
+    Builds the Discrete Fourier Transform (DFT) operator adapted to the desired number of time
+    samples and harmonics.
 
     Args:
         nti (int): Number of time steps.
@@ -32,40 +32,20 @@ def compute_DFT(nti: int, nh: int) -> dict[str : np.ndarray]:
     D["ft"] = np.zeros((2 * nh + 1, nti))
     D["ft"][0, :] = 1.0
     D["ft"][1::2, :] = np.cos(
-        np.reshape(np.arange(1, nh + 1), (-1, 1))
-        * np.arange(0, nti)
-        * 2.0
-        * np.pi
-        / nti
+        np.reshape(np.arange(1, nh + 1), (-1, 1)) * np.arange(0, nti) * 2.0 * np.pi / nti
     )
     D["ft"][2::2, :] = np.sin(
-        np.reshape(np.arange(1, nh + 1), (-1, 1))
-        * np.arange(0, nti)
-        * 2.0
-        * np.pi
-        / nti
+        np.reshape(np.arange(1, nh + 1), (-1, 1)) * np.arange(0, nti) * 2.0 * np.pi / nti
     )
     D["tf"] = np.zeros((nti, 2 * nh + 1))
     D["tf"][:, 0] = 1.0 / nti
     D["tf"][:, 1::2] = (
-        np.cos(
-            np.reshape(np.arange(0, nti), (-1, 1))
-            * np.arange(1, nh + 1)
-            * 2.0
-            * np.pi
-            / nti
-        )
+        np.cos(np.reshape(np.arange(0, nti), (-1, 1)) * np.arange(1, nh + 1) * 2.0 * np.pi / nti)
         * 2.0
         / nti
     )
     D["tf"][:, 2::2] = (
-        np.sin(
-            np.reshape(np.arange(0, nti), (-1, 1))
-            * np.arange(1, nh + 1)
-            * 2.0
-            * np.pi
-            / nti
-        )
+        np.sin(np.reshape(np.arange(0, nti), (-1, 1)) * np.arange(1, nh + 1) * 2.0 * np.pi / nti)
         * 2.0
         / nti
     )

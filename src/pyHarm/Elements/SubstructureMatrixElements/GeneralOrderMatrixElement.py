@@ -44,9 +44,7 @@ class GOMatrix(MatrixElement):
             data["dom"] = data["dto"]
         self.dto = data["dto"]
         self.dom = data["dom"]
-        self.kronMat = np.kron(
-            np.linalg.matrix_power(self.nabla, self.dto), data["matrix"]
-        )
+        self.kronMat = np.kron(np.linalg.matrix_power(self.nabla, self.dto), data["matrix"])
         self.flag_elemtype = self.dto
 
     def adim(self, lc, wc):

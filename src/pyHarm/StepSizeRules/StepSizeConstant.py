@@ -25,14 +25,11 @@ class StepSizeConstant(ABCStepSizeRule):
     """str: Concrete class name used by the factory to instantiate it."""
 
     def getStepSize(self, ds: float, sollist: list[SystemSolution], **kwargs) -> float:
-        """
-        Returns the step size to be used for the prediction step of the
-        analysis.
+        """Returns the step size to be used for the prediction step of the analysis.
 
         Args:
             ds (float): Current step size.
-            sollist (list[SystemSolution]): list of SystemSolution returned
-              during the analysis.
+            sollist (list[SystemSolution]): list of SystemSolution returned during the analysis.
 
         Returns:
             float: updated step size.

@@ -1,22 +1,28 @@
 # Analysis package presentation
 
-This module contains all the analysis type that are provided by **pyHarm**. The module is organized around an abstract class **ABCAnalysis** and a **Factory** that is in charge of creating the objects. All analysis object must comply with the **ABCAnalysis** abstract class. The section below presents the different classes that are available in this module.
+This module contains all the analysis type that are provided by **pyHarm**. The module is organized
+around an abstract class **ABCAnalysis** and a **Factory** that is in charge of creating the
+objects. All analysis object must comply with the **ABCAnalysis** abstract class. The section below
+presents the different classes that are available in this module.
 
 ## ABCAnalysis
 
-The **ABCAnalysis** class is an abstract class defining the essential components of any analysis. The initialisation of an instance requires an input dictionary containing the setup of the analysis, a system of type **ABCSystem** and the number of degrees of freedom to be treated. Three abstract methods are defined :
+The **ABCAnalysis** class is an abstract class defining the essential components of any analysis.
+The initialisation of an instance requires an input dictionary containing the setup of the analysis,
+a system of type **ABCSystem** and the number of degrees of freedom to be treated. Three abstract
+methods are defined :
 
-| Methods | Use |
-| :- | :- |
-|`initialise`| *Abstract method* : Initialises the analysis by treating the first point to solve |
-|`makeStep`| *Abstract method* : Method that describes the process of going from a solve point to the next point to solve |
-|`Solve`| *Abstract method* : Method that runs to whole solving process of the analysis |
+| Methods      | Use                                                                                                          |
+| :-           | :-                                                                                                           |
+| `initialise` | *Abstract method* : Initialises the analysis by treating the first point to solve                            |
+| `makeStep`   | *Abstract method* : Method that describes the process of going from a solve point to the next point to solve |
+| `Solve`      | *Abstract method* : Method that runs to whole solving process of the analysis                                |
 
 
-### Examples of creating an `ABCAnalysis` and adding it into an input dictionary: 
+### Examples of creating an `ABCAnalysis` and adding it into an input dictionary:
 
-To be created, an `ABCAnalysis` needs its abstract methods to be defined : 
-```python 
+To be created, an `ABCAnalysis` needs its abstract methods to be defined :
+```python
 class FakeAnalysis(ABCAnalysis):
     factory_keyword="fakeana"
     def initialise(self, x0=None, **kwargs):
@@ -45,11 +51,16 @@ INP = {
 
 ## FactoryNonLinearStudy
 
-This file contains the dictionary of all the analysis that are available as well as the function `generateNonLinearAnalysis` that creates the analysis objects based on the type of analysis and the provided input.
+This file contains the dictionary of all the analysis that are available as well as the function
+`generateNonLinearAnalysis` that creates the analysis objects based on the type of analysis and the
+provided input.
 
 ## FRF_NonLinear `frf`
 
-The **FRF_NonLinear** object inherits from **ABCAnalysis** and the analysis that performs a forced response analysis. The process closely follows the advised process described in detail in [[1]](#1) using a prediction/correction procedure. The method requires the following parameters into its input dictionary : 
+The **FRF_NonLinear** object inherits from **ABCAnalysis** and the analysis that performs a forced
+response analysis. The process closely follows the advised process described in detail in [[1]](#1)
+using a prediction/correction procedure. The method requires the following parameters into its input
+dictionary :
 
 | key | Use | Default value |
 | :- | :- | :- |
@@ -71,7 +82,9 @@ The **FRF_NonLinear** object inherits from **ABCAnalysis** and the analysis that
 
 ## Linear_Analysis `linear_analysis`
 
-The **Linear_Analysis** object inherits from **ABCAnalysis**. It first performs a modal analysis, followed by a linear frequency response analysis by using mode superposition. The method requires the following parameters into its input dictionary : 
+The **Linear_Analysis** object inherits from **ABCAnalysis**. It first performs a modal analysis,
+followed by a linear frequency response analysis by using mode superposition. The method requires
+the following parameters into its input dictionary :
 
 | key | Use | Default value |
 | :- | :- | :- |

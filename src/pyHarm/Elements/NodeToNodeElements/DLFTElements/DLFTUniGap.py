@@ -23,9 +23,7 @@ from pyHarm.Elements.NodeToNodeElements.DLFTElements.DLFTElement import DLFTElem
 
 
 @jax.jit
-def DLFTUniGapResidual_jax(
-    x, om, Rlin, nbSub, Pdir, Pslave, Pmaster, g, eps, DFT, DTF, N0
-):
+def DLFTUniGapResidual_jax(x, om, Rlin, nbSub, Pdir, Pslave, Pmaster, g, eps, DFT, DTF, N0):
     R = jnp.zeros((len(x),))
     nti = jnp.shape(DFT)[1]
     for dir1 in range(jnp.shape(Pdir)[0]):

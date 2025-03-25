@@ -41,9 +41,7 @@ class System(ABCSystem):
             np.ndarray: reduced size residual vector.
         """
         x = self._expand_q(q)  # expand x to its full size
-        x += self._complete_x(
-            self.LC, x
-        )  # complete x by applying the kinematic condtions
+        x += self._complete_x(self.LC, x)  # complete x by applying the kinematic condtions
         Rlin = np.zeros(self.ndofs)
         Rg = np.zeros(self.ndofs)
         Rlin += self._residual(self.LE_extforcing, x)

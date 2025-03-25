@@ -24,9 +24,7 @@ def test_getCustomOptionDictionary() -> None:
 @pytest.mark.all
 @pytest.mark.unit
 def test_getIndexfromExpldofs() -> None:
-    df = DataFrame(
-        {"sub": ["a", "a", "b", "b"], "node_num": [0, 0, 0, 1], "dof_num": [0, 1, 0, 0]}
-    )
+    df = DataFrame({"sub": ["a", "a", "b", "b"], "node_num": [0, 0, 0, 1], "dof_num": [0, 1, 0, 0]})
     c_a_0_1 = ("a", 0, [1])
     c_b_0_1 = ("b", 0, [1])
     c_b_0_b = ("b", 0, [0])

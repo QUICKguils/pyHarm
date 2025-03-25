@@ -56,9 +56,7 @@ def create_K_corr(N_floor, ke):
     return K
 
 
-def get_modal_analysis_corr(
-    M: np.ndarray, K: np.ndarray
-) -> tuple[: np.ndarray, : np.ndarray]:
+def get_modal_analysis_corr(M: np.ndarray, K: np.ndarray) -> tuple[: np.ndarray, : np.ndarray]:
     """Function that returns natural frequencies and
     the mode shape based on the given mass matrix and rigidity matrix.
     Use np.linalg.eig function in order to solve the eigenvalue problem.
@@ -144,12 +142,8 @@ def add_tunedMass_to_INP_corr(
 ):
     INP_new = add_loading_connector_law_corr(INP, N_floor - 1, force_distribution)
     coef_range = 0.5
-    INP_new["analysis"]["FRF"]["puls_inf"] = (
-        (1.0 - coef_range) * max_response_f * (2 * np.pi)
-    )
-    INP_new["analysis"]["FRF"]["puls_sup"] = (
-        (1.0 + coef_range) * max_response_f * (2 * np.pi)
-    )
+    INP_new["analysis"]["FRF"]["puls_inf"] = (1.0 - coef_range) * max_response_f * (2 * np.pi)
+    INP_new["analysis"]["FRF"]["puls_sup"] = (1.0 + coef_range) * max_response_f * (2 * np.pi)
     INP_new["substructures"]["tunedMass"] = {"matrix": tunedMass, "ndofs": 1}
     INP_new["connectors"]["spring"] = {
         "type": "LinearSpring",
@@ -171,18 +165,14 @@ def add_dashpot_to_INP_corr(INP: dict, dashpot_value: float):
     return INP_new
 
 
-def weibull_creation_corr(
-    lam: float, k: float, energy: float = 1.0, height=1.0
-) -> Callable:
+def weibull_creation_corr(lam: float, k: float, energy: float = 1.0, height=1.0) -> Callable:
     """Function that generates a weibull distribution law based on the given parameters"""
 
     def weibull_corr(om: np.ndarray) -> np.ndarray:
         """Based on the given parameters in the weibull_creation function
         returns the distribution value"""
         ### MODIFICATIONS ARE TO BE DONE BELLOW
-        f = energy * (
-            k / lam * (om / lam) ** (k - 1) * np.exp(-((om / lam) ** (k)))
-        )  # here to
+        f = energy * (k / lam * (om / lam) ** (k - 1) * np.exp(-((om / lam) ** (k))))  # here to
         ### END MODIFICATION
         f *= height  # linear dependence of the height of the floor
         return f
@@ -215,10 +205,6 @@ def add_loading_connector_law_wind_corr(
         ### END MODIFICATIONS
         INP_out["connectors"][f"loading_h_{height:.2e}"] = load
     coef_range = 0.4
-    INP_out["analysis"]["FRF"]["puls_inf"] = (
-        (1.0 - coef_range) * max_response_f * (2 * np.pi)
-    )
-    INP_out["analysis"]["FRF"]["puls_sup"] = (
-        (1.0 + coef_range) * max_response_f * (2 * np.pi)
-    )
+    INP_out["analysis"]["FRF"]["puls_inf"] = (1.0 - coef_range) * max_response_f * (2 * np.pi)
+    INP_out["analysis"]["FRF"]["puls_sup"] = (1.0 + coef_range) * max_response_f * (2 * np.pi)
     return INP_out

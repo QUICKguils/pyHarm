@@ -13,9 +13,7 @@ def mock_abcsubstructure(monkeypatch: MonkeyPatch) -> ABCSubstructure:
     monkeypatch.setattr(ABCSubstructure, "__abstractmethods__", set())
     monkeypatch.setattr(ABCSubstructure, "_add_connectors", lambda self, _: dict())
     monkeypatch.setattr(ABCSubstructure, "_add_kinematics", lambda self, _: dict())
-    monkeypatch.setattr(
-        ABCSubstructure, "factory_keyword", lambda self: "monkey_abcsubstructure"
-    )
+    monkeypatch.setattr(ABCSubstructure, "factory_keyword", lambda self: "monkey_abcsubstructure")
 
 
 @pytest.mark.all

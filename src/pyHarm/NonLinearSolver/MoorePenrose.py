@@ -46,14 +46,13 @@ class Solver_MoorePenrose(ABCNLSolver):
         solver_options = self.solver_options
         self.solver_options = getCustomOptionDictionary(solver_options, self.default)
 
-    def Solve(self, sol: SystemSolution, SolList: list) -> SystemSolution:
-        """Runs the solver.
+    def Solve(self, sol: SystemSolution):
+        """Run the solver.
 
         Args:
             sol (SystemSolution): SystemSolution that contains the starting point.
-            SolList (SystemSolution): list of previously solved solutions.
 
-        Returns:
+        Writes:
             sol (SystemSolution): SystemSolution solved and completed with the output information.
         """
         self.x = sol.x_start
@@ -72,27 +71,21 @@ class Solver_MoorePenrose(ABCNLSolver):
             self.Tk = self.linSysTk()
             self.xprec = self.x
             self.x += -self.deltak
-            self.Vk = (self.Vk - self.Tk.reshape(-1, 1)) / np.linalg.norm(
-                (self.Vk - self.Tk.reshape(-1, 1))
-            )
+            self.Vk = (self.Vk - self.Tk.reshape(-1, 1)) / np.linalg.norm((self.Vk - self.Tk.reshape(-1, 1)))
             self.FXk = self.residual(self.x, sol)[:-1]
             self.AXk = self.jacobian(self.x, sol)[:-1, :]
             self.iter += 1
             if self.iter >= self.solver_options["max_iter"]:
                 self.status = 5
-                self._complete_solution(sol, SolList)
+                self.complete_solution(sol)
                 return sol
-        self._complete_solution(sol, SolList)
-        return sol
+        self.complete_solution(sol)
 
-    def _complete_solution(self, sol, SolList):
+    def complete_solution(self, sol: SystemSolution):
         """Completes the SystemSolution class with solver information.
 
         Args:
-            S (SystemSolution): output of root function.
             sol (SystemSolution): SystemSolution that ran into the solver.
-            SolList (SystemSolution): list of previously solved solutions.
-
         """
         sol.x_red = copy.deepcopy(self.x)
         sol.R_solver = copy.deepcopy(self.FXk)

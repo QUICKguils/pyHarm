@@ -105,9 +105,7 @@ class NLdofsReductor(ABCReductor):
         xnull = np.zeros(len(self.expl_dofs) + 1)
         xnull[-1] = q[-1]
         xf = self.system._expand_q(xnull)  # expand to the full system size
-        xf += self.system._complete_x(
-            self.system.LC, xf
-        )  # add the Kinematic conditions
+        xf += self.system._complete_x(self.system.LC, xf)  # add the Kinematic conditions
         Fe_l = self.system._residual(self.system.LE_extforcing, xf)
         Fe_l += self.system._residual(
             self.system.LE_linear, xf
@@ -195,9 +193,7 @@ class NLdofsReductor(ABCReductor):
         J_ll_T_lu, J_ll_T_piv = self.lu_factor(J_ll.T)
         JnlJllm1 = self._get_AijAiim1LU((J_ll_T_lu, J_ll_T_piv), J_nl)
         ClJllm1 = self._get_AijAiim1LU((J_ll_T_lu, J_ll_T_piv), Cl)
-        J_add = self._add_omega(
-            JnlJllm1 @ J_ln, JnlJllm1 @ Jom_l, ClJllm1 @ J_ln, ClJllm1 @ Jom_l
-        )
+        J_add = self._add_omega(JnlJllm1 @ J_ln, JnlJllm1 @ Jom_l, ClJllm1 @ J_ln, ClJllm1 @ Jom_l)
 
         return J_add
 
@@ -273,7 +269,14 @@ class NLdofsReductor(ABCReductor):
             np.ndarray: residual vector augmented with a component of 0 at the
               end.
         """
-        R_add = np.block([R, np.zeros(1,),])
+        R_add = np.block(
+            [
+                R,
+                np.zeros(
+                    1,
+                ),
+            ]
+        )
         return R_add
 
     def _init_dofs(self, expl_dofs, system):

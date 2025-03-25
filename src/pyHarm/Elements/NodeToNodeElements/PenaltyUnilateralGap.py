@@ -50,9 +50,7 @@ def PenalGapResidual_jax(x, om, Pdir, Pslave, Pmaster, g, k, DFT, DTF, N0=0.0):
             def false_f(k, x_d1, g, i):
                 return 0.0
 
-            f_time = f_time.at[t].set(
-                jax.lax.cond(contact[t], true_f, false_f, k, x_d1, g, t)
-            )
+            f_time = f_time.at[t].set(jax.lax.cond(contact[t], true_f, false_f, k, x_d1, g, t))
             return f_time
 
         initial_state = f_time

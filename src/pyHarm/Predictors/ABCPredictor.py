@@ -70,7 +70,7 @@ class ABCPredictor(abc.ABC):
     """
 
     def __init__(self, sign_ds, **kwargs):
-        self.sign_ds_init = sign_ds
+        self.sign_ds_init = sign_ds  # XXX: seems to never been used
         self.sign_ds = sign_ds
         self.predictor_options = getCustomOptionDictionary(kwargs, self.default_options)
         self.flag_print = self.predictor_options["verbose"]
@@ -129,9 +129,7 @@ class ABCPredictor(abc.ABC):
                 if lstpt.bifurcation_type is BifurcationType.FOLD:
                     print("--> path direction is reversed")
 
-    def getPointerToSolution(
-        self, sollist: list[SystemSolution], k_imposed=None
-    ) -> SystemSolution:
+    def getPointerToSolution(self, sollist: list[SystemSolution], k_imposed=None) -> SystemSolution:
         """Gets the last accepted solution in direct link with the studied point.
 
         Args:

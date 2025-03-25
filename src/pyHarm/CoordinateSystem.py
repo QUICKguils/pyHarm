@@ -31,19 +31,16 @@ def generateCoordinateSystem(dirs: list[list[float]]):
 class CoordinateSystem:
     """Class that represents a coordinate system.
 
-    It allows for generating local coordinate systems to be attached to
-    elements or substructures and transfering their residuals and Jacobians to
-    the global coordinate system.
+    It allows for generating local coordinate systems to be attached to elements or substructures
+    and transfering their residuals and Jacobians to the global coordinate system.
 
     Args:
-        dirs (list[list[float]]): A list of lists containing the directions
-          relative to the global coordinate system.
+        dirs (list[list[float]]): A list of lists containing the directions relative to the global
+          coordinate system.
     """
 
     def __init__(self, dirs: list[list[float]]):
-        self.dirs = np.array(dirs) / np.linalg.norm(np.array(dirs), axis=1).reshape(
-            -1, 1
-        )
+        self.dirs = np.array(dirs) / np.linalg.norm(np.array(dirs), axis=1).reshape(-1, 1)
         self.n_dirs = self.dirs.shape[0]
         self.n_component = self.dirs.shape[1]
         self.checkOrthonormal()
@@ -82,9 +79,9 @@ class CoordinateSystem:
 
 
 class GlobalCoordinateSystem(CoordinateSystem):
-    """
-    Subclass of CoordinateSystem that allows defining global coordinate
-    systems. The initialization is modified for ease of instantiation.
+    """Subclass of CoordinateSystem that allows defining global coordinate systems.
+
+    The initialization is modified for ease of instantiation.
 
     Args:
         ndirs (int): The number of directions in the global coordinate system.

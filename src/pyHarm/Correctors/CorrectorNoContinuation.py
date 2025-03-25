@@ -20,8 +20,8 @@ from pyHarm.Solver import SystemSolution
 
 class Corrector_no_continuation(ABCCorrector):
     """
-    Corrector corresponding to the no continuation method where the equations
-    are solved for a fixed angular frequency.
+    Corrector corresponding to the no continuation method
+    where the equations are solved for a fixed angular frequency.
     """
 
     factory_keyword: str = "nocontinuation"
@@ -34,10 +34,8 @@ class Corrector_no_continuation(ABCCorrector):
 
         Args:
             solx (np.ndarray): actual displacement vector.
-            sol (SystemSolution): actual SystemSolution that contains the
-              starting point.
-            sollist (list[SystemSolution]): list of SystemSolutions from
-              previous analysis steps.
+            sol (SystemSolution): actual SystemSolution that contains the starting point.
+            sollist (list[SystemSolution]): list of SystemSolutions from previous analysis steps.
 
         Returns:
             np.ndarray: Residual of the correction equation.

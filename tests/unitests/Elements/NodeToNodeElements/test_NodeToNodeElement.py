@@ -29,9 +29,7 @@ EXPL_DOFS = pd.DataFrame(
 @pytest.fixture
 def mock_ntnE(monkeypatch: MonkeyPatch) -> NodeToNodeElement:
     monkeypatch.setattr(NodeToNodeElement, "__abstractmethods__", set())
-    monkeypatch.setattr(
-        NodeToNodeElement, "evalResidual", lambda self, x, om: np.zeros(x.size)
-    )
+    monkeypatch.setattr(NodeToNodeElement, "evalResidual", lambda self, x, om: np.zeros(x.size))
     monkeypatch.setattr(
         NodeToNodeElement,
         "evalJacobian",

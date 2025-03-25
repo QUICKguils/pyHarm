@@ -21,15 +21,13 @@ from pyHarm.Solver import SystemSolution
 
 ######## abstract StepSizer ########
 class ABCStepSizeRule(abc.ABC):
-    """
-    This is the abstract class ruling the stepsize rules class.
+    """This is the abstract class ruling the stepsize rules class.
 
-    The step size rules are responsible for adjusting the step size of the
-    analysis depending on the given inputs.
+    The step size rules are responsible for adjusting the step size
+    of the analysis depending on the given inputs.
 
     Args:
-        bounds (list[float,float]): List containing the step size bounds
-          [min_step, max_step].
+        bounds (list[float,float]): List containing the step size bounds [min_step, max_step].
 
     Attributes:
         ds_min (float): min step size.
@@ -49,22 +47,16 @@ class ABCStepSizeRule(abc.ABC):
 
     @abc.abstractmethod
     def getStepSize(self, ds: float, sollist: list[SystemSolution], **kwargs) -> float:
-        """
-        Returns the step size to be used for the prediction step of the
-        analysis.
-        """
+        """Returns the step size to be used for the prediction step of the analysis."""
         pass
 
     def ProjectInBounds(self, ds: float) -> float:
-        """
-        Projects the step-size onto the bounds if the step-size is out of the
-        required bounds.
+        """Projects the step-size onto the bounds if the step-size is out of the required bounds.
 
         Args:
             ds (float): step-size.
 
         Returns:
-            float: step-size projected onto the bounds if it is out of the
-              bounds.
+            float: step-size projected onto the bounds if it is out of the bounds.
         """
         return np.max([self.ds_min, np.min([ds, self.ds_max])])

@@ -17,8 +17,7 @@ This is the factory of the ABCCorrector subclasses.
 
 Attributes:
     Corrector_dico (dict[str, ABCCorrector]):
-      Dictionary containing the ABCCorrector subclasses as values and their
-      factory_keyword as key.
+      Dictionary containing the ABCCorrector subclasses as values and their factory_keyword as key.
 """
 
 from pyHarm.Correctors.ABCCorrector import ABCCorrector
@@ -33,8 +32,7 @@ Corrector_dico = {
 }
 """
 dict[str, ABCCorrector]:
-  Dictionary containing the ABCCorrector subclasses as values and their
-  factory_keyword as key.
+  Dictionary containing the ABCCorrector subclasses as values and their factory_keyword as key.
 """
 
 
@@ -42,10 +40,8 @@ def generateCorrector(name_corrector, corrector_options) -> ABCCorrector:
     """Factory function that creates an ABCCorrector object.
 
     Args:
-        name_corrector (str): Type of the ABCCorrector object that is to be
-          instantiated.
-        corrector_options (dict): supplementary options passed to the
-          corrector.
+        name_corrector (str): Type of the ABCCorrector object that is to be instantiated.
+        corrector_options (dict): supplementary options passed to the corrector.
 
     Returns:
         ABCCorrector: Instance of the required ABCCorrector class.

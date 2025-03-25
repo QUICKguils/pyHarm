@@ -10,15 +10,11 @@ def check_residuals(M: Maestro, max_residual_accepted=1e-6):
     SA = [sol for sol in M.nls["FRF"].SolList if sol.flag_accepted]
     for sol in SA:
         print(np.linalg.norm(sol.R_solver))
-        assert np.isclose(
-            np.linalg.norm(sol.R_solver), 0.0, atol=max_residual_accepted
-        ).all()
+        assert np.isclose(np.linalg.norm(sol.R_solver), 0.0, atol=max_residual_accepted).all()
 
 
 def generate_arc_length(om: np.ndarray, amp: np.ndarray):
-    oo = np.concatenate(
-        [np.diff(om).reshape(-1, 1), np.diff(amp).reshape(-1, 1)], axis=1
-    )
+    oo = np.concatenate([np.diff(om).reshape(-1, 1), np.diff(amp).reshape(-1, 1)], axis=1)
     lam = np.concatenate([np.zeros(1), np.cumsum(np.linalg.norm(oo, axis=1))])
     lam = lam / lam[-1]
     return lam

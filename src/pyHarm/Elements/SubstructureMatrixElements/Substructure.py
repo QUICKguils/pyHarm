@@ -98,9 +98,7 @@ class Substructure(MatrixElement):
             np.ndarray: residual vector.
         """
         x = xg[self.indices]
-        self.R = SubstructureResidual(
-            x, om, self.kronM, self.kronC, self.kronG, self.kronK
-        )
+        self.R = SubstructureResidual(x, om, self.kronM, self.kronC, self.kronG, self.kronK)
         return self.R
 
     def evalJacobian(self, xg, om):

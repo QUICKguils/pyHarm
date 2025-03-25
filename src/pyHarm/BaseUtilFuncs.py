@@ -13,13 +13,11 @@
 # limitations under the License.
 
 """
-This file contains a set of general useful functions that are in use in most of
-pyHarm modules.
+This file contains a set of general useful functions that are in use in most of pyHarm modules.
 
 Attributes:
-    Dico_ABCClass_factory_keyword (dict): Dictionary linking the abstract
-      classes defined in every available subpackages and their factory
-      dictionary.
+    Dico_ABCClass_factory_keyword (dict): Dictionary linking the abstract classes defined in every
+      available subpackages and their factory dictionary.
 """
 
 import copy
@@ -30,17 +28,16 @@ import pandas as pd
 
 def getCustomOptionDictionary(custom_options: dict, default_options: dict):
     """
-    Given a custom option dictionary and a default option dictionary, returns a
-    new dictionary containing all the custom information along with the missing
-    mandatory ones from the default dictionary.
+    Given a custom option dictionary and a default option dictionary, returns a new dictionary
+    containing all the custom information along with the missing mandatory ones from the default
+    dictionary.
 
     Args:
         custom_options (dict): A dictionary containing custom options.
         default_options (dict): A dictionary containing default options.
 
     Returns:
-        dict: A new dictionary combining the custom options with the default
-          options.
+        dict: A new dictionary combining the custom options with the default options.
     """
     # Creation of the dictionary to return as a copy of the default one
     options = copy.copy(default_options)
@@ -53,25 +50,19 @@ def getIndexfromExpldofs(
     expl_dofs: pd.DataFrame, list_of_caracteristics: list[tuple[str, int, list[int]]]
 ):
     """
-    Uses an explicit dof vector and returns an array of indices corresponding
-    to the required dofs.
-    Takes a list of tuples [(substructure_name[str], node_number[int],
-    dir_num[list[int]]), ...].
-    If None is given as input for the directions, then all the dofs from the
-    node are returned.
+    Uses an explicit dof vector and returns an array of indices corresponding to the required dofs.
+    Takes a list of tuples [(substructure_name[str], node_number[int], dir_num[list[int]]), ...].
+    If None is given as input for the directions, then all the dofs from the node are returned.
 
     Args:
         expl_dofs (pd.DataFrame):
-          A DataFrame representing the explicit representation of the degree of
-          freedom vector.
+          A DataFrame representing the explicit representation of the degree of freedom vector.
         list_of_caracteristics (list[tuple[str,int,list[int]]]):
-          A list of tuples specifying the substructure name, node number, and
-          direction numbers.
+          A list of tuples specifying the substructure name, node number, and direction numbers.
 
     Returns:
         np.ndarray:
-          An array of indices corresponding to the required dofs, sorted in
-          ascending order.
+          An array of indices corresponding to the required dofs, sorted in ascending order.
     """
     matching = pd.Series([False] * len(expl_dofs))
     for sub, node, list_dirs in list_of_caracteristics:

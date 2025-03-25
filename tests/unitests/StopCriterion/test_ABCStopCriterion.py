@@ -7,9 +7,7 @@ from pyHarm.StopCriterion.ABCStopCriterion import ABCStopCriterion
 @pytest.fixture
 def mock_abcstopcriterion(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setattr(ABCStopCriterion, "__abstractmethods__", set())
-    monkeypatch.setattr(
-        ABCStopCriterion, "factory_keyword", lambda self: "monkey_abcstopcriterion"
-    )
+    monkeypatch.setattr(ABCStopCriterion, "factory_keyword", lambda self: "monkey_abcstopcriterion")
     monkeypatch.setattr(ABCStopCriterion, "getStopCriterionStatus", lambda self: True)
 
 

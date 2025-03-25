@@ -16,7 +16,6 @@ from pyHarm.Substructures.ABCSubstructure import ABCSubstructure
 
 
 class OnlyDofs(ABCSubstructure):
-
     factory_keyword = "onlydofs"
     """str: Concrete class name used by the factory to instantiate it."""
 

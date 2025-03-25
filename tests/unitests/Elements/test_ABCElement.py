@@ -30,5 +30,7 @@ def mock_E(monkeypatch: MonkeyPatch) -> ABCElement:
 @pytest.mark.unit
 def test_ABCElement(mock_E: ABCElement):
     assert isinstance(mock_E, ABCElement)
-    mock_E.name = NAME  # shows a problem in the creation of ABCElements, name shall be written right away
+    mock_E.name = (
+        NAME  # shows a problem in the creation of ABCElements, name shall be written right away
+    )
     assert mock_E.__repr__() == f"{NAME}[ABCElement]"

@@ -20,9 +20,8 @@ from pyHarm.Solver import SystemSolution
 
 class Corrector_pseudo_arc_length(ABCCorrector):
     """
-    Corrector corresponding to the pseudo_arc_length method where the equations
-    are solved imposing that the solution is ortogonal to the prediction
-    direction.
+    Corrector corresponding to the pseudo_arc_length method where the equations are solved imposing
+    that the solution is ortogonal to the prediction direction.
     """
 
     factory_keyword: str = "pseudo_arc_length"
@@ -35,10 +34,8 @@ class Corrector_pseudo_arc_length(ABCCorrector):
 
         Args:
             solx (np.ndarray): actual displacement vector.
-            sol (SystemSolution): actual SystemSolution that contains the
-              starting point.
-            sollist (list[SystemSolution]): list of SystemSolutions from
-              previous analysis steps.
+            sol (SystemSolution): actual SystemSolution that contains the starting point.
+            sollist (list[SystemSolution]): list of SystemSolutions from previous analysis steps.
 
         Returns:
             np.ndarray: Residual of the correction equation.

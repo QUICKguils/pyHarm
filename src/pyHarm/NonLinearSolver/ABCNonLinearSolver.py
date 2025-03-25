@@ -20,16 +20,12 @@ from pyHarm.Solver import SystemSolution
 class ABCNLSolver(abc.ABC):
     """This is the abstract class ruling the solver class.
 
-    The system is responsible of solving the system starting at a given
-    starting point.
+    The system is responsible of solving the system starting at a given starting point.
 
     Args:
-        solver_options (dict): dictionary containing other options for creation
-          of the solver class.
-        residual (Callable): function that returns the residual vector of the
-          system to be solved.
-        jacobian (Callable): function that returns the jacobian matrix of the
-          system to be solved.
+        solver_options (dict): dictionary containing other options for creation of the solver class.
+        residual (Callable): function that returns the residual vector of the system to be solved.
+        jacobian (Callable): function that returns the jacobian matrix of the system to be solved.
     """
 
     @property
@@ -48,11 +44,13 @@ class ABCNLSolver(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def Solve(self, system_solution: SystemSolution) -> SystemSolution:
-        """Runs the solver.
+    def Solve(self, sol: SystemSolution):
+        """Run the solver.
 
         Args:
-            system_solution (SystemSolution): SystemSolution that contains the
-            starting point.
+            sol (SystemSolution): SystemSolution that contains the starting point.
+
+        Writes:
+            sol (SystemSolution): SystemSolution solved and completed with the output information.
         """
         pass

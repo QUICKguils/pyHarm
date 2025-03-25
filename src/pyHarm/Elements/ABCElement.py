@@ -42,30 +42,26 @@ def ConstructorPslavemaster(nh, ndofi, nsub):
 class ABCElement(abc.ABC):
     """This is the abstract class ruling the element class.
 
-    An element consists in an elementary contribution to the residual
-    equations.
+    An element consists in an elementary contribution to the residual equations.
 
     Args:
         nh (int): number of harmonics.
         nti (int): number of time steps.
         name (str): name given to the kinematic condition.
-        data (dict): dictionary containing all the definition information of
-          the kinematic condition.
-        CS (CoordinateSystem): local or global coordinate system the kinematic
-          condition is defined on.
+        data (dict): dictionary containing all the definition information of the kinematic condition.
+        CS (CoordinateSystem): local or global coordinate system the kinematic condition is defined on.
 
     Attributes:
         flag_nonlinear (bool): if True, the element is nonlinear.
-        flag_AFT (bool): if True, the element requires an alternating
-          frequency/time domain procedure for computing residuals.
+        flag_AFT (bool): if True, the element requires an alternating frequency/time domain
+          procedure for computing residuals.
         flag_extforcing (bool): if True, the element is an external forcing.
-        flag_DLFT (bool): if True, the element uses the dynamic Lagrangian
-          method for computing the residuals.
+        flag_DLFT (bool): if True, the element uses the dynamic Lagrangian method for computing the residuals.
         flag_adim (bool): if True, the element is adimentioned.
         nh (int): number of harmonics.
         nti (int): number of time steps.
-        D (dict[np.ndarray,np.ndarray]): Dynamic operators containing inverse
-          discrete Fourier transform and discrete Fourier transform.
+        D (dict[np.ndarray,np.ndarray]): Dynamic operators containing inverse discrete Fourier
+          transform and discrete Fourier transform.
         nabla (np.ndarray): Derivation operator.
     """
 
@@ -122,8 +118,8 @@ class ABCElement(abc.ABC):
     @abc.abstractmethod
     def adim(self, lc, wc):
         """
-        Modifies the element properties according to the characteristic length
-        and angular frequency.
+        Modifies the element properties according to the characteristic length and angular
+        frequency.
 
         Args:
             lc (float): characteristic length value.

@@ -11,9 +11,7 @@ DS_RETURNED = 1.0
 def mock_abcstepsizerule(monkeypatch: MonkeyPatch) -> ABCStepSizeRule:
     monkeypatch.setattr(ABCStepSizeRule, "__abstractmethods__", set())
     monkeypatch.setattr(ABCStepSizeRule, "factory_keyword", "mock_abcstepsizerule")
-    monkeypatch.setattr(
-        ABCStepSizeRule, "getStepSize", lambda self, ds, sollist: DS_RETURNED
-    )
+    monkeypatch.setattr(ABCStepSizeRule, "getStepSize", lambda self, ds, sollist: DS_RETURNED)
     SSR = ABCStepSizeRule(BOUNDS)
     return SSR
 

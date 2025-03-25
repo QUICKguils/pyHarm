@@ -17,8 +17,8 @@ This module contains the factory of the predictor objects.
 
 Attributes:
     Predictor_dico (dict):
-      Dictionary that contains ABCPredictor objects as values and their
-      factory_keyword attribute as their key.
+      Dictionary that contains ABCPredictor objects as values and their factory_keyword attribute as
+        their key.
 """
 
 from pyHarm.Predictors.ABCPredictor import ABCPredictor
@@ -42,12 +42,10 @@ def generatePredictor(name_predictor, sign_ds, predictor_options) -> ABCPredicto
     """Factory function that creates a ABCPredictor object.
 
     Args:
-        name_predictor (str): Type of the ABCPredictor object that is to be
-          instantiated.
-        sign_ds (float): either -1 or 1, gives the initial direction of
-          prediction.
-        predictor_options (dict): dictionary containing supplementary options
-          for the predictor to be instantiated.
+        name_predictor (str): Type of the ABCPredictor object that is to be instantiated.
+        sign_ds (float): either -1 or 1, gives the initial direction of prediction.
+        predictor_options (dict): dictionary containing supplementary options for the predictor to
+          be instantiated.
 
     Returns:
         ABCPredictor: Instance of the required ABCPredictor class.

@@ -43,7 +43,8 @@ class PredictorSecant(PredictorTangent):
         Returns:
             np.ndarray: next predicted starting point.
             SystemSolution: last accepted point in the list of solutions.
-            float: sign of the prediction used (-1 | 1)
+            float: sign of the prediction used (-1 | 1).
+            float: direction of the prediction.
         """
         return super().predict(sollist, ds, k_imposed=None)
 
@@ -69,7 +70,9 @@ class PredictorSecant(PredictorTangent):
         if isinstance(lstpt, FirstSolution):
             xpred, lstpt, self.sign_ds = self.predict_usingtan(sollist, ds, k_imposed=None)
         else:
-            dir = (lstpt.x - lstpt.precedent_solution.x) / np.linalg.norm(lstpt.x - lstpt.precedent_solution.x)
+            dir = (lstpt.x - lstpt.precedent_solution.x) / np.linalg.norm(
+                lstpt.x - lstpt.precedent_solution.x
+            )
             dir = self.norm_dir(dir) * np.sign(dir[-1])
             xpred = lstpt.x + dir * ds * self.sign_ds
             # write some stuff in the solution

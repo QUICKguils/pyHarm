@@ -59,9 +59,7 @@ def JenkinsCorLoop_jax(x_k, k, DFT, limit_friction_force):
 
 
 @jax.jit
-def JenkinsResidual_jax(
-    x, om, Pdir, Pslave, Pmaster, mu, N0, k, DFT, DTF, f_time_n=0.0
-):
+def JenkinsResidual_jax(x, om, Pdir, Pslave, Pmaster, mu, N0, k, DFT, DTF, f_time_n=0.0):
     limit_friction_force = mu * jnp.abs(f_time_n - N0 * jnp.ones(jnp.shape(DFT)[1]))
     R = jnp.zeros((len(x),))
     nti = jnp.shape(DFT)[1]
@@ -171,21 +169,21 @@ def JenkinsJacobian(x, om, Pdir, Pslave, Pmaster, mu, N0, k, DFT, DTF):
 
 class Jenkins(NodeToNodeElement):
     """
-    This element is jenkins element, modeling a friction contact using an approximate Coulomb law considering a linear spring behavior when stuck.
+    This element is jenkins element, modeling a friction contact using an
+    approximate Coulomb law considering a linear spring behavior when stuck.
 
     Attributes:
         mu (float): friction coefficient.
         N0 (float): normal preload on the element.
         k (foat): linear spring value.
-        jac (str): if "analytical" uses analytical expression of jacobian, if "jax" uses automatic differentiation, if "DF" uses finite difference.
+        jac (str): if "analytical" uses analytical expression of jacobian, if
+          "jax" uses automatic differentiation, if "DF" uses finite difference.
     """
 
     factory_keyword: str = "Jenkins"
     """str: keyword that is used to call the creation of this class in the system factory."""
 
-    def __post_init__(
-        self,
-    ):
+    def __post_init__(self):
         self.mu = self.data["mu"]
         self.N0 = self.data["N0"]
         self.k = self.data["k"]
@@ -195,9 +193,7 @@ class Jenkins(NodeToNodeElement):
             self.jac = "analytical"
         self.nabo = np.linalg.matrix_power(self.nabla, 0)
 
-    def __flag_update__(
-        self,
-    ):
+    def __flag_update__(self):
         self.flag_nonlinear = True
         self.flag_AFT = True
 

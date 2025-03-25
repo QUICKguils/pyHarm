@@ -40,7 +40,5 @@ def generate_subreader(data: dict) -> ABCReader:
     """
     type_of_reader = data["reader"]
     if type_of_reader not in SubstructureReaderDictionary.keys():
-        raise ValueError(
-            "The required substructure reader does not exist in the factory"
-        )
+        raise ValueError("The required substructure reader does not exist in the factory")
     return SubstructureReaderDictionary[type_of_reader]()

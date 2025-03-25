@@ -31,10 +31,8 @@ class Corrector_arc_length(ABCCorrector):
 
         Args:
             solx (np.ndarray): actual displacement vector.
-            sol (SystemSolution): actual SystemSolution that contains the
-              starting point.
-            sollist (list[SystemSolution]): list of SystemSolutions from
-              previous analysis steps.
+            sol (SystemSolution): actual SystemSolution that contains the starting point.
+            sollist (list[SystemSolution]): list of SystemSolutions from previous analysis steps.
 
         Returns:
             np.ndarray: Residual of the correction equation.

@@ -121,9 +121,7 @@ def test_ABCSystem__complete_expl_dofs(mock_S_noinit: ABCSystem):
         e for e in mock_S_noinit.LE if ((not e.flag_nonlinear) and (e.flag_extforcing))
     ]
     mock_S_noinit.LE_linear = [
-        e
-        for e in mock_S_noinit.LE
-        if ((not e.flag_nonlinear) and (not e.flag_extforcing))
+        e for e in mock_S_noinit.LE if ((not e.flag_nonlinear) and (not e.flag_extforcing))
     ]
     mock_S_noinit.LE_nonlinear_dlft = [
         e for e in mock_S_noinit.LE if ((e.flag_nonlinear) and (e.flag_DLFT))
@@ -132,9 +130,7 @@ def test_ABCSystem__complete_expl_dofs(mock_S_noinit: ABCSystem):
         e for e in mock_S_noinit.LE if ((e.flag_nonlinear) and not (e.flag_DLFT))
     ]
     mock_S_noinit._complete_expl_dofs()
-    kc_dofs = np.array(
-        mock_S_noinit.expl_dofs[mock_S_noinit.expl_dofs["KC"] == 1].index
-    )
+    kc_dofs = np.array(mock_S_noinit.expl_dofs[mock_S_noinit.expl_dofs["KC"] == 1].index)
     print(kc_dofs)
     assert (kc_dofs == np.array([1, 3, 5])).all()
 
@@ -154,10 +150,7 @@ def test_ABCSystem__get_expl_dofs_into_solver(mock_S: ABCSystem):
     df_noKC = mock_S._get_expl_dofs_into_solver()
     assert len(df_noKC) == 3
     assert (
-        (
-            df_noKC
-            == mock_S.expl_dofs[mock_S.expl_dofs["KC"] != 1].reset_index(drop=True)
-        )
+        (df_noKC == mock_S.expl_dofs[mock_S.expl_dofs["KC"] != 1].reset_index(drop=True))
         .all()
         .all()
     )

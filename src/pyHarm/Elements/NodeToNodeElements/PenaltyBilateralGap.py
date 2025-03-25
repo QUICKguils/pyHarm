@@ -32,9 +32,7 @@ def PenalGapResidual(x, om, Pdir, Pslave, Pmaster, g, k, DFT, DTF):
     for dir1 in range(Pdir.shape[0]):
         f_time = np.zeros((nti,))
         x_d1 = x_d[dir1, :]
-        f_time[gap_closed] = (
-            k * (r[gap_closed] - g) * x_d1[gap_closed] / (r[gap_closed] + 1e-12)
-        )
+        f_time[gap_closed] = k * (r[gap_closed] - g) * x_d1[gap_closed] / (r[gap_closed] + 1e-12)
         R += (Pslave - Pmaster).T @ Pdir[dir1, :, :].T @ (f_time @ DTF)
     return R
 
@@ -58,11 +56,9 @@ def PenalGapJacobian(x, om, Pdir, Pslave, Pmaster, g, k, DFT, DTF):
                 kronecker = 1
             else:
                 kronecker = 0
-            dRkdxj[gap_closed] = k * (
-                1 - g / (r[gap_closed] + 1e-12)
-            ) * kronecker + k * g * x_k[gap_closed] * x_j[gap_closed] / (
-                r[gap_closed] ** 3 + 1e-12
-            )
+            dRkdxj[gap_closed] = k * (1 - g / (r[gap_closed] + 1e-12)) * kronecker + k * g * x_k[
+                gap_closed
+            ] * x_j[gap_closed] / (r[gap_closed] ** 3 + 1e-12)
             dJdx += (
                 (Pslave - Pmaster).T
                 @ Pdir[dir1, :, :].T

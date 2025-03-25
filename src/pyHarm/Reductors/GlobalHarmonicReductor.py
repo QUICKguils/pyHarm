@@ -75,9 +75,7 @@ class GlobalHarmonicReductor(ABCReductor):
             H_to_add = np.arange(0, self.max_nh + 1)
         else:
             H_to_add = self.data["nh_start"]
-        self.harmonic_to_keep = np.unique(
-            np.concatenate([self.h_always_kept, H_to_add])
-        )
+        self.harmonic_to_keep = np.unique(np.concatenate([self.h_always_kept, H_to_add]))
         self.build_phi(self.harmonic_to_keep)
         self.J_ch = np.zeros((self.tot_dofs, self.tot_dofs))
 
@@ -286,9 +284,7 @@ class GlobalHarmonicReductor(ABCReductor):
         norm_vec = np.zeros(self.tot_dofs)
         df = self.expl_dofs
         for sub, node, dof in self.combinaisons:
-            index = np.array(
-                (df["sub"] == sub) & (df["node_num"] == node) & (df["dof_num"] == dof)
-            )
+            index = np.array((df["sub"] == sub) & (df["node_num"] == node) & (df["dof_num"] == dof))
             norm_vec[index] = np.max(np.abs(xpred[:-1][index]))
         return norm_vec
 
@@ -320,10 +316,7 @@ class GlobalHarmonicReductor(ABCReductor):
         index = self._get_index_block(0)
         df = self.expl_dofs.iloc[index, :]
         self.combinaisons = tuple(
-            [
-                (sub, node, dof)
-                for sub, node, dof in zip(df["sub"], df["node_num"], df["dof_num"])
-            ]
+            [(sub, node, dof) for sub, node, dof in zip(df["sub"], df["node_num"], df["dof_num"])]
         )
         pass
 
@@ -363,7 +356,7 @@ class GlobalHarmonicReductor(ABCReductor):
             np.ndarray: Modified explicit dof DataFrame after passing through
               the reducer.
         """
-        output_expl_dofs = self.expl_dofs.loc[
-            np.where(self.phi[:-1, :-1] != 0)[0]
-        ].reset_index(drop=True)
+        output_expl_dofs = self.expl_dofs.loc[np.where(self.phi[:-1, :-1] != 0)[0]].reset_index(
+            drop=True
+        )
         return output_expl_dofs

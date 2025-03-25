@@ -24,15 +24,13 @@ from pyHarm.Systems.FactorySystem import generateSystem
 
 class Maestro:
     """
-    Class that reads and launches the pyHarm analysis contained in the provided
-    input file.
+    Class that reads and launches the pyHarm analysis contained in the provided input file.
 
-    The class is in charge of reading the input file and build the system and
-    the analysis that are requested by the input file.
-    The class is in charge of loading the plugins beforehand if some plugins
-    are requested by the input file.
-    When operated, the class runs a loop over the analysis required and solve
-    them.
+    The class is in charge of reading the input file and build the system and the analysis that are
+    requested by the input file.
+    The class is in charge of loading the plugins beforehand if some plugins are requested by the
+    input file.
+    When operated, the class runs a loop over the analysis required and solve them.
 
     Args:
         idata (dict): input dictionary describing all the necessary component
@@ -55,22 +53,19 @@ class Maestro:
         for analysis_name, analysis_config_input in self.inputData["analysis"].items():
             analysis_config = copy.deepcopy(analysis_config_input)
             if self.system.adim:
-                analysis_config["puls_sup"] = (analysis_config["puls_sup"] / self.system.wc)
-                analysis_config["puls_inf"] = (analysis_config["puls_inf"] / self.system.wc)
+                analysis_config["puls_sup"] = analysis_config["puls_sup"] / self.system.wc
+                analysis_config["puls_inf"] = analysis_config["puls_inf"] / self.system.wc
             self.nls[analysis_name] = generateNonLinearAnalysis(
                 analysis_config["study"], analysis_config, self.system
             )
 
     def operate(self, x0=None, **kwargs):
-        """
-        Loops over the analysis and runs the Solve method associated with the
-        analysis.
+        """Loops over the analysis and runs the Solve method associated with the analysis.
 
         Args:
             x0 (None | np.ndarray | str): initial point from which running the
               analysis.
             kwargs : additional keyword arguments.
-
         """
         for analysis in self.nls.values():
             debut = time.time()
@@ -81,8 +76,8 @@ class Maestro:
 
     def getIndex(self, sub: str, node: int, dir_num: int) -> np.ndarray:
         """
-        From a substructure name, a node number, and a direction; returns the
-        index of the required dof into the explicit dof vector of the system.
+        From a substructure name, a node number, and a direction;
+        returns the index of the required dof into the explicit dof vector of the system.
 
         Args:
             sub (str): name of the substructure.
@@ -92,7 +87,6 @@ class Maestro:
         Returns :
             np.ndarray : sorted array of the dof index associated with the
               input in the explicit dof DataFrame of the system.
-
         """
         expl_dofs = self.system.expl_dofs
         submatch = expl_dofs["sub"] == sub

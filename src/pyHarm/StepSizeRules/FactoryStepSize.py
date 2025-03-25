@@ -16,8 +16,8 @@
 Module that contains the factory of ABCStepSizeRule objects.
 
 Attributes:
-    StepSizer_dico (dict): Dictionary containing the factory keywords and their
-      associated class of ABCStepSizeRule objects.
+    StepSizer_dico (dict): Dictionary containing the factory keywords
+      and their associated class of ABCStepSizeRule objects.
 """
 
 from pyHarm.StepSizeRules.ABCStepSizeRule import ABCStepSizeRule
@@ -34,16 +34,14 @@ StepSizer_dico = {
 def generateStepSizeRule(
     name_stepsize, bounds: list[float, float], stepsize_options
 ) -> ABCStepSizeRule:
-    """
-    Factory function that creates a ABCStepSizeRule object.
+    """Factory function that creates a ABCStepSizeRule object.
 
     Args:
-        name_stepsize (str): Type of the stepsize rule object that is to be
-          instanciated.
+        name_stepsize (str): Type of the stepsize rule object that is to be instanciated.
         bounds (list[float,float]): list containing the bounds of the step-size
           [min_step, max_step].
-        stepsize_options (dict): dictionary containing complementary keywords
-          argument that is passed to the initialisation of the object.
+        stepsize_options (dict): dictionary containing complementary keywords argument that is
+          passed to the initialisation of the object.
 
     Returns:
         ABCStepSizeRule: Instance of the required ABCStepSizeRule class.

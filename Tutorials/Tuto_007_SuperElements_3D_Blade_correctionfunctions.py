@@ -61,9 +61,7 @@ def add_EM_connectors_corr(
 
 
 # 1.2.4. correction functions :
-def generate_C_phys_corr(
-    om2: np.ndarray, phi: np.ndarray, xi: float, M: np.ndarray
-) -> np.ndarray:
+def generate_C_phys_corr(om2: np.ndarray, phi: np.ndarray, xi: float, M: np.ndarray) -> np.ndarray:
     """
     Generates the modal equivalent damping matrix in the physical space
 
@@ -106,9 +104,7 @@ def rearange_matrices_corr(
 
 
 # 1.3.2. correction functions :
-def make_modal_analysis(
-    Mcond: np.ndarray, Kcond: np.ndarray
-) -> tuple[np.ndarray, np.ndarray]:
+def make_modal_analysis(Mcond: np.ndarray, Kcond: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """
     Makes the modal analysis of the provided mass and rigidity matrices
 
@@ -181,9 +177,7 @@ def add_local_coordinate_corr(INP, local_coordinates):
 
 
 # 2.3. correction functions :
-def add_forcing_corr(
-    INP, forcing_name, forcing_sub, forcing_node, forcing_dir, forcing_amp=0.1
-):
+def add_forcing_corr(INP, forcing_name, forcing_sub, forcing_node, forcing_dir, forcing_amp=0.1):
     INP["connectors"][forcing_name] = {
         "type": "CosinusForcing",
         "connect": {forcing_sub: [forcing_node]},

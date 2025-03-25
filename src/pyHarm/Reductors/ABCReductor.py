@@ -46,9 +46,7 @@ class ABCReductor(abc.ABC):
         self.__post_init__(*args)
 
     def __post_init__(self, *args):
-        """
-        A post init method to be customized if needed when building new class.
-        """
+        """A post init method to be customized if needed when building new class."""
         pass
 
     def output_expl_dofs(self) -> pd.DataFrame:
@@ -56,36 +54,33 @@ class ABCReductor(abc.ABC):
 
         Returns:
             pd.DataFrame: reduced explicit dof DataFrame after passing through the reducer.
-
         """
         return self.expl_dofs
 
     def reduce_vectorx(self, q: np.ndarray) -> np.ndarray:
-        """
-        Applies the reduce_vector method to the input vector of displacement.
+        """Applies the reduce_vector method to the input vector of displacement.
 
         Args:
             q (np.ndarray): vector of displacement of full size.
 
         Returns:
             np.ndarray: reduced vector of displacement.
-
         """
         return self.reduce_vector(q)
 
     @abc.abstractmethod
     def update_reductor(self, *args) -> None:
         """
-        Using the given parameters, performs an update of the reductor and
-        generates its new transformation matrix
+        Using the given parameters, performs an update of the reductor
+        and generates its new transformation matrix.
         """
         pass
 
     @abc.abstractmethod
     def expand(self, q: np.ndarray) -> np.ndarray:
         """
-        From reduced vector, performs the inverse transformation to retrieve
-        the original vector.
+        From reduced vector, performs the inverse transformation
+        to retrieve the original vector.
 
         Args:
             q (np.ndarray): reduced vector of displacement
@@ -97,9 +92,7 @@ class ABCReductor(abc.ABC):
 
     @abc.abstractmethod
     def reduce_vector(self, x: np.ndarray) -> np.ndarray:
-        """
-        From original vector, performs the transformation to get the reduced
-        vector.
+        """From original vector, performs the transformation to get the reduced vector.
 
         Args:
             x (np.ndarray): full size vector.
@@ -111,16 +104,12 @@ class ABCReductor(abc.ABC):
 
     @abc.abstractmethod
     def reduce_matrix(self, dJdx: np.ndarray) -> np.ndarray:
-        """
-        From original matrix, perform the transformation to get the reduced
-        matrix.
+        """From original matrix, perform the transformation to get the reduced matrix.
 
         Args:
-            dJdx (np.ndarray): full size jacobian matrix with respect to
-              displacement.
+            dJdx (np.ndarray): full size jacobian matrix with respect to displacement.
 
         Returns:
-            np.ndarray: reduced size jacobian matrix with respect to
-              displacement.
+            np.ndarray: reduced size jacobian matrix with respect to displacement.
         """
         pass

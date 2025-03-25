@@ -23,9 +23,7 @@ from pyHarm.Elements.NodeToNodeElements.DLFTElements.DLFTUniGap import DLFTUniGa
 
 
 @jit
-def evalResidual_jax(
-    x, om, Rlin, nbSub, Pdir, Pslave, Pmaster, mu, N0, g, eps, DFT, DTF
-):
+def evalResidual_jax(x, om, Rlin, nbSub, Pdir, Pslave, Pmaster, mu, N0, g, eps, DFT, DTF):
     """:meta private:"""
 
     # Normal contact
@@ -35,8 +33,19 @@ def evalResidual_jax(
 
     # Tangential contact
     R_T, _ = DLFTFrictionResidual_jax(
-        x, om, Rlin, nbSub, Pdir[[1, 2], :, :], Pslave, Pmaster,
-        mu, N0, eps, DFT, DTF, f_time_n,
+        x,
+        om,
+        Rlin,
+        nbSub,
+        Pdir[[1, 2], :, :],
+        Pslave,
+        Pmaster,
+        mu,
+        N0,
+        eps,
+        DFT,
+        DTF,
+        f_time_n,
     )
 
     return R_N + R_T
@@ -102,23 +111,48 @@ class DLFT3D(DLFTElement):
         x = xg[self.indices]
         Rlin = Rglin[self.indices]
         self.R = evalResidual_jax(
-            x, om, Rlin, float(self.nbSub), self.Pdir, self.Pslave,
-            self.Pmaster, self.mu, self.N0, self.g, self.eps,
-            self.D["ft"], self.D["tf"],
+            x,
+            om,
+            Rlin,
+            float(self.nbSub),
+            self.Pdir,
+            self.Pslave,
+            self.Pmaster,
+            self.mu,
+            self.N0,
+            self.g,
+            self.eps,
+            self.D["ft"],
+            self.D["tf"],
         )
         _, f_time_n = DLFTUniGapResidual_jax(
-            x, om, Rlin, float(self.nbSub), self.Pdir[[0], :, :],
-            self.Pslave, self.Pmaster,
-            self.g, self.eps,
-            self.D["ft"], self.D["tf"],
+            x,
+            om,
+            Rlin,
+            float(self.nbSub),
+            self.Pdir[[0], :, :],
+            self.Pslave,
+            self.Pmaster,
+            self.g,
+            self.eps,
+            self.D["ft"],
+            self.D["tf"],
             self.N0,
         )
         self.sep = (f_time_n - self.N0) > 0
         _, slip = DLFTFrictionResidual_jax(
-            x, om, Rlin, float(self.nbSub), self.Pdir[[1, 2], :, :],
-            self.Pslave, self.Pmaster,
-            self.mu, self.N0, self.eps,
-            self.D["ft"], self.D["tf"],
+            x,
+            om,
+            Rlin,
+            float(self.nbSub),
+            self.Pdir[[1, 2], :, :],
+            self.Pslave,
+            self.Pmaster,
+            self.mu,
+            self.N0,
+            self.eps,
+            self.D["ft"],
+            self.D["tf"],
             f_time_n,
         )
         self.slip = slip
@@ -129,10 +163,19 @@ class DLFT3D(DLFTElement):
         Rlin = Rglin[self.indices]
         dJdom = np.zeros((len(x),))
         dJdx = jaxf(
-            x, om, Rlin, float(self.nbSub), self.Pdir,
-            self.Pslave, self.Pmaster,
-            self.mu, self.N0, self.g, self.eps,
-            self.D["ft"], self.D["tf"],
+            x,
+            om,
+            Rlin,
+            float(self.nbSub),
+            self.Pdir,
+            self.Pslave,
+            self.Pmaster,
+            self.mu,
+            self.N0,
+            self.g,
+            self.eps,
+            self.D["ft"],
+            self.D["tf"],
         )
         self.J = copy.copy(dJdx)
         self.dJdom = copy.copy(dJdom)

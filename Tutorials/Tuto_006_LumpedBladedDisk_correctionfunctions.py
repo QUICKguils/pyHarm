@@ -82,11 +82,7 @@ def get_families_from_diam_corr(pd_diam):
 
 def get_damping_mat_corr(xi_damp, phi, pd_diam):
     C = np.zeros(phi.shape)
-    C = (
-        phi
-        @ (2 * xi_damp * np.array(pd_diam["freq"]) * (2 * np.pi) * np.eye(phi.shape[0]))
-        @ phi.T
-    )
+    C = phi @ (2 * xi_damp * np.array(pd_diam["freq"]) * (2 * np.pi) * np.eye(phi.shape[0])) @ phi.T
     return C
 
 
@@ -127,9 +123,7 @@ def make_forcing_corr(n_sector, n_diam, explicit_dofs):
         dephase = get_dephase(n, n_sector, n_diam)
         applied_node = int(
             np.array(
-                explicit_dofs[
-                    ((explicit_dofs["sub"] == n) & (explicit_dofs["node"] == 2))
-                ].index
+                explicit_dofs[((explicit_dofs["sub"] == n) & (explicit_dofs["node"] == 2))].index
             )
         )
         Forcing[name_forcing] = {
@@ -159,11 +153,7 @@ def get_ring_sector_numerotation(n, n_sector):
 
 def get_blisk_node_to_attach(n, explicit_dofs):
     node_blisk = np.array(
-        [
-            explicit_dofs[
-                ((explicit_dofs["node"] == 0) & (explicit_dofs["sub"] == n))
-            ].index
-        ]
+        [explicit_dofs[((explicit_dofs["node"] == 0) & (explicit_dofs["sub"] == n))].index]
     )[0, 0]
     return node_blisk
 

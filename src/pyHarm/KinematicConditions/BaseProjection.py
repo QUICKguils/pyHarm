@@ -95,9 +95,7 @@ class BaseProjection(ABCKinematic):
               residual vetor in order to impose the kinematic condition.
         """
         R_add = np.zeros(R.shape)
-        R_add[self.indices] = (
-            self.Pmaster.T @ self.phi_inv @ self.Pslave @ R[self.indices]
-        )
+        R_add[self.indices] = self.Pmaster.T @ self.phi_inv @ self.Pslave @ R[self.indices]
         return R_add
 
     def complete_J(self, Jx, Jom, x):
@@ -124,25 +122,13 @@ class BaseProjection(ABCKinematic):
         msh_master = tuple(np.meshgrid(master_indexes, master_indexes, indexing="ij"))
         msh_slave = tuple(np.meshgrid(slave_indexes, slave_indexes, indexing="ij"))
 
-        msh_slave_master = tuple(
-            np.meshgrid(slave_indexes, master_indexes, indexing="ij")
-        )
-        msh_master_slave = tuple(
-            np.meshgrid(master_indexes, slave_indexes, indexing="ij")
-        )
+        msh_slave_master = tuple(np.meshgrid(slave_indexes, master_indexes, indexing="ij"))
+        msh_master_slave = tuple(np.meshgrid(master_indexes, slave_indexes, indexing="ij"))
 
-        msh_slave_other = tuple(
-            np.meshgrid(slave_indexes, other_indexes, indexing="ij")
-        )
-        msh_master_other = tuple(
-            np.meshgrid(master_indexes, other_indexes, indexing="ij")
-        )
-        msh_other_slave = tuple(
-            np.meshgrid(other_indexes, slave_indexes, indexing="ij")
-        )
-        msh_other_master = tuple(
-            np.meshgrid(other_indexes, master_indexes, indexing="ij")
-        )
+        msh_slave_other = tuple(np.meshgrid(slave_indexes, other_indexes, indexing="ij"))
+        msh_master_other = tuple(np.meshgrid(master_indexes, other_indexes, indexing="ij"))
+        msh_other_slave = tuple(np.meshgrid(other_indexes, slave_indexes, indexing="ij"))
+        msh_other_master = tuple(np.meshgrid(other_indexes, master_indexes, indexing="ij"))
 
         Jom_add[master_indexes] += self.phi_inv @ Jom_add[slave_indexes]
         Jx_add[msh_master] += self.phi_inv @ Jx[msh_slave] @ self.phi

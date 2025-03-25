@@ -44,7 +44,7 @@ class Solver_ScipyRoot(ABCNLSolver):
         "end_status_accepted": [1],
         "residual_tolerance": 1e-4,
     }
-    """dict: dictionary containing the default solver_options"""
+    """dict: dictionary containing the default solver_options."""
 
     def __post_init__(self):
         from scipy.optimize import root
@@ -52,82 +52,59 @@ class Solver_ScipyRoot(ABCNLSolver):
         solver_options = self.solver_options
         self.extcall = root
         self.solver_options = getCustomOptionDictionary(solver_options, self.default)
-        self.solver_options_root = getCustomOptionDictionary(
-            self.solver_options["root"], self.default["root"]
-        )
+        self.solver_options_root = getCustomOptionDictionary(self.solver_options["root"], self.default["root"])
         self.end_status_accepted = self.solver_options["end_status_accepted"]
         self.residual_tolerance = self.solver_options["residual_tolerance"]
 
-    def Solve(
-        self, sol: SystemSolution, SolList: list[SystemSolution]
-    ) -> SystemSolution:
-        """Runs the solver.
+    def Solve(self, sol: SystemSolution):
+        """Run the solver.
 
         Args:
             sol (SystemSolution): SystemSolution that contains the starting point.
-            SolList (SystemSolution): list of previously solved solutions.
 
-        Returns:
+        Writes:
             sol (SystemSolution): SystemSolution solved and completed with the output information.
         """
         self.precond_kwargs = {"jacobian": self.jacobian}
-        S = self.extcall(
-            self.residual,
-            sol.x_start,
-            args=(sol),
-            jac=self.jacobian,
-            **self.solver_options_root,
-        )
-        self._complete_solution(S, sol, SolList)
-        return sol
+        solver_sol = self.extcall(self.residual, sol.x_start, args=(sol), jac=self.jacobian, **self.solver_options_root)
+        self.complete_solution(solver_sol, sol)
 
-    def solution_accepted(self, S, sol):
+    def solution_accepted(self, solver_sol, sol: SystemSolution):
         """Updates the flag_accepted attribute of the SystemSolution.
 
         Args:
-            S (SystemSolution): output of root function.
-            sol (SystemSolution): SystemSolution that ran into the solver..
+            solver_sol: output of root function.
+            sol (SystemSolution): SystemSolution that ran into the solver.
 
         Attributes:
             flag_accepted (bool): SystemSolution in output is considered accepted if True.
         """
         if isinstance(sol, FirstSolution):
             sol.flag_accepted = True
-        elif S.status == 1:
+        elif solver_sol.status == 1:
             sol.flag_accepted = True
-        elif S.status in self.end_status_accepted:
+        elif solver_sol.status in self.end_status_accepted:
             sol.flag_accepted = self.check_residual_tol(sol)
 
-    def check_residual_tol(self, sol):
+    def check_residual_tol(self, sol: SystemSolution):
         """Checks if residual at the output is below the residual tolerance.
 
-        This check is done only if the solver gave an ending status different than 1 (solved with no problem by root function)
+        Args:
+            sol (SystemSolution): SystemSolution that ran into the solver.
+        """
+        return np.linalg.norm(sol.R_solver) <= self.residual_tolerance
+
+    def complete_solution(self, solver_sol, sol: SystemSolution):
+        """Complete the `sol` object with solver informations.
 
         Args:
-            S (SystemSolution): output of root function.
+            solver_sol: output of root function.
             sol (SystemSolution): SystemSolution that ran into the solver.
-            SolList (SystemSolution): list of previously solved solutions.
-
         """
-        if np.linalg.norm(sol.R_solver) <= self.residual_tolerance:
-            return True
-        else:
-            return False
-
-    def _complete_solution(self, S, sol: SystemSolution, SolList: list[SystemSolution]):
-        """Completes the SystemSolution class with solver informations.
-
-        Args:
-            S (SystemSolution): output of root function.
-            sol (SystemSolution): SystemSolution that ran into the solver.
-            SolList (SystemSolution): list of previous solved solutions.
-
-        """
-        sol.x_red = copy.deepcopy(S.x)
-        sol.R_solver = copy.deepcopy(S.fun)
+        sol.x_red = copy.deepcopy(solver_sol.x)
+        sol.R_solver = copy.deepcopy(solver_sol.fun)
         sol.flag_intosolver = True
-        self.solution_accepted(S, sol)
-        # WARN: scipy.root seems unable to provide the `nit` attribute
-        # sol.niter = S.nit
-        sol.status_solver = S.status
-        sol.message_solver = S.message
+        self.solution_accepted(solver_sol, sol)
+        # sol.niter = S.nit   WARN: scipy.root seems unable to provide the `nit` attribute
+        sol.status_solver = solver_sol.status
+        sol.message_solver = solver_sol.message

@@ -50,20 +50,14 @@ def ConstructorPslavemaster(nsub, subs, nodes, sub_expl_dofs):
         Pslave[
             np.arange(led // 2),
             sub_expl_dofs[
-                (
-                    (sub_expl_dofs["sub"] == subs[0])
-                    & (sub_expl_dofs["node_num"] == nodes[0][0])
-                )
+                ((sub_expl_dofs["sub"] == subs[0]) & (sub_expl_dofs["node_num"] == nodes[0][0]))
             ].index,
         ] = 1
         Pmaster = np.zeros((led // 2, led))
         Pmaster[
             np.arange(led // 2),
             sub_expl_dofs[
-                (
-                    (sub_expl_dofs["sub"] == subs[1])
-                    & (sub_expl_dofs["node_num"] == nodes[1][0])
-                )
+                ((sub_expl_dofs["sub"] == subs[1]) & (sub_expl_dofs["node_num"] == nodes[1][0]))
             ].index,
         ] = 1
     return Pslave, Pmaster
@@ -203,9 +197,7 @@ class ABCKinematic(abc.ABC):
             cs += cn
             dof_available = np.intersect1d(
                 dof_available,
-                np.unique(
-                    np.array(expl_dofs[(sub_discrim * modal_dof_discrim)]["dof_num"])
-                ),
+                np.unique(np.array(expl_dofs[(sub_discrim * modal_dof_discrim)]["dof_num"])),
             )
         sub_expl_list = expl_dofs[cs]
         cdd = pd.Series([False] * len(sub_expl_list), index=sub_expl_list.index)
@@ -219,9 +211,7 @@ class ABCKinematic(abc.ABC):
         self.Pslave, self.Pmaster = ConstructorPslavemaster(
             self.nbSub, self.subs, self.nodes, sub_expl_dofs
         )
-        self.Pdir = self.CS.getTM(self.nh, self.component)[
-            np.array(self.data["dirs"]), :, :
-        ]
+        self.Pdir = self.CS.getTM(self.nh, self.component)[np.array(self.data["dirs"]), :, :]
 
     @abc.abstractmethod
     def adim(self, lc, wc):

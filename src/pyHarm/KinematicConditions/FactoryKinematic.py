@@ -37,9 +37,7 @@ Kinematic_dico = {
 """dict: Dictionary containing ABCKinematic as values and their factory_keyword attribute as key."""
 
 
-def generateKinematic(
-    nh, nti, name, data, dict_CS: dict[str, CoordinateSystem]
-) -> ABCKinematic:
+def generateKinematic(nh, nti, name, data, dict_CS: dict[str, CoordinateSystem]) -> ABCKinematic:
     """
     Factory function that creates a ABCKinematic object.
 

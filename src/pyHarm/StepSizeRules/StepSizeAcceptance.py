@@ -21,14 +21,13 @@ from pyHarm.StepSizeRules.ABCStepSizeRule import ABCStepSizeRule
 
 class StepSizeAcceptance(ABCStepSizeRule):
     """
-    Step size is divided by 2 if last solution is not accepted or multiplied by
-    2 if a number of consecutive accepted solutions is reached.
+    Step size is divided by 2 if last solution is not accepted or multiplied by 2 if a number of
+    consecutive accepted solutions is reached.
 
     Attributes:
-        default_options (dict): contains default step size options concerning
-          consecutive_accept if not provided during creation.
-        consecutive_accept (int): number of consecutive accept before
-          increasing step size.
+        default_options (dict): contains default step size options concerning consecutive_accept if
+          not provided during creation.
+        consecutive_accept (int): number of consecutive accept before increasing step size.
     """
 
     name = "accepted step size adaptation"
@@ -47,14 +46,11 @@ class StepSizeAcceptance(ABCStepSizeRule):
         self.consecutive_accept = self.stepsize_options["consecutive_accept"]
 
     def getStepSize(self, ds: float, sollist: list[SystemSolution], **kwargs) -> float:
-        """
-        Returns the step size to be used for the prediction step of the
-        analysis.
+        """Returns the step size to be used for the prediction step of the analysis.
 
         Args:
             ds (float): Current step size.
-            sollist (list[SystemSolution]): list of SystemSolution returned
-              during the analysis.
+            sollist (list[SystemSolution]): list of SystemSolution returned during the analysis.
 
         Returns:
             float: updated step size.
@@ -62,9 +58,7 @@ class StepSizeAcceptance(ABCStepSizeRule):
         if (not sollist[-1].flag_accepted) and (ds > self.ds_min):
             ds /= 2
         try:
-            acc = np.array(
-                [sol.flag_accepted for sol in sollist[-self.consecutive_accept : :]]
-            )
+            acc = np.array([sol.flag_accepted for sol in sollist[-self.consecutive_accept : :]])
             if np.sum(acc) == self.consecutive_accept and ds < self.ds_max:
                 ds *= 2
         except Exception:

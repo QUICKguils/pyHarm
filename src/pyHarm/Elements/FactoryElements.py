@@ -77,9 +77,7 @@ ElementDictionary = {e.factory_keyword: e for e in L_Elem}
 """dict[str, ABCElement]: Dictionary of available ABCElement as values and their factory_keyword as key."""
 
 
-def generateElement(
-    nh, nti, name, data, dict_CS: dict[str, CoordinateSystem]
-) -> ABCElement:
+def generateElement(nh, nti, name, data, dict_CS: dict[str, CoordinateSystem]) -> ABCElement:
     """
     Factory function that creates an ABCElement object.
 

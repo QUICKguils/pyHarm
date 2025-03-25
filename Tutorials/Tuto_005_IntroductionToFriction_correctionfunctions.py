@@ -23,9 +23,7 @@ def get_resonance_corr(mass: float, rigidity: float) -> float:
     return np.sqrt(rigidity / mass) / (2 * np.pi)
 
 
-def add_tuned_mass_corr(
-    INP: dict, tuned_mass: dict[str, np.ndarray], k_link: float
-) -> dict:
+def add_tuned_mass_corr(INP: dict, tuned_mass: dict[str, np.ndarray], k_link: float) -> dict:
     """
     Function that returns a copy on the input dictionnary containing the new substructure and
     the connector to the main substructure
@@ -69,9 +67,7 @@ def smooth_friction_corr(xdot, mu, n0, epsilon):
     return f_fric
 
 
-def residual_regulfriction_corr(
-    x, om, Pslave, Pmaster, nabo, DFT, DTF, mu, n0, epsilon
-):
+def residual_regulfriction_corr(x, om, Pslave, Pmaster, nabo, DFT, DTF, mu, n0, epsilon):
     """
     This is the residual contribution of the smooth coulomb friction model made previously.
     - Construct the relative harmonic speed between by applying (Pslave-Pmaster) operator on the dof vector and use the derivative operator nabo.
@@ -86,9 +82,7 @@ def residual_regulfriction_corr(
     return force_fric_h
 
 
-def add_tuned_mass_plus_friction_corr(
-    INP, tuned_mass, k_link, mu, n0, epsilon, add_tuned_mass
-):
+def add_tuned_mass_plus_friction_corr(INP, tuned_mass, k_link, mu, n0, epsilon, add_tuned_mass):
     """
     Function that adds the friction element to the input dictionary.
     - Use previous `add_tuned_mass` function
