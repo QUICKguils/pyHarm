@@ -16,7 +16,7 @@ import numpy as np
 from scipy import linalg
 
 from pyHarm.Predictors.ABCPredictor import ABCPredictor
-from pyHarm.Solver import FirstSolution, SystemSolution
+from pyHarm.Solver import SystemSolution
 
 
 class PredictorTangent(ABCPredictor):
@@ -33,13 +33,12 @@ class PredictorTangent(ABCPredictor):
     """str: Concrete class name used by the factory to instantiate it."""
 
     def predict(
-        self, sollist: list[SystemSolution], ds: float, k_imposed=None
+        self, SolList: list[SystemSolution], ds: float, k_imposed=None
     ) -> tuple[np.ndarray, SystemSolution, float]:
         """Predicts the next starting point using the tangent.
 
         Args:
-            sollist (list[SystemSolution]): list of SystemSolution already solved during the
-              analysis.
+            SolList (list[SystemSolution]): list of SystemSolution already solved during the analysis.
             ds (float): step size for the prediction.
             k_imposed (None | int): if not None, uses the k_imposed as the index of the last
               solution pointer.
@@ -50,8 +49,8 @@ class PredictorTangent(ABCPredictor):
             float: sign of the prediction used (-1 | 1).
             float: direction of the prediction used (-1 | 1).
         """
-        lstpt = self.getPointerToSolution(sollist, k_imposed)
-        lstpt.getJacobian("full")  # this makes lstpt.J_f available
+        lstpt = self.getPointerToSolution(SolList, k_imposed)
+        lstpt.get_jacobian("full")  # this makes lstpt.J_f available
 
         if self.predictor_options["bifurcation_detect"]:
             self.bifurcation_detect(lstpt)
@@ -61,32 +60,12 @@ class PredictorTangent(ABCPredictor):
 
         # Evaluate the direction of zero gradient for the redsidual
         dir = np.sign(lstpt.J_x_T_qr[0][-1, -1]) * lstpt.J_x_T_qr[0][:, -1]
-        dir = self.norm_dir(dir) * np.sign(dir[-1])  # keep an omega-positive direction
-
-        # # NOTE: this paragraph is experimental
-        # # QR decomposition of transpose of Jacobian, without correction equation
-        # Q, R = linalg.qr(np.transpose(lstpt.J_f))
-        # #
-        # # Evaluate the direction of zero gradient for the redsidual
-        # dir = np.sign(R.diagonal()).prod() * Q[:, -1]
-
-        # # NOTE: this paragraph is experimental
-        # solx_len = lstpt.J_f[:-1, :-1].shape[0]
-        # if isinstance(lstpt, FirstSolution):
-        #     lstpt.dir = np.vstack((np.zeros((solx_len, 1)), 1))
-        # A = np.vstack((lstpt.J_f[:-1, :], lstpt.dir.T))
-        # b = np.vstack((np.zeros((solx_len, 1)), 1))
-        # dir = linalg.solve(A, b).reshape(-1)
+        dir = self.normalize(dir) * np.sign(dir[-1])  # keep an omega-positive direction
 
         # Euler prediction: step along the tangent to the solution branch
         xpred = lstpt.x + dir * ds * self.sign_ds
 
-        # # Debug prints
-        # print(f"{ds=}, {self.sign_ds=}")
-        # print(f"{dir=}")
-        # print(f"{xpred=}")
-
-        # 
+        # write in the previous computed solution
         lstpt.dir = dir
         lstpt.x_pred = xpred
 

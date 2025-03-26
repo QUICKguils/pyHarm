@@ -1,17 +1,3 @@
-# Copyright 2024 SAFRAN SA
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import copy
 
 import numpy as np
@@ -21,7 +7,7 @@ from pyHarm.NonLinearSolver.ABCNonLinearSolver import ABCNLSolver
 from pyHarm.Solver import FirstSolution, SystemSolution
 
 
-class Solver_MoorePenrose(ABCNLSolver):
+class SolverMyMoorePenrose(ABCNLSolver):
     """This nonlinear solver is an implementation of iterative MoorePenrose solving procedure.
 
     Attributes:
@@ -29,11 +15,10 @@ class Solver_MoorePenrose(ABCNLSolver):
         solver_options (dict): dictionary containing other options for creation of the solver class.
         residual (Callable): function that returns the residual vector of the system to be solved.
         jacobian (Callable): function that returns the jacobian matrix of the system to be solved.
-        solver_options_root (dict): dictionary containing options for the root function.
-        extcall (Callable): root function of scipy.optimize.
+        extcall (function): solve function of scipy.linalg.
     """
 
-    factory_keyword: str = "MoorePenrose"
+    factory_keyword: str = "MyMoorePenrose"
     """str: Concrete class name used by the factory to instantiate it."""
 
     default = {"tol_residual": 1e-8, "tol_delta_x": 1e-8, "max_iter": 30}
@@ -42,11 +27,11 @@ class Solver_MoorePenrose(ABCNLSolver):
     def __post_init__(self):
         from scipy.linalg import solve as solve
 
-        self.extcall_moore = solve
+        self.extcall = solve
         solver_options = self.solver_options
         self.solver_options = getCustomOptionDictionary(solver_options, self.default)
 
-    def Solve(self, sol: SystemSolution):
+    def solve(self, sol: SystemSolution):
         """Run the solver.
 
         Args:
@@ -57,7 +42,7 @@ class Solver_MoorePenrose(ABCNLSolver):
         """
         self.x = sol.x_start
         self.xprec = sol.x_start
-        # Get residual and jacobian at starting point :
+        # Get residual and jacobian at starting point
         self.FXk = self.residual(sol.x_start, sol)[:-1]
         self.AXk = self.jacobian(sol.x_start, sol)[:-1, :]
         self.Vk = self._get_first_Vk(sol, self.AXk)
@@ -105,9 +90,9 @@ class Solver_MoorePenrose(ABCNLSolver):
     def linSysdeltak(self):
         matA = np.concatenate([self.AXk, self.Vk.T], axis=0)
         matB = np.concatenate([self.FXk, np.array([0])], axis=0)
-        return self.extcall_moore(matA, matB)
+        return self.extcall(matA, matB)
 
     def linSysTk(self):
         matA = np.concatenate([self.AXk, self.Vk.T], axis=0)  # np.dot(self.AXk,self.Vk)
         matB = np.concatenate([np.dot(self.AXk, self.Vk), np.array([[0]])], axis=0)
-        return self.extcall_moore(matA, matB)
+        return self.extcall(matA, matB)

@@ -41,9 +41,7 @@ class StepSizeMyAcceptance(ABCStepSizeRule):
         if (not sollist[-1].flag_accepted) and (ds > self.ds_min):
             ds /= 5
         try:
-            acc = np.array(
-                [sol.flag_accepted for sol in sollist[-self.consecutive_accept : :]]
-            )
+            acc = np.array([sol.flag_accepted for sol in sollist[-self.consecutive_accept : :]])
             if np.sum(acc) == self.consecutive_accept and ds < self.ds_max:
                 ds *= 1.3
         except Exception:

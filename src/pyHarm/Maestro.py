@@ -69,7 +69,7 @@ class Maestro:
         """
         for analysis in self.nls.values():
             debut = time.time()
-            analysis.Solve(x0, **kwargs)
+            analysis.solve(x0, **kwargs)
             self.timetosolve = time.time() - debut
             if analysis.flag_print:
                 print("Wall clock time:", self.timetosolve)

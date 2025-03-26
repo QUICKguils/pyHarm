@@ -44,7 +44,7 @@ class ABCNLSolver(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def Solve(self, sol: SystemSolution):
+    def solve(self, sol: SystemSolution):
         """Run the solver.
 
         Args:

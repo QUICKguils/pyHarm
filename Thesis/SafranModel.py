@@ -5,13 +5,12 @@ import pathlib
 import numpy as np
 
 from .StepSizeMyAcceptance import StepSizeMyAcceptance
+from .PredictorMyTangent import PredictorMyTangent
 
 MODEL_PATH = pathlib.Path(__file__).parent / "res"
 
-# Problem specification as a phHarm dictionary
-# NOTE: see SafranModel.py for the original problem specs.
 MODEL = {
-    "plugin": [StepSizeMyAcceptance],
+    "plugin": [StepSizeMyAcceptance, PredictorMyTangent],
     "analysis": {},
     "system": {},
     "substructures": {
@@ -54,14 +53,45 @@ MODEL = {
     },
 }
 
+# The "nh" field need to be completed
+# on the corresponding solving file.
 SYSTEM = {
     "type": "Base",
-    "nh": 1,
-    "nti": 1024,
+    "nti": 1024,  # NOTE: originally 1024, bt 2048 makes it pass the bif
     "adim": {
         "status": True,
         "lc": 0.15e-3,  # Adim by the gap clearance
         "wc": 1.0,
+    },
+}
+
+CHUNCK_ALL = {
+    "analysis": {
+        "cont": {
+            "study": "frf",
+            "puls_inf": 1.0,
+            "puls_start": 1.0,
+            "puls_sup": 300.0,
+            "ds0": 1e-1,
+            "ds_min": 1e-12,
+            "ds_max": 1e-1,
+            "sign_ds": 1,
+            "verbose": True,
+            "stepsizer": "acceptance",  # NOTE: originally acceptance
+            "predictor": "mytangent",
+            "reductors": [  # NOTE: originally activated
+                {
+                    "type": "globalHarmonic",
+                    "nh_start": np.array([1]),
+                    "err_admissible": 1e10,
+                    "h_always_kept": np.array([1]),
+                    "verbose": False,
+                },
+            ],
+            "corrector": "arc_length",
+            "stopper": "bounds",
+            "solver": "scipyroot",
+        },
     },
 }
 
@@ -78,15 +108,14 @@ CHUNCK_1 = {
             "puls_sup": 72.0,
             "ds0": 1e-1,
             "ds_min": 1e-12,
-            "ds_max": 3e-1,
+            "ds_max": 1e-1,
             "sign_ds": 1,
             "verbose": True,
             "stepsizer": "myacceptance",
-            "predictor": "tangent",
+            "predictor": "mytangent",
             "corrector": "arc_length",
             "stopper": "bounds",
             "solver": "scipyroot",
-            # "solver": "NewtonRaphson",
         },
     },
 }
@@ -124,46 +153,4 @@ CHUNCK_2 = {
     },
 }
 
-CHUNCK_3 = {
-    "analysis": {
-        "cont": {
-            "study": "frf",
-            "puls_inf": 76.0,
-            "puls_start": 76.0,
-            "puls_sup": 150.0,
-            "ds0": 1e-1,
-            "ds_min": 1e-12,
-            "ds_max": 3e-1,
-            "sign_ds": 1,
-            "verbose": True,
-            "stepsizer": "myacceptance",
-            "predictor": "tangent",
-            "corrector": "arc_length",
-            "stopper": "bounds",
-            "solver": "scipyroot",
-        },
-    },
-}
-
-CHUNCK_3 = {
-    "analysis": {
-        "cont": {
-            "study": "frf",
-            "puls_inf": 76.0,
-            "puls_start": 76.0,
-            "puls_sup": 150.0,
-            "ds0": 1e-1,
-            "ds_min": 1e-12,
-            "ds_max": 3e-1,
-            "sign_ds": 1,
-            "verbose": True,
-            "stepsizer": "myacceptance",
-            "predictor": "tangent",
-            "corrector": "arc_length",
-            "stopper": "bounds",
-            "solver": "scipyroot",
-        },
-    },
-}
-
-CHUNCK_LIST = [CHUNCK_1, CHUNCK_2]
+CHUNCK_LIST = [CHUNCK_ALL]

@@ -39,11 +39,11 @@ def test_ABCPredictor__init__(mock_abcpredictor: ABCPredictor) -> None:
 @pytest.mark.unit
 def test_ABCPredictor_norm_dir(mock_abcpredictor: ABCPredictor) -> None:
     assert np.allclose(
-        mock_abcpredictor.norm_dir(DIRECTION_TEST),
+        mock_abcpredictor.normalize(DIRECTION_TEST),
         DIRECTION_TEST / np.linalg.norm(DIRECTION_TEST),
     )
     mock_abcpredictor.predictor_options["norm"] = "om"
-    assert mock_abcpredictor.norm_dir(DIRECTION_TEST)[-1] == 1.0
+    assert mock_abcpredictor.normalize(DIRECTION_TEST)[-1] == 1.0
 
 
 @pytest.mark.all

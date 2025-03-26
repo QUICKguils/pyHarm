@@ -137,9 +137,7 @@ ampH = np.array(
 )
 
 SA_bifurc = [
-    sol
-    for sol in NRB_XY.nls["FRF"].SolList
-    if (sol.flag_accepted and sol.flag_bifurcation)
+    sol for sol in NRB_XY.nls["FRF"].SolList if (sol.flag_accepted and sol.flag_bifurcation)
 ]
 om_bifurc = np.array([sol.x[-1] for sol in SA_bifurc])
 ampH_bifurc = np.array(

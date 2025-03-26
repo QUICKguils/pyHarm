@@ -44,5 +44,5 @@ class StepSizeConvergence(ABCStepSizeRule):
         if (not sollist[-1].flag_accepted) and (ds > self.ds_min):
             ds /= 4
         else:
-            ds *= self.optimal_nstep/sollist[-1].iter
+            ds *= self.optimal_nstep / sollist[-1].iter
         return ds

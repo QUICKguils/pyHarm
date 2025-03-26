@@ -162,14 +162,14 @@ class Linear_Analysis(ABCAnalysis):
             isol = FirstSolution(X)
             self.SolList.append(isol)
 
-    def Solve(self, x0=None):
+    def solve(self, x0=None):
         """Solving step of the analysis."""
         K, M = self.initialize()
         omega, phi = self.makeStep(K, M)
         self.eigensol["eigenfrequencies"] = omega / (2 * np.pi)
         self.eigensol["eigenvectors"] = phi
 
-    def makeStep(self, K, M):
+    def make_step(self, K, M):
         """Makes a whole step of the analysis.
 
         Args:

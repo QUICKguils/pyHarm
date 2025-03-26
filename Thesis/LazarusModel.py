@@ -3,6 +3,7 @@
 import numpy as np
 
 from .StepSizeMyAcceptance import StepSizeMyAcceptance
+from .PredictorMyTangent import PredictorMyTangent
 
 # Build the linear part of the Duffing oscillator
 linsys = dict()
@@ -12,7 +13,7 @@ linsys["K"] = np.array([1])
 linsys["G"] = 0 * linsys["M"]
 
 MODEL = {
-    "plugin": [StepSizeMyAcceptance],
+    "plugin": [StepSizeMyAcceptance, PredictorMyTangent],
     "analysis": {},
     "system": {},
     "substructures": {
@@ -57,18 +58,18 @@ CHUNCK_ALL = {
             "puls_start": 0.1,
             "puls_sup": 5.0,
 
-            "ds0": 1e-2,
-            "ds_min": 1e-8,
-            "ds_max": 5e-2,
+            # "ds0": 1e-2,
+            # "ds_min": 1e-8,
+            # "ds_max": 5e-2,
 
-            # "ds0": 2e-1,
-            # "ds_min": 1e-3,
-            # "ds_max": 5e-1,
+            "ds0": 1e-1,
+            "ds_min": 1e-3,
+            "ds_max": 2e-1,
 
             "sign_ds": 1,
             "verbose": True,
             "stepsizer": "myacceptance",
-            "predictor": "tangent",
+            "predictor": "mytangent",
             "corrector": "arc_length",
             "stopper": "bounds",
             "solver": "scipyroot",

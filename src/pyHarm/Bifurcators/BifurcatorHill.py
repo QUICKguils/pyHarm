@@ -39,7 +39,7 @@ class BifurcatorHill(ABCBifurcator):
             bifurcation_type (BifurcationType): Attribute is assigned if a
               bifurcation is detected.
         """
-        J = lstpt.getJacobian("full")
+        J = lstpt.get_jacobian("full")
         # XXX: heavy to compute dets. Consider bordering techniques
         det_J_f = linalg.det(J)
         det_J_x = linalg.det(J[:-1, :-1])
@@ -72,7 +72,7 @@ class BifurcatorHill(ABCBifurcator):
         pass
 
     def _compute_Hill_matrix(self, last_point: SystemSolution):
-        J = last_point.getJacobian("full")
+        J = last_point.get_jacobian("full")
         h_z = J[:-1, :-1]
         delta_1 = np.kron(Om * nabla(), 2 * M) + np.kron(np.eye(2 * nh + 1), C)
         delta_2 = np.kron(np.eye(2 * nh + 1), M)

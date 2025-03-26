@@ -22,14 +22,14 @@ Attributes:
 """
 
 from pyHarm.NonLinearSolver.ABCNonLinearSolver import ABCNLSolver
-from pyHarm.NonLinearSolver.MoorePenrose import Solver_MoorePenrose
-from pyHarm.NonLinearSolver.NewtonRaphson import Solver_NewtonRaphson
-from pyHarm.NonLinearSolver.ScipyRoot import Solver_ScipyRoot
+from pyHarm.NonLinearSolver.SolverMoorePenrose import SolverMoorePenrose
+from pyHarm.NonLinearSolver.SolverNewtonRaphson import SolverNewtonRaphson
+from pyHarm.NonLinearSolver.SolverScipyRoot import SolverScipyRoot
 
 Solver_dico = {
-    Solver_ScipyRoot.factory_keyword: Solver_ScipyRoot,
-    Solver_MoorePenrose.factory_keyword: Solver_MoorePenrose,
-    Solver_NewtonRaphson.factory_keyword: Solver_NewtonRaphson,
+    SolverScipyRoot.factory_keyword: SolverScipyRoot,
+    SolverMoorePenrose.factory_keyword: SolverMoorePenrose,
+    SolverNewtonRaphson.factory_keyword: SolverNewtonRaphson,
 }
 """dict:
   Dictionary containing all the available ABCNLSolvers as values, and their

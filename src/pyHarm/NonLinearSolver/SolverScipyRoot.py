@@ -21,7 +21,7 @@ from pyHarm.NonLinearSolver.ABCNonLinearSolver import ABCNLSolver
 from pyHarm.Solver import FirstSolution, SystemSolution
 
 
-class Solver_ScipyRoot(ABCNLSolver):
+class SolverScipyRoot(ABCNLSolver):
     """This nonlinear solver is a wrapping of scipy.root nonlinear solver adapted to the interfaces of pyHarm.
 
     Attributes:
@@ -29,7 +29,7 @@ class Solver_ScipyRoot(ABCNLSolver):
         solver_options (dict): dictionary containing other options for creation of the solver class.
         residual (Callable): function that returns the residual vector of the system to be solved.
         jacobian (Callable): function that returns the jacobian matrix of the system to be solved.
-        solver_options_root (dict): dictionary containing options for the root function.
+        solver_options_root (dict): dictionary containing options for the extcall function.
         extcall (Callable): root function of scipy.optimize.
         end_status_accepted (list): list of accepted ended status of the non-linear solver.
     """
@@ -56,7 +56,7 @@ class Solver_ScipyRoot(ABCNLSolver):
         self.end_status_accepted = self.solver_options["end_status_accepted"]
         self.residual_tolerance = self.solver_options["residual_tolerance"]
 
-    def Solve(self, sol: SystemSolution):
+    def solve(self, sol: SystemSolution):
         """Run the solver.
 
         Args:

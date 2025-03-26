@@ -40,11 +40,11 @@ class ABCAnalysis(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def Solve(self, **kwargs):
+    def solve(self, **kwargs):
         """Solving step of the analysis."""
         pass
 
     @abc.abstractmethod
-    def makeStep(self, **kwargs):
+    def make_step(self, **kwargs):
         """Make a whole step of the analysis."""
         pass

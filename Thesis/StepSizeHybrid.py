@@ -48,9 +48,7 @@ class StepSizeHybrid(ABCStepSizeRule):
         if (not sol.flag_accepted) and (ds > self.ds_min):
             ds /= 6
         try:
-            acc = np.array(
-                [sol.flag_accepted for sol in sollist[-self.consecutive_accept : :]]
-            )
+            acc = np.array([sol.flag_accepted for sol in sollist[-self.consecutive_accept : :]])
             if np.sum(acc) == self.consecutive_accept and ds < self.ds_max:
                 ds *= 1.5
         except Exception:
@@ -61,5 +59,5 @@ class StepSizeHybrid(ABCStepSizeRule):
         # FIX: see why niter is 0 for some solutions
         # must have a link with what the code does after rejcting a solution
         elif not isinstance(sol, FirstSolution) and sol.niter > 0:
-            ds *= self.optimal_nstep/sol.niter
+            ds *= self.optimal_nstep / sol.niter
         return ds

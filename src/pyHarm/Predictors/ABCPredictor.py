@@ -34,13 +34,15 @@ class ABCPredictor(abc.ABC):
     Any added predictor shall be constructed from this class.
 
     Args:
-        sign_ds (float): if -1 predict in the direction of decreasing angular
-          frequency, if 1 the opposite direction.
+        sign_ds (float):
+          if -1 predict in the direction of decreasing angular frequency, if 1 the opposite direction.
 
     Attributes:
-        flag_print (bool): information are printed during the analysis if True.
-        predictor_options (dict): dictionary containing the kwargs and
-          completed using the default options if the keywords are missing.
+        flag_print (bool):
+          information are printed during the analysis if True.
+        predictor_options (dict):
+          dictionary containing the kwargs and completed using the default options
+          if the keywords are missing.
     """
 
     @property
@@ -56,17 +58,15 @@ class ABCPredictor(abc.ABC):
     }
     """
     dict:
-      Set of default parameters for the system class if not given in the input
-      argument.
+      Set of default parameters for the system class if not given in the input argument.
 
-    It contains a normalisation parameter using the keyword 'norm' that can be
-    set to either 'norm1' (default) if the direction is normed to 1 or 'om' if
-    the direction is normed to 1 only for the angular frequency.
-    It contains a bifurcation detection using the 'bifurcation_detect' keyword
-    that can be set to True (default) if detection is needed.
-    It contains a 'verbose' keyword that can be set to True (default) if
-    information about detection of bifurcations is to be displayed during
-    solving.
+    It contains a normalisation parameter using the keyword 'norm' that can be set to either 'norm1'
+    (default) if the direction is normed to 1 or 'om' if the direction is normed to 1 only for the
+    angular frequency.
+    It contains a bifurcation detection using the 'bifurcation_detect' keyword that can be set to
+    True (default) if detection is needed.
+    It contains a 'verbose' keyword that can be set to True (default) if information about detection
+    of bifurcations is to be displayed during solving.
     """
 
     def __init__(self, sign_ds, **kwargs):
@@ -77,33 +77,30 @@ class ABCPredictor(abc.ABC):
 
     @abc.abstractmethod
     def predict(
-        self, sollist: list[SystemSolution], ds: float
+        self, SolList: list[SystemSolution], ds: float
     ) -> tuple[np.ndarray, SystemSolution, float]:
         """Predicts the next starting point.
 
         Args:
-            sollist (list[SystemSolution]): list of SystemSolution already
-              solved during the analysis.
-            ds (float): step size for the prediction.
+            SolList (list[SystemSolution]): list of SystemSolution already solved during the analysis.
+            ds (float): Step size for the prediction.
         """
         pass
 
     def bifurcation_detect(self, lstpt: SystemSolution):
         """
-        Makes a bifurcation detection analysis computing determinant of
-        jacobian matrix and analysing change of sign.
+        Makes a bifurcation detection analysis computing determinant of jacobian matrix
+        and analysing change of sign.
 
         Args:
-            lstpt (SystemSolution): previously accepted point in direct link
+            lstpt (SystemSolution): Previously accepted point in direct link
               with the actual solved point.
 
         Attributes:
-            sign_ds (float): Attribute is modified if a fold bifurcation is
-              detected.
-            bifurcation_type (BifurcationType): Attribute is assigned if a
-              bifurcation is detected.
+            sign_ds (float): Attribute is modified if a fold bifurcation is detected.
+            bifurcation_type (BifurcationType): Attribute is assigned if a bifurcation is detected.
         """
-        Jaco = lstpt.getJacobian("full")
+        Jaco = lstpt.get_jacobian("full")
         # XXX: heavy to compute dets. Consider bordering techniques
         det_J_f = spl.det(Jaco)
         det_J_x = spl.det(Jaco[:-1, :-1])
@@ -149,7 +146,7 @@ class ABCPredictor(abc.ABC):
             lstpt = sollist[k_imposed]
         return lstpt
 
-    def norm_dir(self, dir: float) -> float:
+    def normalize(self, dir: float) -> float:
         """Normalises the direction according to the choice of norm given in the class attributes.
 
         Args:

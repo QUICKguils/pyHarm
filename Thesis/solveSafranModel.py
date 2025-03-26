@@ -20,36 +20,65 @@ class Continuation(NamedTuple):
     chunk_list: list[dict]  # "analysis" keys of all the continuation chuncks.
 
 
-def _get_gap_idx(M: Maestro):
-    """Get indexes of relevant dofs and associated harmonics.
+def _get_dof_idx(M: Maestro):
+    """Get SystemSolution indexes of the required dofs.
 
-    DOF 4 and 5 in pyHarm are DOFs 5 and 6 in the Safran model schematic.
+    That is, the DOFs located at the gap bearing.
+    DOFs 4 and 5 in pyHarm are DOFs 5 and 6 in the Safran model schematic.
     Nonlinear bearing is located between these two DOFs.
     """
-    idx_51 = M.getIndex("linear_rotor", 4, 0)
-    idx_52 = M.getIndex("linear_rotor", 4, 1)
-    idx_61 = M.getIndex("linear_rotor", 5, 0)
-    idx_62 = M.getIndex("linear_rotor", 5, 1)
+    idx_51 = M.getIndex("linear_rotor", 4, 0)  # shaft node, X-dir
+    idx_52 = M.getIndex("linear_rotor", 4, 1)  # shaft node, Y-dir
+    idx_61 = M.getIndex("linear_rotor", 5, 0)  # bearing node, X-dir
+    idx_62 = M.getIndex("linear_rotor", 5, 1)  # bearing node, Y-dir
 
     return idx_51, idx_52, idx_61, idx_62
 
 
-def compute_amplitude(cont: Continuation) -> np.ndarray[float]:
+def _filter_harm(idx: np.ndarray[int], ih: list[int]) -> np.ndarray[int]:
+    """Filter a SystemSolution index vector, to select only the desired harmonics."""
+    expl_ih = np.array([[2 * i - 1, 2 * i] for i in ih], dtype=int).ravel()
+    expl_ih = expl_ih[expl_ih >= 0]  # remove the -1 generated for potential 0-harm
+
+    filtered = np.zeros(idx.shape, dtype=int)
+    filtered[expl_ih] = idx[expl_ih]
+
+    return filtered
+
+
+def _filter_harm_tuple(indexes: tuple, ih: list[int]) -> tuple:
+    return tuple((_filter_harm(idx, ih) for idx in indexes))
+
+
+def compute_amplitude(cont: Continuation, ih=None, pred=False) -> np.ndarray[float]:
+    """Compute gap amplitude at the bearing, for specified harmonics."""
     # Discrete fourier transform operator
     DFTO = compute_DFT(cont.M.system.nti, cont.M.system.nh)
     # Get indexes of relevant dofs and associated harmonics.
-    idx_51, idx_52, idx_61, idx_62 = _get_gap_idx(cont.M)
+    indexes = _get_dof_idx(cont.M)
 
-    return np.array([
-        np.linalg.norm(
-            (np.sqrt(
-                ((sol.x[idx_51] - sol.x[idx_61]) @ DFTO["ft"]) ** 2
-                + ((sol.x[idx_52] - sol.x[idx_62]) @ DFTO["ft"]) ** 2
-            ))
-            @ DFTO["tf"]
-        )
-        for sol in cont.sol_list
-    ])
+    if ih is None:
+        filt_51, filt_52, filt_61, filt_62 = indexes
+    else:
+        filt_51, filt_52, filt_61, filt_62 = _filter_harm_tuple(indexes, ih)
+
+    def select_pred(sol: SystemSolution):
+        return sol.x_pred if pred else sol.x
+
+    return np.array(
+        [
+            np.linalg.norm(
+                (
+                    np.sqrt(
+                        ((select_pred(sol)[filt_51] - select_pred(sol)[filt_61]) @ DFTO["ft"]) ** 2
+                        + ((select_pred(sol)[filt_52] - select_pred(sol)[filt_62]) @ DFTO["ft"]) ** 2
+                    )
+                )
+                @ DFTO["tf"]
+            )
+            for sol in cont.sol_list
+        ]
+    )
 
 
 def extract_accepted(cont: Continuation):
@@ -84,7 +113,8 @@ def extract_bifurcation(cont: Continuation):
     cont_branching = Continuation(
         M=cont.M,
         sol_list=[
-            sol for sol in cont_bifurcation.sol_list
+            sol
+            for sol in cont_bifurcation.sol_list
             if sol.bifurcation_type is BifurcationType.BRANCHING
         ],
         chunk_list=cont.chunk_list,
@@ -93,38 +123,45 @@ def extract_bifurcation(cont: Continuation):
     return cont_bifurcation, cont_fold, cont_branching
 
 
-def nfrc_plotter():
-    fig_nfrc, ax_nfrc = plt.subplots()
+def continuation_plotter():
+    fig, ax = plt.subplots()
+    fold_style = {"color": "C1", "s": 50, "zorder": 2.5, "marker": "x"}
+    branching_style = {"color": "C6", "s": 50, "zorder": 2.5, "marker": "x"}
+    ax.scatter([], [], **fold_style, label="fold bifurcation")
+    ax.scatter([], [], **branching_style, label="branching point")
 
-    def plot(cont: Continuation):
+    def plot(cont: Continuation, ih=None, pred=False):
         cont_accepted, cont_rejected = extract_accepted(cont)
         cont_bifurcation, cont_fold, cont_branching = extract_bifurcation(cont_accepted)
 
         if len(cont_accepted) != 0:
             om_accepted = [sol.x[-1] for sol in cont_accepted.sol_list]
-            ampl_accepted = compute_amplitude(cont_accepted)
-            ax_nfrc.plot(om_accepted, ampl_accepted, label="NFRC")
+            ampl_accepted = compute_amplitude(cont_accepted, ih)
+            if pred:
+                pred_style = {"color": "C2", "zorder": 2.5, "marker": "."}
+                om_pred_accepted = [sol.x_pred[-1] for sol in cont_accepted.sol_list]
+                ampl_pred_accepted = compute_amplitude(cont_accepted, ih, pred)
+                ax.scatter(om_pred_accepted, ampl_pred_accepted, **pred_style, label="prediction")
+            if ih is None:
+                label = f"nh = {cont.M.system.nh}"
+            else:
+                label = f"ih = {ih}"
+            ax.plot(om_accepted, ampl_accepted, label=label, marker=".")
 
         if len(cont_fold) != 0:
             om_fold = [sol.x[-1] for sol in cont_fold.sol_list]
-            ampl_fold = compute_amplitude(cont_fold)
-            ax_nfrc.scatter(
-                om_fold, ampl_fold,
-                s=50, zorder=2.5, marker="x", color="C1", label="fold bifurcation",
-            )
+            ampl_fold = compute_amplitude(cont_fold, ih)
+            ax.scatter(om_fold, ampl_fold, **fold_style)
 
         if len(cont_branching) != 0:
             om_branching = [sol.x[-1] for sol in cont_branching.sol_list]
-            ampl_branching = compute_amplitude(cont_branching)
-            ax_nfrc.scatter(
-                om_branching, ampl_branching,
-                s=50, zorder=2.5, marker="x", color="C6", label="branching point",
-            )
+            ampl_branching = compute_amplitude(cont_branching, ih)
+            ax.scatter(om_branching, ampl_branching, **branching_style)
 
-        ax_nfrc.set_xlabel(r"$\omega$ [rad/s]")
-        ax_nfrc.set_ylabel(r"$\|\Delta \tilde{x}(\omega)\|/$gap")
-        ax_nfrc.legend()
-        fig_nfrc.show()
+        ax.set_xlabel(r"$\omega$ [rad/s]")
+        ax.set_ylabel(r"$\|\Delta x\|/g$")
+        ax.legend()
+        fig.show()
 
     return plot
 
@@ -135,15 +172,14 @@ def plot_orbit(cont: Continuation, **kwargs) -> None:
     Keyword args:
         id (int) or om, ampl (float, float):
           Either the index (id) of the solution in the provided list,
-          or a point (om, ampl) at which the nearest solution on the curve
-          will be used.
+          or a point (om, ampl) at which the nearest solution on the curve will be used.
         scale (float):
           Optional scaling factor used to exacerbate the radius values.
     """
     # Discrete fourier transform operator
     DFTO = compute_DFT(cont.M.system.nti, cont.M.system.nh)
     # Get indexes of relevant dofs and associated harmonics.
-    idx_51, idx_52, idx_61, idx_62 = _get_gap_idx(cont.M)
+    idx_51, idx_52, idx_61, idx_62 = _get_dof_idx(cont.M)
 
     # Check inputs
     if len(cont.sol_list) == 0:
@@ -179,7 +215,7 @@ def plot_orbit(cont: Continuation, **kwargs) -> None:
     if "scale" in kwargs:
         scale = kwargs["scale"]
         mean = np.mean(r)
-        r = mean + (r - mean) * scale
+        r_scaled = mean + (r - mean) * scale
 
     fig_orbit, ax_orbit = plt.subplots(subplot_kw={"projection": "polar"})
     ax_orbit.plot(
@@ -191,11 +227,11 @@ def plot_orbit(cont: Continuation, **kwargs) -> None:
         color="C2", linewidth=2, label="Mean",
     )
     ax_orbit.plot(
-        theta, r,
+        theta, r_scaled,
         color="C0", linewidth=2, label="Rotor motion",
     )
     ax_orbit.scatter(
-        theta[r > 1], r[r > 1],
+        theta[r > 1], r_scaled[r > 1],
         s=15, marker="o", zorder=2.5, color="C6", label="displacement > gap",
     )
     ax_orbit.set_title(f"Freq: {om:.4f} Hz, Mean ampl: {ampl:.4f}")
@@ -206,18 +242,19 @@ def plot_orbit(cont: Continuation, **kwargs) -> None:
     fig_orbit.show()
 
 
-def solve(hb_list: list[tuple[int, int]], chunck_list: list[dict]) -> list[Continuation]:
+def solve(nh_list: list[tuple[int, int]], chunck_list: list[dict]) -> list[Continuation]:
     cont_list = []
-    for i, (nh, nti) in enumerate(hb_list):
+    for i, nh in enumerate(nh_list):
         x0 = None
         M_chunck_list = []
-        hb_params = {"system": SYSTEM | {"nh": nh, "nti": nti}}
+        hb_params = {"system": SYSTEM | {"nh": nh}}
         for chunck in chunck_list:
             M = Maestro(MODEL | hb_params | chunck)
-            M.operate(x0)
-            x0 = (
-                M.nls["cont"].SolList[-1].x[:-1]
-            )  # TODO: take the last *valid* solution
+            try:
+                M.operate(x0)
+            except KeyboardInterrupt:
+                pass
+            x0 = M.nls["cont"].SolList[-1].x[:-1]  # TODO: take the last *valid* solution
             M_chunck_list.append(M)
         cont_list.append(
             Continuation(
@@ -232,20 +269,13 @@ def solve(hb_list: list[tuple[int, int]], chunck_list: list[dict]) -> list[Conti
 def main():
     load_rcparams()
 
-    hb_list = [(0, 1024)]
-    # hb_list = [(1, 1024), (2, 1024), (3, 1024), (4, 1024), (5, 1024)]
-    # hb_list = [(3, 1024), (5, 1024), (12, 1024)]
+    nh_list = [1]
     chunck_list = CHUNCK_LIST
 
-    # This try-except acts as an interactive StopCriterion on CTRL-C
-    # FIX: pyHarm_plugin print warning each time a Maestro is created
-    try:
-        cont_list = solve(hb_list, chunck_list)
-    except KeyboardInterrupt:
-        pass
+    cont_list = solve(nh_list, chunck_list)
 
-    plot_nfrc = nfrc_plotter()
+    plot_cont = continuation_plotter()
     for cont in cont_list:
-        plot_nfrc(cont)
+        plot_cont(cont)
 
     return locals()

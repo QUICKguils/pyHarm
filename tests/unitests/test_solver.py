@@ -36,11 +36,11 @@ def test_SystemSolution_SaveSolution() -> None:
     S = SystemSolution(fake_disp_vector)
     List_of_solutions = list()
     with pytest.raises(ValueError):
-        assert S.SaveSolution(List_of_solutions)
+        assert S.save(List_of_solutions)
     assert len(List_of_solutions) == 0
     for flag in FLAGS_CHECKCOMPLETE:
         setattr(S, flag, True)
-    S.SaveSolution(List_of_solutions)
+    S.save(List_of_solutions)
     assert len(List_of_solutions) == 1
     assert List_of_solutions[0] == S
 
@@ -63,7 +63,7 @@ def test_SystemSolution_convertJacobian_full_to_lu() -> None:
     )
     S.J_f = J_F
     S.flag_J_f = True
-    _ = S.convertJacobian("full", "lu")
+    _ = S.convert_jacobian("full", "lu")
     assert S.flag_J_lu
     assert np.allclose(S.J_lu[1], np.tril(S.J_lu[1]))
     assert np.allclose(S.J_lu[2], np.triu(S.J_lu[2]))
@@ -88,7 +88,7 @@ def test_SystemSolution_convertJacobian_full_to_qr() -> None:
     )
     S.J_f = J_F
     S.flag_J_f = True
-    _ = S.convertJacobian("full", "qr")
+    _ = S.convert_jacobian("full", "qr")
     assert S.flag_J_qr
     assert np.allclose(S.J_qr[1], np.triu(S.J_qr[1]))
     assert np.allclose(S.J_qr[0].T @ S.J_qr[0], np.eye(3))
@@ -113,13 +113,13 @@ def test_SystemSolution_getJacobian() -> None:
     )
     S.J_f = J_F
     S.flag_J_f = True
-    assert S.getJacobian("shallreturnnone") == None
+    assert S.get_jacobian("shallreturnnone") == None
     S.flag_J = True
     with pytest.raises(ValueError):
-        _ = S.getJacobian("shallraiseerror")
-    _ = S.getJacobian("qr")
+        _ = S.get_jacobian("shallraiseerror")
+    _ = S.get_jacobian("qr")
     S.flag_J_f = False
-    _ = S.getJacobian("full")
+    _ = S.get_jacobian("full")
     assert np.allclose(S.J_f, S.J_qr[0] @ S.J_qr[1])
 
 
