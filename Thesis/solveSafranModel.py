@@ -139,9 +139,15 @@ def continuation_plotter():
             ampl_accepted = compute_amplitude(cont_accepted, ih)
             if pred:
                 pred_style = {"color": "C2", "zorder": 2.5, "marker": "."}
-                om_pred_accepted = [sol.x_pred[-1] for sol in cont_accepted.sol_list]
-                ampl_pred_accepted = compute_amplitude(cont_accepted, ih, pred)
+                om_pred_accepted = np.array([sol.x_pred[-1] for sol in cont_accepted.sol_list[:-1]])
+                ampl_pred_accepted = compute_amplitude(cont_accepted, ih, pred=True)[:-1]
                 ax.scatter(om_pred_accepted, ampl_pred_accepted, **pred_style, label="prediction")
+                for i in range(len(om_accepted)-1):
+                    ax.plot(
+                        [om_pred_accepted[i], om_accepted[i]],
+                        [ampl_pred_accepted[i], ampl_accepted[i]],
+                        color="C2",
+                    )
             if ih is None:
                 label = f"nh = {cont.M.system.nh}"
             else:
@@ -276,6 +282,6 @@ def main():
 
     plot_cont = continuation_plotter()
     for cont in cont_list:
-        plot_cont(cont)
+        plot_cont(cont, pred=True)
 
     return locals()

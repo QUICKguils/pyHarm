@@ -63,7 +63,7 @@ class PredictorSecant(PredictorTangent):
             float: sign of the prediction used (-1 | 1)
         """
         # Get pointer to solution and bifurcation detection
-        lstpt = self.getPointerToSolution(SolList, k_imposed)
+        lstpt = self.get_last_point(SolList, k_imposed)
         if self.predictor_options["bifurcation_detect"]:
             self.bifurcation_detect(lstpt)
         if isinstance(lstpt, FirstSolution):

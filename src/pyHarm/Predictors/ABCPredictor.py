@@ -34,8 +34,8 @@ class ABCPredictor(abc.ABC):
     Any added predictor shall be constructed from this class.
 
     Args:
-        sign_ds (float):
-          if -1 predict in the direction of decreasing angular frequency, if 1 the opposite direction.
+        dir (np.ndarray):
+            Normalized tangent vector at the last solved point.
 
     Attributes:
         flag_print (bool):
@@ -69,28 +69,31 @@ class ABCPredictor(abc.ABC):
     of bifurcations is to be displayed during solving.
     """
 
-    def __init__(self, sign_ds, **kwargs):
-        self.sign_ds_init = sign_ds  # XXX: seems to never been used
-        self.sign_ds = sign_ds
+    def __init__(self, dir, **kwargs):
+        self.dir = dir
         self.predictor_options = getCustomOptionDictionary(kwargs, self.default_options)
         self.flag_print = self.predictor_options["verbose"]
 
     @abc.abstractmethod
     def predict(
         self, SolList: list[SystemSolution], ds: float
-    ) -> tuple[np.ndarray, SystemSolution, float]:
-        """Predicts the next starting point.
+    ) -> tuple[np.ndarray, SystemSolution]:
+        """Predict the next starting point.
 
         Args:
             SolList (list[SystemSolution]): list of SystemSolution already solved during the analysis.
             ds (float): Step size for the prediction.
+
+        Returns:
+            np.ndarray: Next predicted starting point.
+            SystemSolution: last accepted point in the list of solutions.
         """
         pass
 
     def bifurcation_detect(self, lstpt: SystemSolution):
         """
         Makes a bifurcation detection analysis computing determinant of jacobian matrix
-        and analysing change of sign.
+        and analyzing change of sign.
 
         Args:
             lstpt (SystemSolution): Previously accepted point in direct link
@@ -117,16 +120,14 @@ class ABCPredictor(abc.ABC):
             lstpt.flag_bifurcation = True
             if np.sign(det_J_f) == np.sign(det_J_f_prec) or np.sign(det_J_f) != np.sign(det_J_x):
                 lstpt.bifurcation_type = BifurcationType.FOLD
-                self.sign_ds *= -1
             else:
                 lstpt.bifurcation_type = BifurcationType.BRANCHING
 
             if self.flag_print:
                 print(f"Warning: a {lstpt.bifurcation_type.value} was detected")
-                if lstpt.bifurcation_type is BifurcationType.FOLD:
-                    print("--> path direction is reversed")
 
-    def getPointerToSolution(self, sollist: list[SystemSolution], k_imposed=None) -> SystemSolution:
+    @staticmethod
+    def get_last_point(sollist: list[SystemSolution], k_imposed=None) -> SystemSolution:
         """Gets the last accepted solution in direct link with the studied point.
 
         Args:

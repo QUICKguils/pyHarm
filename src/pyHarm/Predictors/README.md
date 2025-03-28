@@ -11,12 +11,12 @@ presents the different classes that are available in this module.
 The **ABCPredictor** class is an abstract class defining the essential
 components of any nonlinear solver. One abstract method is defined :
 
-| Methods                | Use                                                                                                                    |
-| :-                     | :-                                                                                                                     |
-| `bifurcation_detect`   | Returns a flag if a bifurcation is encountered. Switches the direction of prediction if a turning point is encountered |
-| `getPointerToSolution` | Returns the last accepted point from the **SystemSolution** list                                                       |
-| `norm_dir`             | Normalises the prediction direction depending on the required normalisation policy                                     |
-| `predict`              | *Abstract method* : Returns the predicted point                                                                        |
+| Methods              | Use                                                                                                                    |
+| :-                   | :-                                                                                                                     |
+| `bifurcation_detect` | Returns a flag if a bifurcation is encountered. Switches the direction of prediction if a turning point is encountered |
+| `get_last_point`     | Returns the last accepted point from the **SystemSolution** list                                                       |
+| `normalize`          | Normalises the prediction direction depending on the required normalisation policy                                     |
+| `predict`            | *Abstract method* : Returns the predicted point                                                                        |
 
 The parameters associated with the predictors are the following :
 

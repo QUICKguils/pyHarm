@@ -78,7 +78,7 @@ CHUNCK_ALL = {
             "sign_ds": 1,
             "verbose": True,
             "stepsizer": "acceptance",  # NOTE: originally acceptance
-            "predictor": "mytangent",
+            "predictor": "tangent",
             "reductors": [  # NOTE: originally activated
                 {
                     "type": "globalHarmonic",
@@ -133,7 +133,7 @@ CHUNCK_2 = {
             "sign_ds": 1,
             "verbose": True,
             "stepsizer": "myacceptance",
-            "predictor": "tangent",
+            "predictor": "mytangent",
             # "reductors": [
             #     {
             #         "type": "globalHarmonic",

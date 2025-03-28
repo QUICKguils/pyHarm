@@ -14,7 +14,7 @@ class PredictorMyTangent(ABCPredictor):
 
     def predict(
         self, SolList: list[SystemSolution], ds: float, k_imposed=None
-    ) -> tuple[np.ndarray, SystemSolution, float]:
+    ) -> tuple[np.ndarray, SystemSolution]:
         """Predicts the next starting point using the tangent.
 
         Args:
@@ -26,10 +26,8 @@ class PredictorMyTangent(ABCPredictor):
         Returns:
             np.ndarray: next predicted starting point.
             SystemSolution: last accepted point in the list of solutions.
-            float: sign of the prediction used (-1 | 1).
-            float: direction of the prediction used (-1 | 1).
         """
-        last_sol = self.getPointerToSolution(SolList, k_imposed)
+        last_sol = self.get_last_point(SolList, k_imposed)
         prev_sol = last_sol.precedent_solution
         last_sol.get_jacobian("full")  # this makes lstpt.J_f available
         solx_len = last_sol.J_f[:-1, :-1].shape[0]
@@ -64,4 +62,4 @@ class PredictorMyTangent(ABCPredictor):
         last_sol.dir = dir
         last_sol.x_pred = xpred
 
-        return xpred, last_sol, self.sign_ds
+        return xpred, last_sol

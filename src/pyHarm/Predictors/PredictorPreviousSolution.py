@@ -50,7 +50,7 @@ class PredictorPreviousSolution(ABCPredictor):
             float: sign of the prediction used (-1 | 1)
         """
         # Get pointer to solution, Jacobian in full mode, and bifurcation detection
-        lstpt = self.getPointerToSolution(sollist, k_imposed)  # get pointer
+        lstpt = self.get_last_point(sollist, k_imposed)  # get pointer
         lstpt.get_jacobian("full")  # get J_f
         self.bifurcation_detect(lstpt)  # get pointer
         dir = np.zeros(lstpt.x.shape)  # no normalisation needed already normalized to norm=1

@@ -50,9 +50,9 @@ def test_ABCPredictor_norm_dir(mock_abcpredictor: ABCPredictor) -> None:
 @pytest.mark.unit
 def test_ABCPredictor_getPointerToSolution(mock_abcpredictor: ABCPredictor) -> None:
     sollist = [SOL_ACCEPT, SOL_NOTACC]
-    assert mock_abcpredictor.getPointerToSolution(sollist, k_imposed=0) == SOL_ACCEPT
-    assert mock_abcpredictor.getPointerToSolution(sollist, k_imposed=1) == SOL_NOTACC
-    assert mock_abcpredictor.getPointerToSolution(sollist, k_imposed=None) == SOL_ACCEPT
+    assert mock_abcpredictor.get_last_point(sollist, k_imposed=0) == SOL_ACCEPT
+    assert mock_abcpredictor.get_last_point(sollist, k_imposed=1) == SOL_NOTACC
+    assert mock_abcpredictor.get_last_point(sollist, k_imposed=None) == SOL_ACCEPT
 
 
 @pytest.mark.all

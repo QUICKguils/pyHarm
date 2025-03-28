@@ -7,7 +7,7 @@ import numpy as np
 
 from pyHarm.DynamicOperator import compute_DFT
 from pyHarm.Maestro import Maestro
-from pyHarm.Predictors.ABCPredictor import BifurcationType
+from pyHarm.Predictors.ABCPredictor import ABCPredictor, BifurcationType
 from pyHarm.Solver import SystemSolution
 
 from .mplrc import load_rcparams
@@ -117,13 +117,19 @@ def continuation_plotter():
         cont_bifurcation, cont_fold, cont_branching = extract_bifurcation(cont_accepted)
 
         if len(cont_accepted) != 0:
-            om_accepted = [sol.x[-1] for sol in cont_accepted.sol_list]
+            om_accepted = np.array([sol.x[-1] for sol in cont_accepted.sol_list])
             ampl_accepted = compute_amplitude(cont_accepted, ih)
             if pred:
                 pred_style = {"color": "C2", "zorder": 2.5, "marker": "."}
-                om_pred_accepted = [sol.x_pred[-1] for sol in cont_accepted.sol_list]
-                ampl_pred_accepted = compute_amplitude(cont_accepted, ih, pred)
+                om_pred_accepted = np.array([sol.x_pred[-1] for sol in cont_accepted.sol_list[:-1]])
+                ampl_pred_accepted = compute_amplitude(cont_accepted, ih, pred=True)[:-1]
                 ax.scatter(om_pred_accepted, ampl_pred_accepted, **pred_style, label="prediction")
+                for i in range(len(om_accepted)-1):
+                    ax.plot(
+                        [om_pred_accepted[i], om_accepted[i]],
+                        [ampl_pred_accepted[i], ampl_accepted[i]],
+                        color="C2",
+                    )
             if ih is None:
                 label = f"nh = {cont.M.system.nh}"
             else:
@@ -156,8 +162,12 @@ def solve(nh_list: list[tuple[int, int]], chunck_list: list[dict]) -> list[Conti
         hb_params = {"system": SYSTEM | {"nh": nh}}
         for chunck in chunck_list:
             M = Maestro(MODEL | hb_params | chunck)
-            M.operate(x0)
-            x0 = M.nls["cont"].SolList[-1].x[:-1]  # TODO: take the last *valid* solution
+            try:
+                M.operate(x0)
+            except KeyboardInterrupt:
+                pass
+            lstpt = ABCPredictor.get_last_point(M.nls["cont"].SolList)
+            x0 = lstpt.x[:-1]
             M_chunck_list.append(M)
         cont_list.append(
             Continuation(
@@ -179,6 +189,6 @@ def main():
 
     plot_cont = continuation_plotter()
     for cont in cont_list:
-        plot_cont(cont)
+        plot_cont(cont, pred=True)
 
     return locals()

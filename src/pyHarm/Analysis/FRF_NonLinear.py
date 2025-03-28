@@ -58,8 +58,6 @@ class FRF_NonLinear(ABCAnalysis):
         "solver": "scipyroot",
         "predictor": "tangent",
         "corrector": "arc_length",
-        # FIX: I think "preconditioner" key is never used
-        "preconditioner": "nopreconditioner",
         "reductors": [{"type": "noreductor"}],
         "stepsizer": "acceptance",
         "stopper": "bounds",
@@ -271,7 +269,7 @@ class FRF_NonLinear(ABCAnalysis):
         # obtain the starting point
         self.ds = self.adaptstep.getStepSize(self.ds, self.SolList)
 
-        xpred_full, last_solution_pointer, sign_ds = self.predictor.predict(self.SolList, self.ds)
+        xpred_full, last_solution_pointer = self.predictor.predict(self.SolList, self.ds)
 
         ## update the reductor --> need to use old version of the reduce
         xpred_red, _, output_expl_dofs = self._update_reductor(xpred_full, last_solution_pointer)
@@ -279,7 +277,6 @@ class FRF_NonLinear(ABCAnalysis):
         sol = SystemSolution(xpred_red, last_solution_pointer)
         sol.ds = self.ds
         sol.dir = dir
-        sol.sign_ds = sign_ds
         self.solver.solve(sol)
         self.complete_solution(sol)
         if "index_insolve" in kwargs:

@@ -1,32 +1,12 @@
-# Copyright 2024 SAFRAN SA
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import numpy as np
 from scipy import linalg
 
 from pyHarm.Predictors.ABCPredictor import ABCPredictor
-from pyHarm.Solver import SystemSolution
+from pyHarm.Solver import FirstSolution, SystemSolution
 
 
 class PredictorTangent(ABCPredictor):
-    """Define the tangent type of predictor.
-
-    Using the Jacobian at solution point, a tangent to R(x)=0 solution is drawn and used as a
-    prediction direction.
-
-    The tangent is computed using a QR decomposition of the Jacobian at the solution point.
-    """
+    """Implement a tangent-type predictor."""
 
     predictor_name = "Tangent Predictor"
     factory_keyword: str = "tangent"
@@ -34,7 +14,7 @@ class PredictorTangent(ABCPredictor):
 
     def predict(
         self, SolList: list[SystemSolution], ds: float, k_imposed=None
-    ) -> tuple[np.ndarray, SystemSolution, float]:
+    ) -> tuple[np.ndarray, SystemSolution]:
         """Predicts the next starting point using the tangent.
 
         Args:
@@ -46,27 +26,34 @@ class PredictorTangent(ABCPredictor):
         Returns:
             np.ndarray: next predicted starting point.
             SystemSolution: last accepted point in the list of solutions.
-            float: sign of the prediction used (-1 | 1).
-            float: direction of the prediction used (-1 | 1).
         """
-        lstpt = self.getPointerToSolution(SolList, k_imposed)
-        lstpt.get_jacobian("full")  # this makes lstpt.J_f available
+        last_sol = self.get_last_point(SolList, k_imposed)
+        prev_sol = last_sol.precedent_solution
+        last_sol.get_jacobian("full")  # this makes lstpt.J_f available
+        solx_len = last_sol.J_f[:-1, :-1].shape[0]
 
         if self.predictor_options["bifurcation_detect"]:
-            self.bifurcation_detect(lstpt)
+            self.bifurcation_detect(last_sol)
 
-        # QR decomposition of transpose of Jacobian, without correction equation
-        lstpt.J_x_T_qr = linalg.qr(np.transpose(lstpt.J_f[:-1, :]))
-
-        # Evaluate the direction of zero gradient for the redsidual
-        dir = np.sign(lstpt.J_x_T_qr[0][-1, -1]) * lstpt.J_x_T_qr[0][:, -1]
-        dir = self.normalize(dir) * np.sign(dir[-1])  # keep an omega-positive direction
+        if isinstance(last_sol, FirstSolution):
+            prev_dir = np.vstack((np.zeros((solx_len, 1)), last_sol.sign_ds))
+        else:
+            prev_dir = prev_sol.dir
+        A = np.vstack((last_sol.J_f[:-1, :], prev_dir.T))
+        b = np.vstack((np.zeros((solx_len, 1)), 1))
+        dir = linalg.solve(A, b).ravel()
+        dir = self.normalize(dir)
 
         # Euler prediction: step along the tangent to the solution branch
-        xpred = lstpt.x + dir * ds * self.sign_ds
+        xpred = last_sol.x + dir * ds
+
+        # # Debug prints
+        # print(f"{ds=}, {self.sign_ds=}")
+        # print(f"{dir=}")
+        # print(f"{xpred=}")
 
         # write in the previous computed solution
-        lstpt.dir = dir
-        lstpt.x_pred = xpred
+        last_sol.dir = dir
+        last_sol.x_pred = xpred
 
-        return xpred, lstpt, self.sign_ds
+        return xpred, last_sol
