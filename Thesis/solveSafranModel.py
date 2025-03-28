@@ -105,8 +105,7 @@ def extract_bifurcation(cont: Continuation):
     cont_fold = Continuation(
         M=cont.M,
         sol_list=[
-            sol for sol in cont_bifurcation.sol_list
-            if sol.bifurcation_type is BifurcationType.FOLD
+            sol for sol in cont_bifurcation.sol_list if sol.bifurcation_type is BifurcationType.FOLD
         ],
         chunk_list=cont.chunk_list,
     )
@@ -138,7 +137,7 @@ def continuation_plotter():
             om_accepted = [sol.x[-1] for sol in cont_accepted.sol_list]
             ampl_accepted = compute_amplitude(cont_accepted, ih)
             if pred:
-                pred_style = {"color": "C2", "zorder": 2.5, "marker": "."}
+                pred_style = {"color": "C7", "marker": "."}
                 om_pred_accepted = np.array([sol.x_pred[-1] for sol in cont_accepted.sol_list[:-1]])
                 ampl_pred_accepted = compute_amplitude(cont_accepted, ih, pred=True)[:-1]
                 ax.scatter(om_pred_accepted, ampl_pred_accepted, **pred_style, label="prediction")
@@ -146,7 +145,7 @@ def continuation_plotter():
                     ax.plot(
                         [om_pred_accepted[i], om_accepted[i]],
                         [ampl_pred_accepted[i], ampl_accepted[i]],
-                        color="C2",
+                        color="C7", linewidth=0.8,
                     )
             if ih is None:
                 label = f"nh = {cont.M.system.nh}"
