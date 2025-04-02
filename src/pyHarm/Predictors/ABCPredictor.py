@@ -54,6 +54,7 @@ class ABCPredictor(abc.ABC):
     default_options = {
         "norm": "norm1",
         "bifurcation_detect": True,
+        "blind_spot": 30,
         "verbose": True,
     }
     """
@@ -65,12 +66,14 @@ class ABCPredictor(abc.ABC):
     angular frequency.
     It contains a bifurcation detection using the 'bifurcation_detect' keyword that can be set to
     True (default) if detection is needed.
+    It contains a 'blind_angle' keyword that sets a blind angle to avoid the predictor to search in
+    the inwards direction.
     It contains a 'verbose' keyword that can be set to True (default) if information about detection
     of bifurcations is to be displayed during solving.
     """
 
-    def __init__(self, dir, **kwargs):
-        self.dir = dir
+    def __init__(self, sign_ds, **kwargs):
+        self.sign_ds = sign_ds
         self.predictor_options = getCustomOptionDictionary(kwargs, self.default_options)
         self.flag_print = self.predictor_options["verbose"]
 
@@ -90,7 +93,7 @@ class ABCPredictor(abc.ABC):
         """
         pass
 
-    def bifurcation_detect(self, lstpt: SystemSolution):
+    def bifurcation_detect(self, last_sol: SystemSolution):
         """
         Makes a bifurcation detection analysis computing determinant of jacobian matrix
         and analyzing change of sign.
@@ -103,28 +106,37 @@ class ABCPredictor(abc.ABC):
             sign_ds (float): Attribute is modified if a fold bifurcation is detected.
             bifurcation_type (BifurcationType): Attribute is assigned if a bifurcation is detected.
         """
-        Jaco = lstpt.get_jacobian("full")
+        J = last_sol.get_jacobian("full")
+        prev_sol = last_sol.precedent_solution
         # XXX: heavy to compute dets. Consider bordering techniques
-        det_J_f = spl.det(Jaco)
-        det_J_x = spl.det(Jaco[:-1, :-1])
-        lstpt.det_J_f = det_J_f
-        lstpt.det_J_x = det_J_x
-        if isinstance(lstpt, FirstSolution):
-            det_J_x_prec = det_J_x
-            det_J_f_prec = det_J_f
+        det_J = spl.det(J)
+        det_J_x = spl.det(J[:-1, :-1])
+        last_sol.det_J_f = det_J
+        last_sol.det_J_x = det_J_x
+        if isinstance(last_sol, FirstSolution):
+            det_J_x_prev = det_J_x
+            det_J_f_prev = det_J
         else:
-            det_J_x_prec = lstpt.precedent_solution.det_J_x
-            det_J_f_prec = lstpt.precedent_solution.det_J_f
+            det_J_x_prev = prev_sol.det_J_x
+            det_J_f_prev = prev_sol.det_J_f
 
-        if np.sign(det_J_x) != np.sign(det_J_x_prec):
-            lstpt.flag_bifurcation = True
-            if np.sign(det_J_f) == np.sign(det_J_f_prec) or np.sign(det_J_f) != np.sign(det_J_x):
-                lstpt.bifurcation_type = BifurcationType.FOLD
+        if np.sign(det_J_x) != np.sign(det_J_x_prev):
+            last_sol.flag_bifurcation = True
+            if np.sign(det_J) == np.sign(det_J_f_prev) or np.sign(det_J) != np.sign(det_J_x):
+                last_sol.bifurcation_type = BifurcationType.FOLD
             else:
-                lstpt.bifurcation_type = BifurcationType.BRANCHING
-
+                last_sol.bifurcation_type = BifurcationType.BRANCHING
+                self.sign_ds *= -1
             if self.flag_print:
-                print(f"Warning: a {lstpt.bifurcation_type.value} was detected")
+                print(f"Warning: a {last_sol.bifurcation_type.value} was detected")
+        elif (
+            not isinstance(last_sol, FirstSolution)
+            and np.dot(prev_sol.dir, last_sol.dir) < -np.cos(np.deg2rad(self.predictor_options["blind_spot"]/2))
+        ):
+            last_sol.flag_bifurcation = True
+            self.sign_ds *= -1
+            if self.flag_print:
+                print("A potential higher order bifurcation is detected")
 
     @staticmethod
     def get_last_point(sollist: list[SystemSolution], k_imposed=None) -> SystemSolution:

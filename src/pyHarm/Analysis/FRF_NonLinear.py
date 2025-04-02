@@ -269,12 +269,13 @@ class FRF_NonLinear(ABCAnalysis):
         # obtain the starting point
         self.ds = self.adaptstep.getStepSize(self.ds, self.SolList)
 
-        xpred_full, last_solution_pointer = self.predictor.predict(self.SolList, self.ds)
+        last_sol = self.predictor.predict(self.SolList, self.ds)
+        xpred_full = last_sol.x_pred
 
         ## update the reductor --> need to use old version of the reduce
-        xpred_red, _, output_expl_dofs = self._update_reductor(xpred_full, last_solution_pointer)
+        xpred_red, _, output_expl_dofs = self._update_reductor(xpred_full, last_sol)
 
-        sol = SystemSolution(xpred_red, last_solution_pointer)
+        sol = SystemSolution(xpred_red, last_sol)
         sol.ds = self.ds
         sol.dir = dir
         self.solver.solve(sol)

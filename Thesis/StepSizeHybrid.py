@@ -46,7 +46,7 @@ class StepSizeHybrid(ABCStepSizeRule):
         sol = sollist[-1]
 
         if (not sol.flag_accepted) and (ds > self.ds_min):
-            ds /= 6
+            ds /= 3
         try:
             acc = np.array([sol.flag_accepted for sol in sollist[-self.consecutive_accept : :]])
             if np.sum(acc) == self.consecutive_accept and ds < self.ds_max:

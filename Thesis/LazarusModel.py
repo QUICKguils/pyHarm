@@ -4,6 +4,7 @@ import numpy as np
 
 from .StepSizeMyAcceptance import StepSizeMyAcceptance
 from .PredictorMyTangent import PredictorMyTangent
+from .SolverMyNewtonRaphson import SolverMyNewtonRaphson
 
 # Build the linear part of the Duffing oscillator
 linsys = dict()
@@ -13,7 +14,7 @@ linsys["K"] = np.array([1])
 linsys["G"] = 0 * linsys["M"]
 
 MODEL = {
-    "plugin": [StepSizeMyAcceptance, PredictorMyTangent],
+    "plugin": [StepSizeMyAcceptance, PredictorMyTangent, SolverMyNewtonRaphson],
     "analysis": {},
     "system": {},
     "substructures": {
@@ -54,26 +55,30 @@ CHUNCK_ALL = {
     "analysis": {
         "cont": {
             "study": "frf",
+
+            # # Quick test on first peak
+            # "puls_inf": 0.01,
+            # "puls_start": 0.1,
+            # "puls_sup": 0.3,
+            # "ds0": 1e-2,
+            # "ds_min": 1e-8,
+            # "ds_max": 5e-2,
+
             "puls_inf": 0.01,
             "puls_start": 0.1,
-            # "puls_sup": 5.0,
-            "puls_sup": 0.3,
-
-            "ds0": 1e-2,
+            "puls_sup": 5.0,
+            "ds0": 5e-3,
             "ds_min": 1e-8,
             "ds_max": 5e-2,
 
-            # "ds0": 1e-1,
-            # "ds_min": 1e-3,
-            # "ds_max": 2e-1,
-
             "sign_ds": 1,
             "verbose": True,
-            "stepsizer": "myacceptance",
+            "stepsizer": "acceptance",
             "predictor": "tangent",
             "corrector": "arc_length",
             "stopper": "bounds",
-            "solver": "scipyroot",
+            "solver": "MyNewtonRaphson",
+            # "solver": "NewtonRaphson",
         },
     },
 }

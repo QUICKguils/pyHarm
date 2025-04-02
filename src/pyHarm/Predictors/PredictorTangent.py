@@ -1,8 +1,22 @@
+# Copyright 2024 SAFRAN SA
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import numpy as np
 from scipy import linalg
 
 from pyHarm.Predictors.ABCPredictor import ABCPredictor
-from pyHarm.Solver import FirstSolution, SystemSolution
+from pyHarm.Solver import SystemSolution
 
 
 class PredictorTangent(ABCPredictor):
@@ -28,32 +42,17 @@ class PredictorTangent(ABCPredictor):
             SystemSolution: last accepted point in the list of solutions.
         """
         last_sol = self.get_last_point(SolList, k_imposed)
-        prev_sol = last_sol.precedent_solution
-        last_sol.get_jacobian("full")  # this makes lstpt.J_f available
-        solx_len = last_sol.J_f[:-1, :-1].shape[0]
+
+        # See Allgower, p.29 : Jacobian tangent from its QR decomposition
+        last_sol.get_jacobian("full")  # this makes last_sol.J_f available
+        Q, R = linalg.qr(np.transpose(last_sol.J_f[:-1,:]))
+        sign = - np.sign(np.prod(np.diag(R)))  # sign = sign(det(R)*det(Q)), with det(Q) = 1
+        last_sol.dir = sign * Q[:, -1]
 
         if self.predictor_options["bifurcation_detect"]:
             self.bifurcation_detect(last_sol)
 
-        if isinstance(last_sol, FirstSolution):
-            prev_dir = np.vstack((np.zeros((solx_len, 1)), last_sol.sign_ds))
-        else:
-            prev_dir = prev_sol.dir
-        A = np.vstack((last_sol.J_f[:-1, :], prev_dir.T))
-        b = np.vstack((np.zeros((solx_len, 1)), 1))
-        dir = linalg.solve(A, b).ravel()
-        dir = self.normalize(dir)
-
         # Euler prediction: step along the tangent to the solution branch
-        xpred = last_sol.x + dir * ds
+        last_sol.x_pred = last_sol.x + self.sign_ds * ds * last_sol.dir
 
-        # # Debug prints
-        # print(f"{ds=}, {self.sign_ds=}")
-        # print(f"{dir=}")
-        # print(f"{xpred=}")
-
-        # write in the previous computed solution
-        last_sol.dir = dir
-        last_sol.x_pred = xpred
-
-        return xpred, last_sol
+        return last_sol

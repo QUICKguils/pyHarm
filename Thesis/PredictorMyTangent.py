@@ -35,12 +35,6 @@ class PredictorMyTangent(ABCPredictor):
         if self.predictor_options["bifurcation_detect"]:
             self.bifurcation_detect(last_sol)
 
-        # # QR decomposition of transpose of Jacobian, without correction equation
-        # Q, R = linalg.qr(np.transpose(lstpt.J_f))
-        # #
-        # # Evaluate the direction of zero gradient for the redsidual
-        # dir = np.sign(R.diagonal()).prod() * Q[:, -1]
-
         if isinstance(last_sol, FirstSolution):
             prev_dir = np.vstack((np.zeros((solx_len, 1)), last_sol.sign_ds))
         else:

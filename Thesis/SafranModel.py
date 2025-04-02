@@ -5,12 +5,13 @@ import pathlib
 import numpy as np
 
 from .StepSizeMyAcceptance import StepSizeMyAcceptance
+from .StepSizeHybrid import StepSizeHybrid
 from .PredictorMyTangent import PredictorMyTangent
 
 MODEL_PATH = pathlib.Path(__file__).parent / "res"
 
 MODEL = {
-    "plugin": [StepSizeMyAcceptance, PredictorMyTangent],
+    "plugin": [StepSizeMyAcceptance, StepSizeHybrid, PredictorMyTangent],
     "analysis": {},
     "system": {},
     "substructures": {
@@ -77,7 +78,7 @@ CHUNCK_ALL = {
             "ds_max": 1e-1,
             "sign_ds": 1,
             "verbose": True,
-            "stepsizer": "acceptance",  # NOTE: originally acceptance
+            "stepsizer": "hybrid",  # NOTE: originally acceptance
             "predictor": "tangent",  # NOTE: originally tangent
             "reductors": [  # NOTE: originally activated
                 {
@@ -88,9 +89,11 @@ CHUNCK_ALL = {
                     "verbose": False,
                 },
             ],
-            "corrector": "arc_length",
+            "corrector": "pseudo_arc_length",
             "stopper": "bounds",
-            "solver": "scipyroot",
+            # "solver": "scipyroot",
+            # "solver": "NewtonRaphson",
+            "solver": "MoorePenrose",
         },
     },
 }

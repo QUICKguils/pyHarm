@@ -39,8 +39,8 @@ class SolverNewtonRaphson(ABCNLSolver):
     default = {
         "tol_residual": 1e-8,
         "tol_delta_x": 1e-8,
-        "max_iter": 50,
-    }  # Maximum iterations accepted before confirming divergence
+        "max_iter": 50,  # Maximum iterations accepted before confirming divergence
+    }
     """dict: dictionary containing the default solver_options"""
 
     def __post_init__(self):
