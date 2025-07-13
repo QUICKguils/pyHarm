@@ -15,7 +15,7 @@
 import numpy as np
 
 from pyHarm.Predictors.ABCPredictor import ABCPredictor
-from pyHarm.Solver import SystemSolution
+from pyHarm.Solver import SystemSolution, get_last_solution
 
 
 class PredictorPreviousSolution(ABCPredictor):
@@ -30,36 +30,27 @@ class PredictorPreviousSolution(ABCPredictor):
 
     predictor_name = "Previous Solution Predictor"
 
-    def predict(
-        self, sollist: list[SystemSolution], ds: float, k_imposed=None
-    ) -> tuple[np.ndarray, SystemSolution, float]:
-        """
-        Predicts the next starting point by taking the previous solution and
-        making a step in angular frequency.
+    def predict(self, solList: list[SystemSolution], ds: float, k_imposed=None) -> SystemSolution:
+        """Predicts the next starting point by taking the previous solution and making a step in angular frequency.
 
         Args:
-            sollist (list[SystemSolution]): list of SystemSolution already
-              solved during the analysis.
+            SolList (list[SystemSolution]): list of SystemSolution already solved during the analysis.
             ds (float): step size for the prediction.
-            k_imposed (None | int): if not None, uses the k_imposed as the
-              index of the last solution pointer.
+            k_imposed (None | int): if not None, uses the k_imposed as the index of the last solution pointer.
 
         Returns:
-            np.ndarray: next predicted starting point.
-            SystemSolution: last accepted point in the list of solutions.
-            float: sign of the prediction used (-1 | 1)
+            SystemSolution: last accepted solution of SolList, with computed prediction written in it.
         """
         # Get pointer to solution, Jacobian in full mode, and bifurcation detection
-        lstpt = self.get_last_point(sollist, k_imposed)  # get pointer
-        lstpt.get_jacobian("full")  # get J_f
-        self.bifurcation_detect(lstpt)  # get pointer
-        dir = np.zeros(lstpt.x.shape)  # no normalisation needed already normalized to norm=1
+        last_sol = get_last_solution(solList, k_imposed)
+        last_sol.get_jacobian("full")
+        self.bifurcation_detect(last_sol)
+        dir = np.zeros(last_sol.x.shape)
         dir[-1] = 1
-        xpred = lstpt.x + dir * ds * self.sign_ds
+        xpred = last_sol.x + dir * ds * self.sign_ds
 
         # write some stuff in the solution
-        lstpt.dir = dir
-        lstpt.x_pred = xpred
-        # lstpt.sign_ds = self.sign_ds
+        last_sol.dir = dir
+        last_sol.x_pred = xpred
 
-        return xpred, lstpt, self.sign_ds
+        return last_sol

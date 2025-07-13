@@ -29,11 +29,11 @@ class SystemSolution:
 
     Args:
         xs (np.ndarray): Array representing the starting point.
-        last_solution_pointer: Pointer to the last converged solution object.
+        last_solution: Pointer to the last converged solution object.
         **kwargs: Additional keyword arguments.
 
     Attributes:
-        flag_restart (bool): Raised whenever (last_solution_point != index-1).
+        flag_restart (bool): Raised whenever (last_solution != index-1).
         flag_accepted (bool): Raised by the nonlinear solver, if the solution is considered as valid.
         flag_bifurcation (bool): Raised by the predictor, if a bifurcation has been detected.
         flag_solved (bool): Raised by the `save` method, if the solution is considered as solved.
@@ -43,7 +43,6 @@ class SystemSolution:
         flag_J_qr (bool): Jacobian available with qr formalism of scipy.linalg.qr = [Q, R].
         flag_J_lu (bool): Jacobian available with lu formalism of scipy.linalg.lu = [P, L, U].
         flag_J_f (bool): Jacobian available at full-size.
-        index_insolve (int): Index of the solution within the solver.
         niter (int): Number of iterations preformed by the solver.
         ds (float): Sstep size for the continuation.
         sign_ds (int): Sign of the step size.
@@ -54,10 +53,10 @@ class SystemSolution:
         J_f: Full-size Jacobian.
         J_lu: Jacobian with LU decomposition.
         J_qr: Jacobian with QR decomposition.
-        precedent_solution: A pointer to the last converged solution.
+        precedent_solution: A pointer to the precedent converged solution.
     """
 
-    def __init__(self, xs: np.ndarray, last_solution_pointer=None, **kwargs):
+    def __init__(self, xs: np.ndarray, last_solution=None, **kwargs):
         self.flag_restart = False
         self.flag_accepted = False
         self.flag_bifurcation = False
@@ -68,7 +67,6 @@ class SystemSolution:
         self.flag_J_qr = False
         self.flag_J_lu = False
         self.flag_J_f = False
-        self.index_insolve = 0
         self.niter = 0
         self.ds = 0.0
         self.sign_ds = 1
@@ -79,7 +77,7 @@ class SystemSolution:
         self.J_f = None
         self.J_lu = None
         self.J_qr = None
-        self.precedent_solution = last_solution_pointer
+        self.precedent_solution = last_solution
 
     def save(self, SolList: list):
         """Saves the SystemSolution object in the provided list, if it is complete.
@@ -210,3 +208,21 @@ class FirstSolution(SystemSolution):
         super().__init__(xs, None)
         self.x = copy.deepcopy(self.x_start)
         self.x_pred = copy.deepcopy(self.x_start)
+
+
+def get_last_solution(SolList: list[SystemSolution], k_imposed=None) -> SystemSolution:
+    """Gets the last accepted solution in direct link with the studied point.
+
+    Args:
+        SolList (list[SystemSolution]): list of SystemSolution already solved during the analysis.
+        k_imposed (None|int): if not None then the provided index is used as the last accepted point.
+
+    Returns:
+        SystemSolution: last accepted point.
+    """
+    if isinstance(SolList[-1], FirstSolution):
+        return SolList[-1]
+    if k_imposed is not None:
+        return SolList[k_imposed]
+    return next(sol for sol in reversed(SolList) if sol.flag_accepted)
+

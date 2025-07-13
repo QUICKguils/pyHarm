@@ -78,7 +78,7 @@ class ABCSubstructure(ABC):
         self.kinematics = self._add_kinematics(data)
 
     def __repr__(self) -> str:
-        return "{}[{}]".format(self.name, self.__class__.__name__)
+        return f"{self.name}[{self.__class__.__name__}]"
 
     @property
     @abstractmethod

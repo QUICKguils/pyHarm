@@ -41,26 +41,20 @@ class Substructure(MatrixElement):
         self.kronG = np.kron(np.linalg.matrix_power(self.nabla, 1), data["matrix"]["G"])
         self.kronK = np.kron(np.linalg.matrix_power(self.nabla, 0), data["matrix"]["K"])
 
-    def get_Mass(
-        self,
-    ):
-        """
-        Extracts Mass matrix from the harmonic domain Mass matrix
+    def get_Mass(self):
+        """Extracts Mass matrix from the harmonic domain Mass matrix.
 
         Returns :
             np.ndarray: Mass matrix
         """
-        M = -self.kronM[
+        M = -self.kronM[  # XXX: is the minus sign correct ?
             self.size_mat[0] : 2 * self.size_mat[0],
             self.size_mat[0] : 2 * self.size_mat[0],
         ]
         return M
 
-    def get_Rigidity(
-        self,
-    ):
-        """
-        Extracts Rigidity matrix from the harmonic domain Rigidity matrix
+    def get_Rigidity(self):
+        """Extracts Rigidity matrix from the harmonic domain Rigidity matrix.
 
         Returns :
             np.ndarray: Rigidity matrix

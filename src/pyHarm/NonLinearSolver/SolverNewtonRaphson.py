@@ -14,7 +14,7 @@
 
 import copy
 
-import numpy as np
+from scipy import linalg
 
 from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
 from pyHarm.NonLinearSolver.ABCNonLinearSolver import ABCNLSolver
@@ -29,24 +29,21 @@ class SolverNewtonRaphson(ABCNLSolver):
         solver_options (dict): dictionary containing other options for creation of the solver class.
         residual (Callable): function that returns the residual vector of the system to be solved.
         jacobian (Callable): function that returns the jacobian matrix of the system to be solved.
-        solver_options_root (dict): dictionary containing options for the root function.
-        extcall (Callable): root function of scipy.optimize.
     """
 
-    factory_keyword: str = "NewtonRaphson"
+    factory_keyword : str = "NewtonRaphson"
     """str: Concrete class name used by the factory to instantiate it."""
 
     default = {
         "tol_residual": 1e-8,
         "tol_delta_x": 1e-8,
-        "max_iter": 50,  # Maximum iterations accepted before confirming divergence
+        "max_iter": 5,
+        "pseudo": False,  # True -> don't update Jacobian at each corr step
+        "pert": 0.0,  # perturbation introduced in the residual equation
     }
     """dict: dictionary containing the default solver_options"""
 
     def __post_init__(self):
-        from scipy.linalg import solve as solve
-
-        self.linearsolve = solve
         self.solver_options = getCustomOptionDictionary(self.solver_options, self.default)
 
     def solve(self, sol: SystemSolution):
@@ -58,25 +55,28 @@ class SolverNewtonRaphson(ABCNLSolver):
         Writes:
             sol (SystemSolution): SystemSolution solved and completed with the output information.
         """
+        self.flag_solved = False
+        self.pert = self.solver_options["pert"]
         self.x = sol.x_start
-        self.xprec = sol.x_start
-        self.FXk = self.residual(sol.x_start, sol)
-        self.AXk = self.jacobian(sol.x_start, sol)
-        self.iter = 0
-        self.status = 1
-        while (
-            np.linalg.norm(self.FXk) >= self.solver_options["tol_residual"]
-            or np.linalg.norm(self.x - self.xprec) >= self.solver_options["tol_delta_x"]
-        ):
-            self.deltak = self.linSysdeltak()
-            self.xprec = copy.deepcopy(self.x)
-            self.x -= self.deltak
-            self.FXk = self.residual(self.x, sol)
-            self.AXk = self.jacobian(self.x, sol)
-            self.iter += 1
-            if self.iter >= self.solver_options["max_iter"]:
-                self.status = 5
+        x_prec = sol.x_start
+        self.H = self.residual(sol.x_start, sol)[:-1]
+        self.J = self.jacobian(sol.x_start, sol)[:-1, :]
+
+        for self.iter in range(1, self.solver_options["max_iter"] + 1):
+            x_prec = copy.deepcopy(self.x)
+            corr = linalg.pinv(self.J) @ (self.H - self.pert)
+            self.x -= corr
+            self.H = self.residual(self.x, sol)[:-1]
+            if not self.solver_options["pseudo"]:
+                self.J = self.jacobian(self.x, sol)[:-1, :]
+
+            if (
+                linalg.norm(self.H - self.pert) < self.solver_options["tol_residual"]
+                and linalg.norm(self.x - x_prec) < self.solver_options["tol_delta_x"]
+            ):
+                self.flag_solved = True
                 break
+
         self.complete_solution(sol)
 
     def complete_solution(self, sol):
@@ -86,23 +86,11 @@ class SolverNewtonRaphson(ABCNLSolver):
             sol (SystemSolution): SystemSolution that contains the starting point.
         """
         sol.x_red = copy.deepcopy(self.x)
-        sol.R_solver = copy.deepcopy(self.FXk)
+        sol.R_solver = copy.deepcopy(self.H)
+        sol.J_f = self.jacobian(sol.x, sol)
         sol.niter = self.iter
         sol.flag_R = True
         sol.flag_J = True
         sol.flag_J_f = True
-        sol.J_f = self.jacobian(sol.x, sol)
         sol.flag_intosolver = True
-        if self.status == 1:
-            sol.flag_accepted = True
-        sol.status_solver = self.status
-
-    def linSysdeltak(self):
-        """
-        Calculation of the 'deltak' correction to apply to the current
-        iteration in order to converge towards the solution.
-
-        Returns:
-            self.extcall_newton(matA,matB): Correction 'deltak'
-        """
-        return self.linearsolve(self.AXk, self.FXk)
+        sol.flag_accepted = self.flag_solved

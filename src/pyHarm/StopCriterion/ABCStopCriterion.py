@@ -50,12 +50,12 @@ class ABCStopCriterion(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def getStopCriterionStatus(self, sol: SystemSolution, sollist: list, **kwargs) -> bool:
+    def getStopCriterionStatus(self, sol: SystemSolution, SolList: list, **kwargs) -> bool:
         """Abstract method to get the stop criterion status.
 
         Args:
             sol (SystemSolution): A SystemSolution object.
-            sollist (list): A list of solutions.
+            SolList (list): A list of solutions.
             **kwargs: Additional keyword arguments.
 
         Raises:

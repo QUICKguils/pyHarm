@@ -49,4 +49,5 @@ class MatrixElement(ABCElement):
         self.indices = np.array(ed[ed["sub"] == self.sub].index)
 
     @abstractmethod
-    def _generateMatrices(self, data): ...
+    def _generateMatrices(self, data):
+        pass

@@ -1,6 +1,6 @@
 # Module Bifurcators
 
-This module contains all the bifurcation detector types that are provided by
+This module contains all the bifurcation handling types that are provided by
 pyHarm. The module is organized around an abstract class **ABCBifurcator** and a
 **FactoryBifurcator** that is in charge of creating the objects. All bifurcation
 detector objects must comply with the **ABCBifurcator** abstract class. The
@@ -59,19 +59,24 @@ INP = {
 
 ## FactoryBifurcator
 
-This file contains the dictionary of all the bifurcators that are available as
-well as the function `generateBifurcator` that creates the bifurcator object.
+This file contains the dictionary of all the bifurcators that are available, as well as the function
+`generateBifurcator` that creates the bifurcator object.
 
-## HillBifurcator `hill`
+## BifurcatorABE `abe`
+
+Use the Algebraic Bifurcation/Branching Equation to localize bifurcations and find emanating branches.
+
+## BifurcatorPerturbation `perturbation`
+
+This bifurcation detector is mainly a python implementation of [[1]](#1).
+
+## BifurcatorHill `hill`
 
 Uses the Hill's method combined with bordering techniques, to derived tests
 functions that can detect three types of simple bifurcation:
 - fold bifurcation,
 - branching point bifurcation, and
 - Neimark-Sacker bifurcation.
-
-This bifurcation detector is mainly a python implementation of [[1]](#1).
-
 
 ### References
 

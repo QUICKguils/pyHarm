@@ -14,9 +14,7 @@
 
 import numpy as np
 
-from pyHarm.Elements.SubstructureMatrixElements.GeneralOrderMatrixElement import (
-    GOMatrix,
-)
+from pyHarm.Elements.SubstructureMatrixElements.GeneralOrderMatrixElement import GOMatrix
 
 
 class LinearHystMatrix(GOMatrix):

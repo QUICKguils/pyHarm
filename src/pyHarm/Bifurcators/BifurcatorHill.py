@@ -5,19 +5,14 @@ from scipy import linalg
 
 from pyHarm.DynamicOperator import nabla
 from pyHarm.Bifurcators.ABCBifurcator import ABCBifurcator
-from pyHarm.Solver import FirstSolution, SystemSolution
+from pyHarm.Solver import SystemSolution
+from pyHarm.Systems import ABCSystem
 
 
-class BifurcationType(Enum):
-    FOLD = "fold bifurcation"
-    BRANCHING = "branching point bifurcation"
-    NEIMARK_SACKER = "Neimark-Sacker bifurcation"
-
-
+# WARN: only works if one and only one substructure is defined
+# TODO: made a check for that
 class BifurcatorHill(ABCBifurcator):
     """Branching predictions through the Hill's method."""
-
-    # TODO: better docstring
 
     bifurcator_name = "Hill's method"
 
@@ -39,31 +34,7 @@ class BifurcatorHill(ABCBifurcator):
             bifurcation_type (BifurcationType): Attribute is assigned if a
               bifurcation is detected.
         """
-        J = lstpt.get_jacobian("full")
-        # XXX: heavy to compute dets. Consider bordering techniques
-        det_J_f = linalg.det(J)
-        det_J_x = linalg.det(J[:-1, :-1])
-        lstpt.det_J_f = det_J_f
-        lstpt.det_J_x = det_J_x
-        if isinstance(lstpt, FirstSolution):
-            det_J_x_prec = det_J_x
-            det_J_f_prec = det_J_f
-        else:
-            det_J_x_prec = lstpt.precedent_solution.det_J_x
-            det_J_f_prec = lstpt.precedent_solution.det_J_f
-
-        if np.sign(det_J_x) != np.sign(det_J_x_prec):
-            lstpt.flag_bifurcation = True
-            if np.sign(det_J_f) == np.sign(det_J_f_prec) or np.sign(det_J_f) != np.sign(det_J_x):
-                lstpt.bifurcation_type = BifurcationType.FOLD
-                self.sign_ds *= -1
-            else:
-                lstpt.bifurcation_type = BifurcationType.BRANCHING
-
-            if self.flag_print:
-                print(f"Warning: a {lstpt.bifurcation_type.value} was detected")
-                if lstpt.bifurcation_type is BifurcationType.FOLD:
-                    print("--> path direction is reversed")
+        pass
 
     def localize(self):
         pass
@@ -71,10 +42,17 @@ class BifurcatorHill(ABCBifurcator):
     def track(self):
         pass
 
-    def _compute_Hill_matrix(self, last_point: SystemSolution):
-        J = last_point.get_jacobian("full")
+    def _compute_Hill_matrix(self, last_solution: SystemSolution, system: ABCSystem):
+        J = last_solution.get_jacobian("full")
+        Om = last_solution.x[-1]
+
+        M = system.LE[0].data["matrix"]["M"]
+        C = system.LE[0].data["matrix"]["C"]
+        nh = system.LE[0].nh
+
+
         h_z = J[:-1, :-1]
-        delta_1 = np.kron(Om * nabla(), 2 * M) + np.kron(np.eye(2 * nh + 1), C)
+        delta_1 = np.kron(Om * nabla(nh), 2 * M) + np.kron(np.eye(2 * nh + 1), C)
         delta_2 = np.kron(np.eye(2 * nh + 1), M)
         delta_2_inv = linalg.inv(delta_2)
 

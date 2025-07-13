@@ -45,16 +45,14 @@ class ABCSystem(abc.ABC):
         lc (float): characteristic length.
         wc (float): characteristic angular frequency.
         ndofs (int): total number of degrees of freedom.
+        LS (list[ABCSubstructure]): list of substructures.
         LE (list[ABCElement]): list of elements.
         LC (lit[ABCKinematic]): list of kinematic conditions.
         LE_extforcing (list[ABCElement]): list of elements of type external forcing.
         LE_linear (list[ABCElement]): list of elements that are linear towards the displacement.
-        LE_nonlinear_dlft (list[ABCElement]): list of elements that are nonlinear while using DLFT
-          formulation.
-        LE_nonlinear_nodlft (list[ABCElement]): list of elements that are nonlinear while not using
-          DLFT formulation.
-        expl_dofs (pd.DataFrame): Dataframe that explicit the nature of the degrees of freedom
-          vector.
+        LE_nonlinear_dlft (list[ABCElement]): list of elements that are nonlinear while using DLFT formulation.
+        LE_nonlinear_nodlft (list[ABCElement]): list of elements that are nonlinear while not using DLFT formulation.
+        expl_dofs (pd.DataFrame): Dataframe that explicit the nature of the degrees of freedom vector.
         ndofs_solve (int): number of degree of freedom that are to be solved.
     """
 

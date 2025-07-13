@@ -15,7 +15,7 @@
 import numpy as np
 
 from pyHarm.Predictors.PredictorTangent import PredictorTangent
-from pyHarm.Solver import FirstSolution, SystemSolution
+from pyHarm.Solver import FirstSolution, SystemSolution, get_last_solution
 
 
 class PredictorSecant(PredictorTangent):
@@ -47,9 +47,7 @@ class PredictorSecant(PredictorTangent):
         """
         return super().predict(SolList, ds, k_imposed=None)
 
-    def predict(
-        self, SolList: list, ds: float, k_imposed=None
-    ) -> tuple[np.ndarray, SystemSolution, float]:
+    def predict(self, SolList: list, ds: float, k_imposed=None) -> SystemSolution:
         """Predicts the next starting point using secant prediction.
 
         Args:
@@ -58,24 +56,23 @@ class PredictorSecant(PredictorTangent):
             k_imposed (None | int): if not None, uses the k_imposed as the index of the last solution pointer.
 
         Returns:
-            np.ndarray: next predicted starting point.
-            SystemSolution: last accepted point in the list of solutions.
-            float: sign of the prediction used (-1 | 1)
+            SystemSolution: last accepted solution of SolList, with computed prediction written in it.
         """
         # Get pointer to solution and bifurcation detection
-        lstpt = self.get_last_point(SolList, k_imposed)
+        last_sol = get_last_solution(SolList, k_imposed)
         if self.predictor_options["bifurcation_detect"]:
-            self.bifurcation_detect(lstpt)
-        if isinstance(lstpt, FirstSolution):
-            xpred, lstpt, self.sign_ds = self.predict_usingtan(SolList, ds, k_imposed=None)
+            self.bifurcation_detect(last_sol)
+        if isinstance(last_sol, FirstSolution):
+            xpred, last_sol, self.sign_ds = self.predict_usingtan(SolList, ds, k_imposed=None)
         else:
-            dir = (lstpt.x - lstpt.precedent_solution.x) / np.linalg.norm(
-                lstpt.x - lstpt.precedent_solution.x
+            dir = (last_sol.x - last_sol.precedent_solution.x) / np.linalg.norm(
+                last_sol.x - last_sol.precedent_solution.x
             )
             dir = self.normalize(dir) * np.sign(dir[-1])
-            xpred = lstpt.x + dir * ds * self.sign_ds
-            # write some stuff in the solution
-            lstpt.dir = dir
-            lstpt.x_pred = xpred
+            xpred = last_sol.x + dir * ds * self.sign_ds
 
-        return xpred, lstpt, self.sign_ds
+            # write some stuff in the solution
+            last_sol.dir = dir
+            last_sol.x_pred = xpred
+
+        return last_sol

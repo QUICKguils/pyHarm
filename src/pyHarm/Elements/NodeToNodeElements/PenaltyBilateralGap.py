@@ -56,9 +56,10 @@ def PenalGapJacobian(x, om, Pdir, Pslave, Pmaster, g, k, DFT, DTF):
                 kronecker = 1
             else:
                 kronecker = 0
-            dRkdxj[gap_closed] = k * (1 - g / (r[gap_closed] + 1e-12)) * kronecker + k * g * x_k[
-                gap_closed
-            ] * x_j[gap_closed] / (r[gap_closed] ** 3 + 1e-12)
+            dRkdxj[gap_closed] = (
+                k * (1 - g / (r[gap_closed] + 1e-12)) * kronecker
+                + k * g * x_k[gap_closed] * x_j[gap_closed] / (r[gap_closed] ** 3 + 1e-12)
+            )
             dJdx += (
                 (Pslave - Pmaster).T
                 @ Pdir[dir1, :, :].T

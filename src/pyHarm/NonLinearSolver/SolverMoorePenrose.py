@@ -35,15 +35,18 @@ class SolverMoorePenrose(ABCNLSolver):
     factory_keyword: str = "MoorePenrose"
     """str: Concrete class name used by the factory to instantiate it."""
 
-    default = {"tol_residual": 1e-8, "tol_delta_x": 1e-8, "max_iter": 30}
-    """dict: dictionary containing the default solver_options"""
+    default_options = {
+        "tol_residual": 1e-8,
+        "tol_delta_x": 1e-8,
+        "max_iter": 30,
+    }
+    """dict: dictionary containing the default options for this concrete NLSolver."""
 
     def __post_init__(self):
         from scipy.linalg import solve as solve
 
         self.extcall = solve
-        solver_options = self.solver_options
-        self.solver_options = getCustomOptionDictionary(solver_options, self.default)
+        self.solver_options = getCustomOptionDictionary(self.solver_options, self.default_options)
 
     def solve(self, sol: SystemSolution):
         """Run the solver.

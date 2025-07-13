@@ -17,8 +17,8 @@ This module contains the factory of the predictor objects.
 
 Attributes:
     Predictor_dico (dict):
-      Dictionary that contains ABCPredictor objects as values and their factory_keyword attribute as
-        their key.
+      Dictionary that contains ABCPredictor objects as values
+      and their factory_keyword attribute as their key.
 """
 
 from pyHarm.Predictors.ABCPredictor import ABCPredictor
@@ -33,8 +33,8 @@ Predictor_dico = {
 }
 """
 dict:
-  Dictionary that contains ABCPredictor objects as values and their
-  factory_keyword attribute as their key.
+  Dictionary that contains ABCPredictor objects as values
+  and their factory_keyword attribute as their key.
 """
 
 

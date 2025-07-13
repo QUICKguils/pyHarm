@@ -266,7 +266,7 @@ class Jenkins(NodeToNodeElement):
             self.D["tf"],
         )
         self.stuck = stuck
-        self.tau = 100 * np.where(np.array(stuck) == True)[0].shape[0] / len(stuck)
+        self.tau = 100 * np.where(np.array(stuck))[0].shape[0] / len(stuck)
         return self.R
 
     def evalJacobian(self, xg, om):

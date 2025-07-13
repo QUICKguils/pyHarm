@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import numpy as np
-
 from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
 from pyHarm.KinematicConditions.GODisplacement import GODisplacement
 
@@ -31,9 +29,7 @@ class DispImposed(GODisplacement):
     default = {"phi": 0.0, "ho": 1}
     """dict: dictionary containing the default parameters of the kinematic condition"""
 
-    def __post_init__(
-        self,
-    ):
+    def __post_init__(self):
         self.data = getCustomOptionDictionary(self.data, self.default)
         self.amp = self.data["amp"]
         self.ho = self.data["ho"]

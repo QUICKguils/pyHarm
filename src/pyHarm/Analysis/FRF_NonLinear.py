@@ -16,6 +16,7 @@ import numpy as np
 
 from pyHarm.Analysis.ABCAnalysis import ABCAnalysis
 from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
+from pyHarm.Bifurcators.FactoryBifurcator import generateBifurcator
 from pyHarm.Correctors.FactoryCorrector import generateCorrector
 from pyHarm.NonLinearSolver.FactoryNonLinearSolver import generateNonLinearSolver
 from pyHarm.Predictors.FactoryPredictor import generatePredictor
@@ -42,6 +43,7 @@ class FRF_NonLinear(ABCAnalysis):
         adaptstep (ABCStepSizeRule): ABCStepSizeRule associated with the analysis.
         predictor (ABCPredictor): ABCPredictor associated with the analysis.
         corrector (ABCCorrector): ABCCorrector associated with the analysis.
+        bifurcator (ABCBifurcator): ABCBifurcator associated with the analysis.
         stopper (ABCStopCriterion): ABCStopCriterion associated with the analysis.
         solver (ABCNLSolver): ABCNLSolver associated with the analysis.
         corrector_init (ABCCorrector): instance of no-continuation corrector for initial solution.
@@ -58,6 +60,7 @@ class FRF_NonLinear(ABCAnalysis):
         "solver": "scipyroot",
         "predictor": "tangent",
         "corrector": "arc_length",
+        "bifurcator": None,
         "reductors": [{"type": "noreductor"}],
         "stepsizer": "acceptance",
         "stopper": "bounds",
@@ -101,6 +104,10 @@ class FRF_NonLinear(ABCAnalysis):
             self.analysis_options["corrector"],
             self.analysis_options.get("corrector_options", dict()),
         )
+        self.bifurcator = generateBifurcator(
+            self.analysis_options["bifurcator"],
+            self.analysis_options.get("bifurcator_options", dict()),
+        )
         self.stopper = generateStopCriterion(
             self.analysis_options["stopper"],
             [self.analysis_options["puls_inf"], self.analysis_options["puls_sup"]],
@@ -132,7 +139,6 @@ class FRF_NonLinear(ABCAnalysis):
         self.x0, _, _ = self._update_reductor(x0)
         isol = FirstSolution(self.x0)
         self.solver.solve(isol)
-        isol.index_insolve = 0
         self.complete_solution(isol)
         isol.save(self.SolList)
         if self.flag_print:
@@ -236,12 +242,12 @@ class FRF_NonLinear(ABCAnalysis):
         Rg = self.reductor.reduce_vector(Rg)
         return Rg
 
-    def _update_reductor(self, xpred_full, last_solution_pointer=None):
+    def _update_reductor(self, xpred_full, last_solution=None):
         """Updates the reducers.
 
         Args:
             xpred_full (np.ndarray): full starting displacement vector.
-            last_solution_pointer (SystemSolution): SystemSolution from which the prediction has
+            last_solution (SystemSolution): SystemSolution from which the prediction has
               been generated.
 
         Returns:
@@ -250,10 +256,10 @@ class FRF_NonLinear(ABCAnalysis):
             output_expl_dofs (pd.DataFrame): DataFrame of the dofs after applying the reduction
               layers.
         """
-        if last_solution_pointer is None:
+        if last_solution is None:
             sol = FirstSolution(xpred_full)
         else:
-            sol = SystemSolution(xpred_full, last_solution_pointer)  # fake SystemSolution
+            sol = SystemSolution(xpred_full, last_solution)  # fake SystemSolution
         J_f = self.globalJacobian(xpred_full, sol)
         xpred_red, J_red, output_expl_dofs = self.reductor.update_reductor(
             xpred_full, J_f, self.system._get_expl_dofs_into_solver(), self.system
@@ -266,22 +272,18 @@ class FRF_NonLinear(ABCAnalysis):
         Makes a step of solving : get a step size, generate a predicted point,
         solve the nonlinear system, save the solution.
         """
-        # obtain the starting point
         self.ds = self.adaptstep.getStepSize(self.ds, self.SolList)
 
         last_sol = self.predictor.predict(self.SolList, self.ds)
-        xpred_full = last_sol.x_pred
 
         ## update the reductor --> need to use old version of the reduce
-        xpred_red, _, output_expl_dofs = self._update_reductor(xpred_full, last_sol)
+        xpred_red, _, output_expl_dofs = self._update_reductor(last_sol.x_pred, last_sol)
 
         sol = SystemSolution(xpred_red, last_sol)
         sol.ds = self.ds
         sol.dir = dir
         self.solver.solve(sol)
         self.complete_solution(sol)
-        if "index_insolve" in kwargs:
-            sol.index_insolve = kwargs["index_insolve"]
         sol.save(self.SolList)
         if self.flag_print:
             if sol.flag_accepted:
@@ -300,11 +302,9 @@ class FRF_NonLinear(ABCAnalysis):
               vector, otherwise x0 is initialized using the provided array.
         """
         self.initialize(x0, **kwargs)
-        k = 1
         while not self.stopper.getStopCriterionStatus(self.SolList[-1], self.SolList):
-            self.make_step(index_insolve=k)
+            self.make_step()
             self.purge_jacobians()
-            k += 1
 
     def purge_jacobians(self):
         """Purge the Jacobians of Solutions that are no longer used."""

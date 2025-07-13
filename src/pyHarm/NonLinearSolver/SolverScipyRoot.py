@@ -39,20 +39,19 @@ class SolverScipyRoot(ABCNLSolver):
 
     name = "scipyroot solver"
 
-    default = {
+    default_options = {
         "root": {"method": "hybr", "options": {"diag": None}},
         "end_status_accepted": [1],
         "residual_tolerance": 1e-4,
     }
-    """dict: dictionary containing the default solver_options."""
+    """dict: dictionary containing the default options for this concrete NLSolver."""
 
     def __post_init__(self):
         from scipy.optimize import root
 
-        solver_options = self.solver_options
         self.extcall = root
-        self.solver_options = getCustomOptionDictionary(solver_options, self.default)
-        self.solver_options_root = getCustomOptionDictionary(self.solver_options["root"], self.default["root"])
+        self.solver_options = getCustomOptionDictionary(self.solver_options, self.default_options)
+        self.solver_options_root = getCustomOptionDictionary(self.solver_options["root"], self.default_options["root"])
         self.end_status_accepted = self.solver_options["end_status_accepted"]
         self.residual_tolerance = self.solver_options["residual_tolerance"]
 

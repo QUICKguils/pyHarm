@@ -16,7 +16,7 @@ import numpy as np
 from scipy import linalg
 
 from pyHarm.Predictors.ABCPredictor import ABCPredictor
-from pyHarm.Solver import SystemSolution
+from pyHarm.Solver import SystemSolution, get_last_solution
 
 
 class PredictorTangent(ABCPredictor):
@@ -26,9 +26,7 @@ class PredictorTangent(ABCPredictor):
     factory_keyword: str = "tangent"
     """str: Concrete class name used by the factory to instantiate it."""
 
-    def predict(
-        self, SolList: list[SystemSolution], ds: float, k_imposed=None
-    ) -> tuple[np.ndarray, SystemSolution]:
+    def predict(self, SolList: list[SystemSolution], ds: float, k_imposed=None) -> SystemSolution:
         """Predicts the next starting point using the tangent.
 
         Args:
@@ -38,15 +36,14 @@ class PredictorTangent(ABCPredictor):
               solution pointer.
 
         Returns:
-            np.ndarray: next predicted starting point.
-            SystemSolution: last accepted point in the list of solutions.
+            SystemSolution: last accepted solution of SolList, with computed prediction written in it.
         """
-        last_sol = self.get_last_point(SolList, k_imposed)
+        last_sol = get_last_solution(SolList, k_imposed)
 
         # See Allgower, p.29 : Jacobian tangent from its QR decomposition
         last_sol.get_jacobian("full")  # this makes last_sol.J_f available
-        Q, R = linalg.qr(np.transpose(last_sol.J_f[:-1,:]))
-        sign = - np.sign(np.prod(np.diag(R)))  # sign = sign(det(R)*det(Q)), with det(Q) = 1
+        Q, R = linalg.qr(np.transpose(last_sol.J_f[:-1, :]))
+        sign = -np.sign(np.prod(np.diag(R)))  # sign = sign(det(R)*det(Q)), with det(Q) = 1
         last_sol.dir = sign * Q[:, -1]
 
         if self.predictor_options["bifurcation_detect"]:
