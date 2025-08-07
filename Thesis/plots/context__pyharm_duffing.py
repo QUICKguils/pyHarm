@@ -147,7 +147,7 @@ def solve_one(nh, gamma):
         # Find the maximum of the displacement amplitude
         # for each excitation frequencies, a.k.a. the FRF.
         # RMS value or other norm styles could have been used.
-        ampls.append(np.max(displ))
+        ampls[ix_sol] = np.max(displ)
 
     return freqs, ampls
 
