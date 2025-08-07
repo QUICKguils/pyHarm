@@ -76,10 +76,11 @@ CHUNCK_ALL = {
             "ds0": 1e-1,
             "ds_min": 1e-12,
             "ds_max": 1e-1,
-            "sign_ds": 1,
+            "sign_ds": -1,
             "verbose": True,
-            "stepsizer": "hybrid",  # NOTE: originally acceptance
+            "stepsizer": "acceptance",  # NOTE: originally acceptance
             "predictor": "tangent",  # NOTE: originally tangent
+            # "predictor_options": { "blind_spot": 30},
             "reductors": [  # NOTE: originally activated
                 {
                     "type": "globalHarmonic",
@@ -89,11 +90,12 @@ CHUNCK_ALL = {
                     "verbose": False,
                 },
             ],
-            "corrector": "pseudo_arc_length",
+            "corrector": "arc_length",  # originally arc_length
             "stopper": "bounds",
-            # "solver": "scipyroot",
+            "solver": "scipyroot",
             # "solver": "NewtonRaphson",
-            "solver": "MoorePenrose",
+            # "solver_options": {"max_iter": 4},
+            # "solver": "MoorePenrose",
         },
     },
 }

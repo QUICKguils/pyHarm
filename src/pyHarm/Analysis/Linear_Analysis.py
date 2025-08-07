@@ -165,7 +165,7 @@ class Linear_Analysis(ABCAnalysis):
     def solve(self, x0=None):
         """Solving step of the analysis."""
         K, M = self.initialize()
-        omega, phi = self.makeStep(K, M)
+        omega, phi = self.make_step(K, M)
         self.eigensol["eigenfrequencies"] = omega / (2 * np.pi)
         self.eigensol["eigenvectors"] = phi
 

@@ -46,6 +46,7 @@ def getCustomOptionDictionary(custom_options: dict, default_options: dict):
     return options
 
 
+# TODO: seems to be use nowhere, except for a test that tests it.
 def getIndexfromExpldofs(
     expl_dofs: pd.DataFrame, list_of_caracteristics: list[tuple[str, int, list[int]]]
 ):

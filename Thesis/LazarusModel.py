@@ -64,21 +64,41 @@ CHUNCK_ALL = {
             # "ds_min": 1e-8,
             # "ds_max": 5e-2,
 
+            # # Coarse
+            # "puls_inf": 0.01,
+            # "puls_start": 0.1,
+            # "puls_sup": 5.0,
+            # "ds0": 5e-3,
+            # "ds_min": 1e-8,
+            # "ds_max": 5e-2,
+
+            # # Less coarse (capture branch bifurcation)
+            # "puls_inf": 0.01,
+            # "puls_start": 0.1,
+            # "puls_sup": 5.0,
+            # "ds0": 1e-2,
+            # "ds_min": 1e-8,
+            # "ds_max": 2e-2,
+
+            # Quite fine
             "puls_inf": 0.01,
             "puls_start": 0.1,
             "puls_sup": 5.0,
             "ds0": 5e-3,
             "ds_min": 1e-8,
-            "ds_max": 5e-2,
+            "ds_max": 5e-3,
 
             "sign_ds": 1,
             "verbose": True,
             "stepsizer": "acceptance",
             "predictor": "tangent",
             "corrector": "arc_length",
+            "bifurcator": None,
+            # "bifurcator": "perturbation",
+            # "bifurcator_options": {"blind_spot: 30"},
             "stopper": "bounds",
             "solver": "MyNewtonRaphson",
-            # "solver": "NewtonRaphson",
+            "solver_options": {"max_iter": 4, "pert": 1E-4},
         },
     },
 }

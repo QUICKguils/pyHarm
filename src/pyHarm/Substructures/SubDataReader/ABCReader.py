@@ -27,7 +27,8 @@ class ABCReader(abc.ABC):
     """This is the abstract class ruling the reader class for substructure.
 
     The reader is responsible for reading, parsing and completing an input
-    dictionary from a external file to comply with pyHarm."""
+    dictionary from a external file to comply with pyHarm.
+    """
 
     @property
     @abc.abstractmethod

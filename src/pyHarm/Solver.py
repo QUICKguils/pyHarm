@@ -225,4 +225,3 @@ def get_last_solution(SolList: list[SystemSolution], k_imposed=None) -> SystemSo
     if k_imposed is not None:
         return SolList[k_imposed]
     return next(sol for sol in reversed(SolList) if sol.flag_accepted)
-

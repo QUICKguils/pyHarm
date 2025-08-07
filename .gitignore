@@ -1,7 +1,7 @@
 # ni2d models
 thesis/ni2d/*
 
-# save results
+# saved results
 thesis/assets/*
 
 # ===== generated from UV python manager =====

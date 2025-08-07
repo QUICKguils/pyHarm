@@ -27,7 +27,7 @@ class PredictorMyTangent(ABCPredictor):
             np.ndarray: next predicted starting point.
             SystemSolution: last accepted point in the list of solutions.
         """
-        last_sol = self.get_last_point(SolList, k_imposed)
+        last_sol = self.get_last_solution(SolList, k_imposed)
         prev_sol = last_sol.precedent_solution
         last_sol.get_jacobian("full")  # this makes lstpt.J_f available
         solx_len = last_sol.J_f[:-1, :-1].shape[0]

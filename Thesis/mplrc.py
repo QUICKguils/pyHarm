@@ -2,10 +2,10 @@
 
 import matplotlib as mpl
 
-# Measured in the latex document.
-# Obviously depends on the paper type and margins width.
-REPORT_TW = 5.90666  # [in]
+# Text width of the report, as measured in the latex document.
+REPORT_TW = 5.512  # [in]
 
+# ULiège branding colors, form official chart.
 UCOLOR = {
     # Main teal color.
     "TealDark": "#00707F",
@@ -34,16 +34,21 @@ UCOLOR = {
 }
 
 
-def load_rcparams(style="running") -> None:
+def load_rcparams(style="report") -> None:
+    # When saved as svg, consider fonts as fonts, not as paths.
+    # Unless the font is not embeddable, it's better to treat fonts as fonts.
+    # This gives better displays and allows to select text in PDFs.
+    # It also allows the text to be modified with e.g. Inkscape.
+    mpl.rcParams["svg.fonttype"] = "none"
+
+    # Choose compiler for pgf backend, when figs are saved as pgf.
+    mpl.rcParams["pgf.texsystem"] = "lualatex"
+
+    # Plot style
     mpl.rcParams["figure.constrained_layout.use"] = True
     mpl.rcParams["axes.grid"] = True
-    mpl.rcParams["grid.linewidth"] = 0.8
+    mpl.rcParams["grid.linewidth"] = 0.6
     mpl.rcParams["grid.alpha"] = 0.3
-    # Here, figure.dpi is set to scale nicely on the screen.
-    # If one desire to save the plot in raster format,
-    # higher dpi values should be used (e.g., 250dpi).
-    mpl.rcParams["figure.dpi"] = 109  # qhd 27in = 109 dpi
-
     custom_colorcycler = mpl.cycler(
         color=[
             UCOLOR["TealDark"],  # C0
@@ -58,36 +63,49 @@ def load_rcparams(style="running") -> None:
     )
     mpl.rcParams["axes.prop_cycle"] = mpl.cycler(custom_colorcycler)
 
-    # Running figures
-    if style == "running":
-        pass
+    # Here, figure.dpi is set to scale nicely on the screen.
+    # If one desire to save the plot in raster format,
+    # higher dpi values should be used (e.g., 300 dpi).
+    mpl.rcParams["figure.dpi"] = 150
 
     # Report figures
     if style == "report":
-        mpl.rcParams["figure.figsize"] = (REPORT_TW, REPORT_TW / 1.618033989)
+        mpl.rcParams["figure.figsize"] = (REPORT_TW, REPORT_TW / 1.618033989)  # golden *_*
 
-        # mpl.rcParams['mathtext.fontset'] = 'stix'
-        # mpl.rcParams['font.family'] = 'serif'
-        # # FIX: Plots can not be saved as pdf with some fonts
-        # # E.g., STIX Two Text or Source Sans 3 causes the pdf backend to crash.
-        # mpl.rcParams['font.serif'] = ['STIX Two Text'] + mpl.rcParams['font.serif']
-        # mpl.rcParams['font.size'] = 11
+        mpl.rcParams["lines.linewidth"] = 1
 
-        mpl.rcParams["font.sans-serif"] = ["Noto Sans"] + mpl.rcParams["font.sans-serif"]
+        # These params will control how the pgf backend will treat the fonts.
+        mpl.rcParams["font.family"] = "sans-serif"
         mpl.rcParams["font.size"] = 11
 
-        # Those sizes are relative to font.size
-        mpl.rcParams["axes.titlesize"] = "small"
-        mpl.rcParams["axes.labelsize"] = "small"
-        mpl.rcParams["xtick.labelsize"] = "x-small"
-        mpl.rcParams["ytick.labelsize"] = "x-small"
+        # These options are not relevant when saved as pgf figure,
+        # as the tex compilation will use the latex fonts anyways.
+        mpl.rcParams["mathtext.fontset"] = "dejavusans"
+        mpl.rcParams["font.serif"] = ["STIX Two Text"] + mpl.rcParams["font.serif"]
+        mpl.rcParams["font.sans-serif"] = ["Noto Sans"] + mpl.rcParams["font.sans-serif"]
+
+        # NOTE: possible to set them relative to font.size
+        # E.g., use "medium", "small", "x-small", etc.
+        # Here I set the fontsize according to the
+        # \small and \footnotesize definitions in latex2e.
+        mpl.rcParams["axes.titlesize"] = 10
+        mpl.rcParams["axes.labelsize"] = 10
+        mpl.rcParams["xtick.labelsize"] = 9
+        mpl.rcParams["ytick.labelsize"] = 9
+        mpl.rcParams["legend.fontsize"] = 9
 
     # Presentation figures
     if style == "slide":
-        mpl.rcParams["mathtext.fontset"] = "stixsans"
+        mpl.rcParams["lines.linewidth"] = 2
+
+        # These params will control how the pgf backend will treat the fonts.
         mpl.rcParams["font.family"] = "sans-serif"
-        mpl.rcParams["font.sans-serif"] = ["Noto Sans"] + mpl.rcParams["font.sans-serif"]
         mpl.rcParams["font.size"] = 15
+
+        # These options are not relevant when saved as pgf figure,
+        # as the tex compilation will use the latex fonts anyways.
+        mpl.rcParams["mathtext.fontset"] = "dejavusans"
+        mpl.rcParams["font.sans-serif"] = ["Noto Sans"] + mpl.rcParams["font.sans-serif"]
 
         # Those sizes are relative to font.size
         mpl.rcParams["axes.titlesize"] = "medium"

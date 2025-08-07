@@ -7,7 +7,9 @@ import numpy as np
 
 from pyHarm.DynamicOperator import compute_DFT
 from pyHarm.Maestro import Maestro
-from pyHarm.Predictors.ABCPredictor import ABCPredictor, BifurcationType
+from pyHarm.Solver import get_last_solution
+from pyHarm.Bifurcators.ABCBifurcator import BifurcationType
+
 from pyHarm.Solver import SystemSolution
 
 from .mplrc import load_rcparams
@@ -259,7 +261,7 @@ def solve(nh_list: list[tuple[int, int]], chunck_list: list[dict]) -> list[Conti
                 M.operate(x0)
             except KeyboardInterrupt:
                 pass
-            lstpt = ABCPredictor.get_last_point(M.nls["cont"].SolList)
+            lstpt = get_last_solution(M.nls["cont"].SolList)
             x0 = lstpt.x[:-1]
             M_chunck_list.append(M)
         cont_list.append(

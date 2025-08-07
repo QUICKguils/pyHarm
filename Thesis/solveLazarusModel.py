@@ -7,8 +7,8 @@ import numpy as np
 
 from pyHarm.DynamicOperator import compute_DFT
 from pyHarm.Maestro import Maestro
-from pyHarm.Predictors.ABCPredictor import ABCPredictor, BifurcationType
-from pyHarm.Solver import SystemSolution
+from pyHarm.Bifurcators.ABCBifurcator import BifurcationType
+from pyHarm.Solver import SystemSolution, get_last_solution
 
 from .mplrc import load_rcparams
 from .LazarusModel import CHUNCK_LIST, MODEL, SYSTEM
@@ -124,11 +124,12 @@ def continuation_plotter():
                 om_pred_accepted = np.array([sol.x_pred[-1] for sol in cont_accepted.sol_list[:-1]])
                 ampl_pred_accepted = compute_amplitude(cont_accepted, ih, pred=True)[:-1]
                 ax.scatter(om_pred_accepted, ampl_pred_accepted, **pred_style, label="prediction")
-                for i in range(len(om_accepted)-1):
+                for i in range(len(om_accepted) - 1):
                     ax.plot(
                         [om_pred_accepted[i], om_accepted[i]],
                         [ampl_pred_accepted[i], ampl_accepted[i]],
-                        color="C7", linewidth=0.8,
+                        color="C7",
+                        linewidth=0.8,
                     )
             if ih is None:
                 label = f"nh = {cont.M.system.nh}"
@@ -166,8 +167,8 @@ def solve(nh_list: list[tuple[int, int]], chunck_list: list[dict]) -> list[Conti
                 M.operate(x0)
             except KeyboardInterrupt:
                 pass
-            lstpt = ABCPredictor.get_last_point(M.nls["cont"].SolList)
-            x0 = lstpt.x[:-1]
+            last_sol = get_last_solution(M.nls["cont"].SolList)
+            x0 = last_sol.x[:-1]
             M_chunck_list.append(M)
         cont_list.append(
             Continuation(
@@ -182,7 +183,7 @@ def solve(nh_list: list[tuple[int, int]], chunck_list: list[dict]) -> list[Conti
 def main():
     load_rcparams()
 
-    nh_list = [5]
+    nh_list = [12]
     chunck_list = CHUNCK_LIST
 
     cont_list = solve(nh_list, chunck_list)

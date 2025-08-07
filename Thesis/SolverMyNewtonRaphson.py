@@ -23,8 +23,9 @@ class SolverMyNewtonRaphson(ABCNLSolver):
     default = {
         "tol_residual": 1e-8,
         "tol_delta_x": 1e-8,
-        "max_iter": 20,
-        "pseudo": False,
+        "max_iter": 5,
+        "pseudo": False,  # True -> don't update Jacobian at each corr step
+        "pert": 0.0,  # perturbation introduced in the residual equation
     }
     """dict: dictionary containing the default solver_options"""
 
@@ -41,6 +42,7 @@ class SolverMyNewtonRaphson(ABCNLSolver):
             sol (SystemSolution): SystemSolution solved and completed with the output information.
         """
         self.flag_solved = False
+        self.pert = self.solver_options["pert"]
         self.x = sol.x_start
         x_prec = sol.x_start
         self.H = self.residual(sol.x_start, sol)[:-1]
@@ -48,14 +50,14 @@ class SolverMyNewtonRaphson(ABCNLSolver):
 
         for self.iter in range(1, self.solver_options["max_iter"] + 1):
             x_prec = copy.deepcopy(self.x)
-            corr = linalg.pinv(self.J) @ self.H
+            corr = linalg.pinv(self.J) @ (self.H - self.pert)
             self.x -= corr
             self.H = self.residual(self.x, sol)[:-1]
             if not self.solver_options["pseudo"]:
                 self.J = self.jacobian(self.x, sol)[:-1, :]
 
             if (
-                linalg.norm(self.H) < self.solver_options["tol_residual"]
+                linalg.norm(self.H - self.pert) < self.solver_options["tol_residual"]
                 and linalg.norm(self.x - x_prec) < self.solver_options["tol_delta_x"]
             ):
                 self.flag_solved = True
