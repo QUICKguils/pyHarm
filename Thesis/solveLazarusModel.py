@@ -45,8 +45,8 @@ def _spot_solution(cont: Continuation, om: float, ampl: float) -> SystemSolution
     om_list = [sol.x[-1] for sol in cont.sol_list]
     ampl_list = compute_amplitude(cont)
     curve_sdist = np.array(  # square distance from the continuation curve
-        [(om_i - om) ** 2 + (ampl_i - ampl) ** 2 for (om_i, ampl_i) in zip(om_list, ampl_list)]
-    )
+                           [(om_i - om) ** 2 + (ampl_i - ampl) ** 2 for (om_i, ampl_i) in zip(om_list, ampl_list)]
+                           )
     id = np.argmin(curve_sdist)
 
     return cont.sol_list[id]

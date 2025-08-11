@@ -3,7 +3,6 @@ from enum import Enum
 
 import numpy as np
 
-from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
 from pyHarm.Solver import SystemSolution
 
 
@@ -26,19 +25,14 @@ class ABCBifurcator(abc.ABC):
           information are printed during the analysis if True.
     """
 
-    default_options = {
-        "verbose": True
-    }
-    """dict: set of default parameters for the system class if not given in the input argument.
-
-    It contains a 'verbose' keyword that can be set to True (default)
-    if information about detection of bifurcations is to be displayed during solving.
-    """
-
     def __init__(self, bifurcator_options):
-        self.bifurcator_options = getCustomOptionDictionary(bifurcator_options, self.default_options)
-        self.flag_print = self.bifurcator_options["verbose"]
+        self.opts = bifurcator_options
+        self.in_operation = False
         self.__post_init__()
+
+    @abc.abstractmethod
+    def __post_init__(self):
+        pass
 
     @property
     @abc.abstractmethod
@@ -47,13 +41,7 @@ class ABCBifurcator(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def __post_init__(self):
-        pass
-
-    @abc.abstractmethod
-    def detect(
-        self, SolList: list[SystemSolution], ds: float, k_imposed=None
-    ) -> tuple[np.ndarray, SystemSolution, float]:
+    def detect(self, sol: SystemSolution) -> bool:
         pass
 
     @abc.abstractmethod

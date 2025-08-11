@@ -60,7 +60,7 @@ class PredictorSecant(PredictorTangent):
         """
         # Get pointer to solution and bifurcation detection
         last_sol = get_last_solution(SolList, k_imposed)
-        if self.predictor_options["bifurcation_detect"]:
+        if self.opts["bifurcation_detect"]:
             self.bifurcation_detect(last_sol)
         if isinstance(last_sol, FirstSolution):
             xpred, last_sol, self.sign_ds = self.predict_usingtan(SolList, ds, k_imposed=None)

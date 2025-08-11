@@ -20,6 +20,7 @@ from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
 from pyHarm.Solver import SystemSolution
 
 
+# FIX: interface is broken for predictors other than tangent
 class ABCPredictor(abc.ABC):
     """Abstract class for the predictor.
 
@@ -38,7 +39,6 @@ class ABCPredictor(abc.ABC):
     """
 
     default_options = {
-        "bifurcation_detect": False,  # XXX: remove that when Bifurcator implemented
         "norm": "norm1",
         "verbose": True,
     }
@@ -49,18 +49,13 @@ class ABCPredictor(abc.ABC):
     It contains a normalisation parameter using the keyword 'norm' that can be set to either 'norm1'
     (default) if the direction is normed to 1 or 'om' if the direction is normed to 1 only for the
     angular frequency.
-    It contains a bifurcation detection using the 'bifurcation_detect' keyword that can be set to
-    True (default) if detection is needed.
-    It contains a 'blind_angle' keyword that sets a blind angle to avoid the predictor to search in
-    the inwards direction.
     It contains a 'verbose' keyword that can be set to True (default) if information about detection
     of bifurcations is to be displayed during solving.
     """
 
-    def __init__(self, sign_ds, **kwargs):
-        self.sign_ds = sign_ds
-        self.predictor_options = getCustomOptionDictionary(kwargs, self.default_options)
-        self.flag_print = self.predictor_options["verbose"]
+    # TODO: remove sign_ds from predictor, unused now
+    def __init__(self, predictor_options):
+        self.opts = getCustomOptionDictionary(predictor_options, self.default_options)
 
     @property
     @abc.abstractmethod
@@ -81,7 +76,7 @@ class ABCPredictor(abc.ABC):
         """
         pass
 
-    def normalize(self, dir: float) -> float | None:
+    def normalize(self, dir: float) -> float:
         """Normalises the direction according to the choice of norm given in the class attributes.
 
         Args:
@@ -90,9 +85,9 @@ class ABCPredictor(abc.ABC):
         Returns:
             np.ndarray: normalized prediction direction.
         """
-        if self.predictor_options["norm"] == "norm1":
+        if self.opts["norm"] == "norm1":
             return dir / np.linalg.norm(dir)
-        if self.predictor_options["norm"] == "om":
+        if self.opts["norm"] == "om":
             return dir / dir[-1]
         print('Wrong normalisation option, please choose between "norm1" and "om"')
-        return None
+        return dir

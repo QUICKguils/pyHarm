@@ -28,12 +28,6 @@ class ABCNLSolver(abc.ABC):
         jacobian (Callable): function that returns the jacobian matrix of the system to be solved.
     """
 
-    @property
-    @abc.abstractmethod
-    def factory_keyword(self) -> str:
-        """str: Concrete class name used by the factory to instantiate it."""
-        pass
-
     def __init__(self, residual, jacobian, solver_options):
         self.solver_options = solver_options
         self.residual = residual
@@ -41,6 +35,12 @@ class ABCNLSolver(abc.ABC):
         self.__post_init__()
 
     def __post_init__(self):
+        pass
+
+    @property
+    @abc.abstractmethod
+    def factory_keyword(self) -> str:
+        """str: Concrete class name used by the factory to instantiate it."""
         pass
 
     @abc.abstractmethod

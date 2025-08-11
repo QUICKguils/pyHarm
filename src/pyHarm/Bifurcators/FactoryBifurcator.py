@@ -7,14 +7,16 @@ Attributes:
 """
 
 from pyHarm.Bifurcators.ABCBifurcator import ABCBifurcator
-from pyHarm.Bifurcators.BifurcatorABE import BifurcatorABE
-from pyHarm.Bifurcators.BifurcatorHill import BifurcatorHill
+from pyHarm.Bifurcators.BifurcatorNone import BifurcatorNone
+from pyHarm.Bifurcators.BifurcatorDetect import BifurcatorDetect
 from pyHarm.Bifurcators.BifurcatorPerturbation import BifurcatorPerturbation
+from pyHarm.Bifurcators.BifurcatorABE import BifurcatorABE
 
 Bifurcator_dico = {
+    BifurcatorNone.factory_keyword: BifurcatorNone,
+    BifurcatorDetect.factory_keyword: BifurcatorDetect,
     BifurcatorABE.factory_keyword: BifurcatorABE,
     BifurcatorPerturbation.factory_keyword: BifurcatorPerturbation,
-    BifurcatorHill.factory_keyword: BifurcatorHill,
 }
 """
 dict:
@@ -23,11 +25,11 @@ dict:
 """
 
 
-def generateBifurcator(name_bifurcator: str | None, bifurcator_options) -> ABCBifurcator | None:
+def generateBifurcator(name_bifurcator: str, bifurcator_options) -> ABCBifurcator:
     """Factory function that creates an ABCBifurcator object.
 
     Args:
-        name_bifurcator (str | None):
+        name_bifurcator (str):
           Type of the ABCBifurcator object that is to be instantiated.
         bifurcator_options (dict):
           Dictionary containing supplementary options for the bifucator to be instantiated.
@@ -35,6 +37,4 @@ def generateBifurcator(name_bifurcator: str | None, bifurcator_options) -> ABCBi
     Returns:
         ABCBifurcator: Instance of the required ABCBifurcator class.
     """
-    if name_bifurcator is None:
-        return None
     return Bifurcator_dico[name_bifurcator](bifurcator_options)

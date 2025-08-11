@@ -46,8 +46,8 @@ INP = {
         "FRF":{
             "study":"frf",
             ...,
-            "bifurcator": "fakestability",  # call the criterion using factory_keyword.
-            "bifurcator_options":{"verbose": True},
+            "stability": "fakestability",  # call the criterion using factory_keyword.
+            "stability_options":{"verbose": True},
             ...,
         },
         ...,
@@ -64,13 +64,7 @@ This file contains the dictionary of all the bifurcators that are available, as 
 
 ## StabilityHill `hill`
 
-Uses the Hill's method combined with bordering techniques, to derived tests
-functions that can detect three types of simple bifurcation:
-- fold bifurcation,
-- branching point bifurcation, and
-- Neimark-Sacker bifurcation.
+Uses the Hill's method to assess the stability of the computed solutions.
 
 ### References
 
-TODO: cite Krach, Detroux, maybe Lazarus
-<a id="1">[1]</a> E. Allgower and K. Georg, *Numerical Continuation Methods -- An Introduction. Soc. Ind Appl Math. 2003.

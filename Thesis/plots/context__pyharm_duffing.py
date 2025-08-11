@@ -1,4 +1,4 @@
-"""Context: pyharm linear vs duffing"""
+"""Context: pyharm linear vs Duffing"""
 
 import numpy as np
 

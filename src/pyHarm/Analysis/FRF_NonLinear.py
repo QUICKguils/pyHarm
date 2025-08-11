@@ -21,7 +21,7 @@ from pyHarm.Correctors.FactoryCorrector import generateCorrector
 from pyHarm.NonLinearSolver.FactoryNonLinearSolver import generateNonLinearSolver
 from pyHarm.Predictors.FactoryPredictor import generatePredictor
 from pyHarm.Reductors.FactoryChainedReductors import generateChainReductor
-from pyHarm.Solver import FirstSolution, SystemSolution
+from pyHarm.Solver import FirstSolution, SystemSolution, get_last_solution
 from pyHarm.StepSizeRules.FactoryStepSize import generateStepSizeRule
 from pyHarm.StopCriterion.FactoryStopCriterion import generateStopCriterion
 from pyHarm.Systems.ABCSystem import ABCSystem
@@ -60,7 +60,7 @@ class FRF_NonLinear(ABCAnalysis):
         "solver": "scipyroot",
         "predictor": "tangent",
         "corrector": "arc_length",
-        "bifurcator": None,
+        "bifurcator": "none",
         "reductors": [{"type": "noreductor"}],
         "stepsizer": "acceptance",
         "stopper": "bounds",
@@ -97,7 +97,6 @@ class FRF_NonLinear(ABCAnalysis):
         )
         self.predictor = generatePredictor(
             self.analysis_options["predictor"],
-            self.analysis_options["sign_ds"],
             self.analysis_options.get("predictor_options", dict()),
         )
         self.corrector = generateCorrector(
@@ -268,20 +267,27 @@ class FRF_NonLinear(ABCAnalysis):
         return xpred_red, J_red, output_expl_dofs
 
     def make_step(self, **kwargs):
-        """
-        Makes a step of solving : get a step size, generate a predicted point,
-        solve the nonlinear system, save the solution.
-        """
+        """Perform a solving step."""
+
         self.ds = self.adaptstep.getStepSize(self.ds, self.SolList)
 
-        last_sol = self.predictor.predict(self.SolList, self.ds)
+        last_sol = get_last_solution(self.SolList)
+
+        self.predictor.compute_tangent(last_sol)
+
+        if self.bifurcator.detect(last_sol):
+            self.bifurcator.localize()
+        if self.bifurcator.in_operation:
+            self.bifurcator.track()
+
+        self.predictor.predict(last_sol)
 
         ## update the reductor --> need to use old version of the reduce
         xpred_red, _, output_expl_dofs = self._update_reductor(last_sol.x_pred, last_sol)
 
         sol = SystemSolution(xpred_red, last_sol)
         sol.ds = self.ds
-        sol.dir = dir
+        sol.sign_ds = last_sol.sign_ds
         self.solver.solve(sol)
         self.complete_solution(sol)
         sol.save(self.SolList)

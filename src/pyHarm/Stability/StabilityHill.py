@@ -1,46 +1,19 @@
-from enum import Enum
-
 import numpy as np
 from scipy import linalg
 
 from pyHarm.DynamicOperator import nabla
-from pyHarm.Bifurcators.ABCBifurcator import ABCBifurcator
+from pyHarm.Stability import ABCStability
 from pyHarm.Solver import SystemSolution
 from pyHarm.Systems import ABCSystem
 
 
-# WARN: only works if one and only one substructure is defined
-# TODO: made a check for that
-class BifurcatorHill(ABCBifurcator):
+class StabilityHill(ABCStability):
     """Branching predictions through the Hill's method."""
 
     bifurcator_name = "Hill's method"
 
     factory_keyword: str = "hill"
     """str: Concrete class name used by the factory to instantiate it."""
-
-    def detect(self, lstpt: SystemSolution):
-        """
-        Makes a bifurcation detection analysis computing determinant of
-        jacobian matrix and analysing change of sign.
-
-        Args:
-            lstpt (SystemSolution): previously accepted point in direct link
-              with the actual solved point.
-
-        Attributes:
-            sign_ds (float): Attribute is modified if a fold bifurcation is
-              detected.
-            bifurcation_type (BifurcationType): Attribute is assigned if a
-              bifurcation is detected.
-        """
-        pass
-
-    def localize(self):
-        pass
-
-    def track(self):
-        pass
 
     def _compute_Hill_matrix(self, last_solution: SystemSolution, system: ABCSystem):
         J = last_solution.get_jacobian("full")

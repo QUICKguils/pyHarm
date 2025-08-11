@@ -38,7 +38,7 @@ dict:
 """
 
 
-def generatePredictor(name_predictor, sign_ds, predictor_options) -> ABCPredictor:
+def generatePredictor(name_predictor: str, predictor_options) -> ABCPredictor:
     """Factory function that creates a ABCPredictor object.
 
     Args:
@@ -50,5 +50,4 @@ def generatePredictor(name_predictor, sign_ds, predictor_options) -> ABCPredicto
     Returns:
         ABCPredictor: Instance of the required ABCPredictor class.
     """
-    E = Predictor_dico[name_predictor](sign_ds, **predictor_options)
-    return E
+    return Predictor_dico[name_predictor](predictor_options)

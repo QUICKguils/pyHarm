@@ -16,7 +16,7 @@ import numpy as np
 from scipy import linalg
 
 from pyHarm.Predictors.ABCPredictor import ABCPredictor
-from pyHarm.Solver import SystemSolution, get_last_solution
+from pyHarm.Solver import SystemSolution
 
 
 class PredictorTangent(ABCPredictor):
@@ -26,30 +26,36 @@ class PredictorTangent(ABCPredictor):
     factory_keyword: str = "tangent"
     """str: Concrete class name used by the factory to instantiate it."""
 
-    def predict(self, SolList: list[SystemSolution], ds: float, k_imposed=None) -> SystemSolution:
-        """Predicts the next starting point using the tangent.
+    # WARN: change: k_impose should come from get_last_solution now
+    def compute_tangent(self, sol: SystemSolution):
+        """Compute the tangent of the solution curve at the given solution point.
 
         Args:
-            SolList (list[SystemSolution]): list of SystemSolution already solved during the analysis.
-            ds (float): step size for the prediction.
-            k_imposed (None | int): if not None, uses the k_imposed as the index of the last
-              solution pointer.
+            sol (SystemSolution):
+                Previous computed solution. ds should already been have computed.
 
-        Returns:
-            SystemSolution: last accepted solution of SolList, with computed prediction written in it.
+        Writes:
+            sol.dir:
+                Direction of the tangent.
         """
-        last_sol = get_last_solution(SolList, k_imposed)
-
         # See Allgower, p.29 : Jacobian tangent from its QR decomposition
-        last_sol.get_jacobian("full")  # this makes last_sol.J_f available
-        Q, R = linalg.qr(np.transpose(last_sol.J_f[:-1, :]))
+        sol.get_jacobian("full")  # this makes last_sol.J_f available
+        Q, R = linalg.qr(np.transpose(sol.J_f[:-1, :]))
         sign = -np.sign(np.prod(np.diag(R)))  # sign = sign(det(R)*det(Q)), with det(Q) = 1
-        last_sol.dir = sign * Q[:, -1]
+        sol.dir = sign * Q[:, -1]
 
-        if self.predictor_options["bifurcation_detect"]:
-            self.bifurcation_detect(last_sol)
+    def predict(self, sol: SystemSolution):
+        """Predict the next solution, through an Euler prediction.
+
+        Args:
+            sol (SystemSolution):
+                Previous computed solution.
+                ds, sign_ds and dir should already been have computed.
+
+        Writes:
+            sol.x_pred:
+                Prediction of the next solution.
+        """
 
         # Euler prediction: step along the tangent to the solution branch
-        last_sol.x_pred = last_sol.x + self.sign_ds * ds * last_sol.dir
-
-        return last_sol
+        sol.x_pred = sol.x + sol.sign_ds * sol.ds * sol.dir

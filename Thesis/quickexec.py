@@ -1,9 +1,8 @@
-from thesis import solveLazarusModel as sv
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
-l = sv.main()
-cont = l["cont_list"][-1]
 
-plot_cont = sv.continuation_plotter()
-plot_cont(cont, ih=[0], pred=True)
-plot_cont(cont, ih=[1], pred=True)
-plot_cont(cont, ih=[2], pred=True)
+def modify(pt: Point):
+    pt.x = 0
