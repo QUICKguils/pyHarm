@@ -32,7 +32,7 @@ class PredictorMyTangent(ABCPredictor):
         last_sol.get_jacobian("full")  # this makes lstpt.J_f available
         solx_len = last_sol.J_f[:-1, :-1].shape[0]
 
-        if self.predictor_options["bifurcation_detect"]:
+        if self.opts["bifurcation_detect"]:
             self.bifurcation_detect(last_sol)
 
         if isinstance(last_sol, FirstSolution):

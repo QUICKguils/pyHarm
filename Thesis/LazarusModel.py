@@ -101,8 +101,9 @@ CHUNCK_ALL = {
             "stepsizer": "acceptance",
             "predictor": "tangent",
             "corrector": "arc_length",
-            "bifurcator": "detect",
-            # "bifurcator_options": {"blind_spot: 30"},
+            # "bifurcator": "detect",
+            "bifurcator": "perturbation_allgower",
+            "bifurcator_options": {"perturbation": -1e-5},
             "stopper": "bounds",
             "solver": "NewtonRaphson",
             # "solver_options": {"max_iter": 4, "pert": 1E-4},
@@ -194,26 +195,33 @@ def extract_bifurcation(cont: Continuation):
     cont_branching = Continuation(
         M=cont.M,
         sol_list=[
-            sol
-            for sol in cont_bifurcation.sol_list
-            if sol.bifurcation_type is BifurcationType.BRANCHING
+            sol for sol in cont_bifurcation.sol_list if sol.bifurcation_type is BifurcationType.BRANCHING
+        ],
+        chunk_list=cont.chunk_list,
+    )
+    cont_unknown = Continuation(
+        M=cont.M,
+        sol_list=[
+            sol for sol in cont_bifurcation.sol_list if sol.bifurcation_type is BifurcationType.UNKNOWN
         ],
         chunk_list=cont.chunk_list,
     )
 
-    return cont_bifurcation, cont_fold, cont_branching
+    return cont_bifurcation, cont_fold, cont_branching, cont_unknown
 
 
 def continuation_plotter():
     fig, ax = plt.subplots()
     fold_style = {"color": "C1", "s": 50, "zorder": 2.5, "marker": "x"}
     branching_style = {"color": "C6", "s": 50, "zorder": 2.5, "marker": "x"}
+    unknown_style = {"color": "C3", "s": 50, "zorder": 2.5, "marker": "x"}
     ax.scatter([], [], **fold_style, label="fold bifurcation")
     ax.scatter([], [], **branching_style, label="branching point")
+    ax.scatter([], [], **unknown_style, label="other bif.")
 
     def plot(cont: Continuation, ih=None, pred=False):
         cont_accepted, cont_rejected = extract_accepted(cont)
-        cont_bifurcation, cont_fold, cont_branching = extract_bifurcation(cont_accepted)
+        cont_bifurcation, cont_fold, cont_branching, cont_unknown = extract_bifurcation(cont_accepted)
 
         if len(cont_accepted) != 0:
             om_accepted = np.array([sol.x[-1] for sol in cont_accepted.sol_list])
@@ -245,6 +253,11 @@ def continuation_plotter():
             om_branching = [sol.x[-1] for sol in cont_branching.sol_list]
             ampl_branching = compute_amplitude(cont_branching, ih)
             ax.scatter(om_branching, ampl_branching, **branching_style)
+
+        if len(cont_unknown) != 0:
+            om_unknown = [sol.x[-1] for sol in cont_unknown.sol_list]
+            ampl_unknown = compute_amplitude(cont_unknown, ih)
+            ax.scatter(om_unknown, ampl_unknown, **unknown_style)
 
         ax.set_xlabel(r"$\omega$ [rad/s]")
         ax.set_ylabel("Amplitude [m]")

@@ -20,7 +20,7 @@ from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
 from pyHarm.Solver import SystemSolution
 
 
-# FIX: interface is broken for predictors other than tangent
+# FIX: interface is broken for predictors other than tangent. Update them
 class ABCPredictor(abc.ABC):
     """Abstract class for the predictor.
 
@@ -63,16 +63,34 @@ class ABCPredictor(abc.ABC):
         """str: Concrete class name used by the factory to instantiate it."""
         pass
 
+    # FIX: change: `k_impose` should come from get_last_solution now
     @abc.abstractmethod
-    def predict(self, SolList: list[SystemSolution], ds: float) -> SystemSolution:
-        """Predict the next starting point.
+    def compute_dir(self, sol: SystemSolution):
+        """Compute the searching direction for the next solution point.
 
         Args:
-            SolList (list[SystemSolution]): list of SystemSolution already solved during the analysis.
-            ds (float): Step size for the prediction.
+            sol (SystemSolution):
+                Previous computed solution.
+                Attribute `ds` should already have been computed.
 
-        Returns:
-            SystemSolution: last accepted solution of SolList, with computed prediction written in it.
+        Writes:
+            sol.dir:
+                Searching direction for the next solution.
+        """
+        pass
+
+    @abc.abstractmethod
+    def predict(self, sol: SystemSolution):
+        """Predict the next solution.
+
+        Args:
+            sol (SystemSolution):
+                Previous computed solution.
+                Attributes `ds`, `sign_ds` and `dir` should already been have computed.
+
+        Writes:
+            sol.x_pred:
+                Prediction of the next solution.
         """
         pass
 

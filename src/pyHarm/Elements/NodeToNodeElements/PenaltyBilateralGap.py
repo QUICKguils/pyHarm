@@ -83,16 +83,12 @@ class PenaltyBilateralGap(NodeToNodeElement):
     factory_keyword: str = "PenaltyBilateralGap"
     """str: keyword that is used to call the creation of this class in the system factory."""
 
-    def __post_init__(
-        self,
-    ):
+    def __post_init__(self):
         self.g = self.data["g"]
         self.k = self.data["k"]
         self.nabo = np.linalg.matrix_power(self.nabla, 0)
 
-    def __flag_update__(
-        self,
-    ):
+    def __flag_update__(self):
         self.flag_nonlinear = True
         self.flag_AFT = True
 

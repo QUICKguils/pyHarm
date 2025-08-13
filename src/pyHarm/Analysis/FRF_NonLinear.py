@@ -60,7 +60,7 @@ class FRF_NonLinear(ABCAnalysis):
         "solver": "scipyroot",
         "predictor": "tangent",
         "corrector": "arc_length",
-        "bifurcator": "none",
+        "bifurcator": "jump",
         "reductors": [{"type": "noreductor"}],
         "stepsizer": "acceptance",
         "stopper": "bounds",
@@ -269,28 +269,37 @@ class FRF_NonLinear(ABCAnalysis):
     def make_step(self, **kwargs):
         """Perform a solving step."""
 
-        self.ds = self.adaptstep.getStepSize(self.ds, self.SolList)
-
+        # Retrieve the last valid computed solution
         last_sol = get_last_solution(self.SolList)
 
-        self.predictor.compute_tangent(last_sol)
+        # Searching direction for the next solution point
+        self.predictor.compute_dir(last_sol)
 
+        # Treat potential bifurcations
         if self.bifurcator.detect(last_sol):
-            self.bifurcator.localize()
+            self.bifurcator.localize(self.SolList, self.solver, self.system)
         if self.bifurcator.in_operation:
-            self.bifurcator.track()
+            self.bifurcator.track(self.solver)
 
+        # Update last sol (potential change from perturb.)
+        last_sol = get_last_solution(self.SolList)
+
+        # Predict the next solution point location
         self.predictor.predict(last_sol)
 
-        ## update the reductor --> need to use old version of the reduce
+        # Update the reductor (old version of the reduce needed)  # guil: wut ?!
         xpred_red, _, output_expl_dofs = self._update_reductor(last_sol.x_pred, last_sol)
 
+        # Create the new predicted solution
         sol = SystemSolution(xpred_red, last_sol)
-        sol.ds = self.ds
+        sol.ds = self.adaptstep.getStepSize(self.ds, self.SolList)
         sol.sign_ds = last_sol.sign_ds
+
+        # Solve it and save it
         self.solver.solve(sol)
         self.complete_solution(sol)
         sol.save(self.SolList)
+
         if self.flag_print:
             if sol.flag_accepted:
                 print(f"solution converged at om={sol.x[-1]}")

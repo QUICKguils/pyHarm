@@ -29,7 +29,7 @@ def plot(nh, nti, x_h, x_t, DFTO) -> None:
     from ..mplrc import load_rcparams, REPORT_TW
 
     load_rcparams()
-    fig, axs = plt.subplots(2, 2, figsize=(REPORT_TW, 0.9*REPORT_TW))
+    fig, axs = plt.subplots(2, 2, figsize=(0.9*REPORT_TW, 0.8*REPORT_TW))
 
     def label(i):
         if i == 0:

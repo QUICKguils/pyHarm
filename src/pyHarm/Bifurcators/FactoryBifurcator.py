@@ -8,15 +8,15 @@ Attributes:
 
 from pyHarm.Bifurcators.ABCBifurcator import ABCBifurcator
 from pyHarm.Bifurcators.BifurcatorNone import BifurcatorNone
-from pyHarm.Bifurcators.BifurcatorDetect import BifurcatorDetect
+from pyHarm.Bifurcators.BifurcatorJump import BifurcatorJump
 from pyHarm.Bifurcators.BifurcatorPerturbation import BifurcatorPerturbation
 from pyHarm.Bifurcators.BifurcatorABE import BifurcatorABE
 
 Bifurcator_dico = {
     BifurcatorNone.factory_keyword: BifurcatorNone,
-    BifurcatorDetect.factory_keyword: BifurcatorDetect,
-    BifurcatorABE.factory_keyword: BifurcatorABE,
+    BifurcatorJump.factory_keyword: BifurcatorJump,
     BifurcatorPerturbation.factory_keyword: BifurcatorPerturbation,
+    BifurcatorABE.factory_keyword: BifurcatorABE,
 }
 """
 dict:

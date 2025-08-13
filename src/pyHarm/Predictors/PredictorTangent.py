@@ -26,17 +26,19 @@ class PredictorTangent(ABCPredictor):
     factory_keyword: str = "tangent"
     """str: Concrete class name used by the factory to instantiate it."""
 
-    # WARN: change: k_impose should come from get_last_solution now
-    def compute_tangent(self, sol: SystemSolution):
-        """Compute the tangent of the solution curve at the given solution point.
+    def compute_dir(self, sol: SystemSolution):
+        """Compute the searching direction for the next solution point.
+
+        Here, the direction is the tangent of the solution curve.
 
         Args:
             sol (SystemSolution):
-                Previous computed solution. ds should already been have computed.
+                Previous computed solution.
+                Attribute `ds` should already have been computed.
 
         Writes:
             sol.dir:
-                Direction of the tangent.
+                Searching direction for the next solution (tangent of the solution curve).
         """
         # See Allgower, p.29 : Jacobian tangent from its QR decomposition
         sol.get_jacobian("full")  # this makes last_sol.J_f available
@@ -50,12 +52,11 @@ class PredictorTangent(ABCPredictor):
         Args:
             sol (SystemSolution):
                 Previous computed solution.
-                ds, sign_ds and dir should already been have computed.
+                Attributes `ds`, `sign_ds` and `dir` should already been have computed.
 
         Writes:
             sol.x_pred:
                 Prediction of the next solution.
         """
-
         # Euler prediction: step along the tangent to the solution branch
         sol.x_pred = sol.x + sol.sign_ds * sol.ds * sol.dir

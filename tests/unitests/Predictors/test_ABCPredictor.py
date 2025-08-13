@@ -32,7 +32,7 @@ def mock_abcpredictor(monkeypatch: MonkeyPatch) -> ABCPredictor:
 @pytest.mark.unit
 def test_ABCPredictor__init__(mock_abcpredictor: ABCPredictor) -> None:
     assert mock_abcpredictor.sign_ds == SIGN_DS
-    assert mock_abcpredictor.predictor_options == ABCPredictor.default_options
+    assert mock_abcpredictor.opts == ABCPredictor.default_options
 
 
 @pytest.mark.all
@@ -42,7 +42,7 @@ def test_ABCPredictor_norm_dir(mock_abcpredictor: ABCPredictor) -> None:
         mock_abcpredictor.normalize(DIRECTION_TEST),
         DIRECTION_TEST / np.linalg.norm(DIRECTION_TEST),
     )
-    mock_abcpredictor.predictor_options["norm"] = "om"
+    mock_abcpredictor.opts["norm"] = "om"
     assert mock_abcpredictor.normalize(DIRECTION_TEST)[-1] == 1.0
 
 
@@ -71,7 +71,7 @@ def test_ABCPredictor_bifurcation_detect(mock_abcpredictor: ABCPredictor) -> Non
     SOL_NOTACC.det_J_f = 2.0
     mock_abcpredictor.bifurcation_detect(SOL_ACCEPT)
     assert SOL_ACCEPT.flag_bifurcation == False
-    mock_abcpredictor.predictor_options["flag_print"] = False
+    mock_abcpredictor.opts["flag_print"] = False
     SOL_NOTACC.det_J_x = -1.0
     SOL_NOTACC.det_J_f = 2.0
     mock_abcpredictor.bifurcation_detect(SOL_ACCEPT)
@@ -82,5 +82,5 @@ def test_ABCPredictor_bifurcation_detect(mock_abcpredictor: ABCPredictor) -> Non
     mock_abcpredictor.bifurcation_detect(SOL_ACCEPT)
     assert SOL_ACCEPT.flag_bifurcation == True
     assert mock_abcpredictor.sign_ds == -SIGN_DS
-    mock_abcpredictor.predictor_options["bifurcation_detect"] = False
+    mock_abcpredictor.opts["bifurcation_detect"] = False
     assert mock_abcpredictor.bifurcation_detect(SOL_ACCEPT) == None
