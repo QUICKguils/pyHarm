@@ -43,9 +43,9 @@ DATA = {
             "corrector": "arc_length",
             "bifurcator": "perturbation",
             "bifurcator_options": {
-                "pert": -1E-5,
-                # "interactive": True,
-                # "vizu": [("duffing", 0, 0)],
+                # "pert": -1E-5,
+                "interactive": True,
+                "vizu": [("duffing", 0, 0)],
             },
             "stopper": "bounds",
             "solver": "NewtonRaphson",

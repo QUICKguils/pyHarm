@@ -56,7 +56,7 @@ class BifurcatorJump(ABCBifurcator):
         return sol.bifurcation_type is not None
 
     def localize(self, *args):
-        pass
+        return None
 
     def track(self, *args):
         pass

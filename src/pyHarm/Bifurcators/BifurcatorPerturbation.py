@@ -97,8 +97,9 @@ class BifurcatorPerturbation(ABCBifurcator):
         self.step_counter = self.opts["pert_steps"]
         self.in_operation = True
 
+        return None
 
-    def track(self, solver: SolverNewtonRaphson):
+    def track(self, sol_list: list[SystemSolution], solver: SolverNewtonRaphson, *args):
         """Here, the track method basically acts as a counter."""
         if self.step_counter == 0:
             # Reset Newton solver so that it solves the unperturbed equations.
@@ -113,7 +114,7 @@ class BifurcatorPerturbation(ABCBifurcator):
         sol_accepted = [sol for sol in sol_list if sol.flag_accepted]
 
         # Take a few of the last computed solutions
-        n_last_sols_desired = 20
+        n_last_sols_desired = 10_000
         n_last_sols = min(len(sol_accepted), n_last_sols_desired)
         last_sols = sol_accepted[-n_last_sols:]
 
@@ -151,6 +152,5 @@ class BifurcatorPerturbation(ABCBifurcator):
 
         ax.set_xlabel("Frequency (rad/s)")
         ax.set_ylabel("Amplitude (m)")
-        ax.legend()
 
         fig.show()

@@ -73,37 +73,34 @@ CHUNCK_ALL = {
             # "ds_min": 1e-8,
             # "ds_max": 5e-2,
 
-            # # Coarse
+            # Coarse, but capture branch bifurcation
+            "puls_inf": 0.01,
+            "puls_start": 0.1,
+            "puls_sup": 5.0,
+            "ds0": 1e-2,
+            "ds_min": 1e-8,
+            "ds_max": 2e-2,
+
+            # # Quite fine
             # "puls_inf": 0.01,
             # "puls_start": 0.1,
             # "puls_sup": 5.0,
             # "ds0": 5e-3,
             # "ds_min": 1e-8,
-            # "ds_max": 5e-2,
-
-            # # Less coarse (capture branch bifurcation)
-            # "puls_inf": 0.01,
-            # "puls_start": 0.1,
-            # "puls_sup": 5.0,
-            # "ds0": 1e-2,
-            # "ds_min": 1e-8,
-            # "ds_max": 2e-2,
-
-            # Quite fine
-            "puls_inf": 0.01,
-            "puls_start": 0.1,
-            "puls_sup": 5.0,
-            "ds0": 5e-3,
-            "ds_min": 1e-8,
-            "ds_max": 5e-3,
-            "sign_ds": 1,
+            # "ds_max": 5e-3,
+            # "sign_ds": 1,
 
             "stepsizer": "acceptance",
             "predictor": "tangent",
             "corrector": "arc_length",
-            "bifurcator": "jump",
-            # "bifurcator": "perturbation_allgower",
-            # "bifurcator_options": {"perturbation": -1e-5},
+            # "bifurcator": "jump",
+            # "bifurcator": "perturbation",
+            "bifurcator": "abe",
+            "bifurcator_options": {
+                # "pert": -1E-5,
+                "interactive": True,
+                "vizu": [("duffing", 0, 0)],
+            },
             "stopper": "bounds",
             "solver": "NewtonRaphson",
             # "solver_options": {"max_iter": 4, "pert": 1E-4},
