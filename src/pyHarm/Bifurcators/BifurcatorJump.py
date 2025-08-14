@@ -39,7 +39,6 @@ class BifurcatorJump(ABCBifurcator):
 
         # TODO: maybe separate detection from simple jumps
         if np.sign(sol.det_Jx) != np.sign(prev_sol.det_Jx):
-            sol.flag_bifurcation = True
             if np.sign(sol.det_Jf) == np.sign(prev_sol.det_Jf):
             # if np.sign(sol.det_Jf) == np.sign(prev_sol.det_Jf) or np.sign(sol.det_Jf) != np.sign(sol.det_Jx):
                 sol.bifurcation_type = BifurcationType.FOLD
@@ -49,7 +48,6 @@ class BifurcatorJump(ABCBifurcator):
             if self.opts["verbose"]:
                 print(f"Warning: a {sol.bifurcation_type.value} was detected")
         elif np.dot(prev_sol.dir, sol.dir) < -np.cos(np.deg2rad(self.opts["blind_spot"] / 2)):
-            sol.flag_bifurcation = True
             sol.bifurcation_type = BifurcationType.UNKNOWN
             sol.sign_ds *= -1
             if self.opts["verbose"]:

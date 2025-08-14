@@ -80,7 +80,7 @@ CHUNCK_ALL = {
             "verbose": True,
             "stepsizer": "acceptance",  # NOTE: originally acceptance
             "predictor": "tangent",  # NOTE: originally tangent
-            # "predictor_options": { "blind_spot": 30},
+            # "predictor_options": { "blind_spot": 180},
             "reductors": [  # NOTE: originally activated
                 {
                     "type": "globalHarmonic",

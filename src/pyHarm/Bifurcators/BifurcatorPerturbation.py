@@ -4,7 +4,7 @@ from scipy import linalg
 from pyHarm import DynamicOperator
 from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
 from pyHarm.Bifurcators.ABCBifurcator import ABCBifurcator, BifurcationType
-from pyHarm.NonLinearSolver.SolverNewtonRaphson import SolverNewtonRaphson
+from pyHarm.NonLinearSolver import SolverNewtonRaphson
 from pyHarm.Solver import FirstSolution, SystemSolution
 from pyHarm.Systems.System import System
 
@@ -35,7 +35,7 @@ class BifurcatorPerturbation(ABCBifurcator):
         self.opts = getCustomOptionDictionary(self.opts, self.default_options)
 
     def detect(self, sol: SystemSolution):
-        """Only raise flag_bifurcation for branching, no need to invert sign_ds"""
+        """Only raise a detected bifurcation for branching, no need to invert sign_ds"""
 
         J = sol.get_jacobian("full")
         sol.det_Jf = linalg.det(J)
@@ -50,24 +50,33 @@ class BifurcatorPerturbation(ABCBifurcator):
         if np.sign(sol.det_Jx) != np.sign(prev_sol.det_Jx):
             if np.sign(sol.det_Jf) == np.sign(prev_sol.det_Jf):
             # if np.sign(sol.det_Jf) == np.sign(prev_sol.det_Jf) or np.sign(sol.det_Jf) != np.sign(sol.det_Jx):
-                sol.flag_bifurcation = True
                 sol.bifurcation_type = BifurcationType.FOLD
             else:
-                sol.flag_bifurcation = True
                 sol.bifurcation_type = BifurcationType.BRANCHING
                 detected = True
         elif np.dot(prev_sol.dir, sol.dir) < -np.cos(np.deg2rad(self.opts["blind_spot"] / 2)):
-            sol.flag_bifurcation = True
             sol.bifurcation_type = BifurcationType.UNKNOWN
             detected = True
 
-        if self.opts["verbose"] and sol.flag_bifurcation:
+        if self.opts["verbose"] and sol.bifurcation_type is not None:
             print(f"Warning: a {sol.bifurcation_type.value} was detected")
 
         return detected
 
-    def localize(self, sol_list: list[SystemSolution], solver: SolverNewtonRaphson, system: System):
+    # WARN: a bit too hacky for long term
+    # The localize() and track() method() directly writes in the properties
+    # of the NLSolver defined in the upstream FRF_analysis. This will be unexpected
+    # and wacky for someone discovering the code. Plus, the this bifurcator
+    # relies on the fact that a Newton solver has indeed been chosen for the analysis.
+    def localize(
+            self,
+            sol_list: list[SystemSolution],
+            solver: SolverNewtonRaphson,
+            update_reductor,
+            system: System
+    ):
         """TBD"""
+
         if self.opts["interactive"]:
             if self.opts["vizu"] is not None:
                 self.branching_view(sol_list, system)
@@ -87,6 +96,7 @@ class BifurcatorPerturbation(ABCBifurcator):
         # Set tracking
         self.step_counter = self.opts["pert_steps"]
         self.in_operation = True
+
 
     def track(self, solver: SolverNewtonRaphson):
         """Here, the track method basically acts as a counter."""

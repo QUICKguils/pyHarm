@@ -277,9 +277,11 @@ class FRF_NonLinear(ABCAnalysis):
 
         # Treat potential bifurcations
         if self.bifurcator.detect(last_sol):
-            self.bifurcator.localize(self.SolList, self.solver, self.system)
+            loc_res = self.bifurcator.localize(
+                self.SolList, self.solver, self._update_reductor, self.system
+            )
         if self.bifurcator.in_operation:
-            self.bifurcator.track(self.solver)
+            self.bifurcator.track(self.solver, loc_res)
 
         # Predict the next solution point location
         self.predictor.predict(last_sol)
