@@ -1,17 +1,103 @@
-"""solveLazarusModel -- Solve the simple Duffing oscillator from Lazarus et al."""
+"""PeletanModel -- Simple Diffing oscillator from Peletan"""
 
 from typing import NamedTuple
 
-import matplotlib.pyplot as plt
 import numpy as np
 
+from pyHarm.Bifurcators.ABCBifurcator import BifurcationType
 from pyHarm.DynamicOperator import compute_DFT
 from pyHarm.Maestro import Maestro
-from pyHarm.Bifurcators.ABCBifurcator import BifurcationType
 from pyHarm.Solver import SystemSolution, get_last_solution
 
-from .mplrc import load_rcparams
-from .LazarusModel import CHUNCK_LIST, MODEL, SYSTEM
+# Define the Duffing oscillator
+# m*q_ddot + c*q_dot + k*q + gamma*q^3 = f(t)
+# with parameters from Peletan article
+linsys = dict()
+linsys["M"] = np.array([1])
+linsys["C"] = np.array([1])
+linsys["K"] = np.array([-1000])
+linsys["G"] = 0 * linsys["M"]
+f = 2000
+gamma = 10_000
+
+
+MODEL = {
+    "analysis": {},
+    "system": {},
+    "substructures": {
+        "duffing": {
+            "matrix": linsys,
+            "ndofs": 1,
+        },
+    },
+    "connectors": {
+        "loading": {
+            "type": "CosinusForcing",
+            "connect": {"duffing": [0]},
+            "dirs": [0],
+            "amp": f,
+        },
+        "cubic_spring": {
+            "type": "CubicSpring",
+            "connect": {"duffing": [0]},
+            "dirs": [0],
+            "k": gamma,
+        },
+    },
+}
+
+# The "nh" field need to be completed
+# on the corresponding solving file.
+SYSTEM = {
+    "type": "Base",
+    "nti": 2048,
+    "adim": {
+        "status": False,
+        "lc": 1.0,
+        "wc": 1.0,
+    },
+}
+
+CHUNCK_ALL = {
+    "analysis": {
+        "cont": {
+            "study": "frf",
+
+            "puls_inf": 0.0,
+            "puls_start": 0.001,  # starting from 0.1 gives craszy results
+            "puls_sup": 190,
+            "ds0": 2e-3,
+            "ds_min": 1e-6,
+            "ds_max": 1e-1,
+            "sign_ds": 1,
+
+            "reductors": [
+                {
+                    "type": "globalHarmonic",
+                    "nh_start": np.array([0]),
+                    "err_admissible": 1e10,
+                    "h_always_kept": np.array([0, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19]),
+                    "verbose": False,
+                }
+            ],
+            "stepsizer": "acceptance",
+            "predictor": "tangent",
+            "corrector": "arc_length",
+            "stopper": "bounds",
+            "bifurcator": "jump",
+            "bifurcator_options": {
+                # "pert": -1E-2,
+                # "interactive": True,
+                # "vizu": [("duffing", 0, 0)],
+            },
+            "solver": "NewtonRaphson",
+            "solver_options": {"max_iter": 200},
+            # "solver_options": {"max_iter": 5, "pert": 1E-2},
+        },
+    },
+}
+
+CHUNCK_LIST = [CHUNCK_ALL]
 
 
 class Continuation(NamedTuple):
@@ -82,7 +168,7 @@ def extract_accepted(cont: Continuation):
 def extract_bifurcation(cont: Continuation):
     cont_bifurcation = Continuation(
         M=cont.M,
-        sol_list=[sol for sol in cont.sol_list if sol.flag_bifurcation],
+        sol_list=[sol for sol in cont.sol_list if sol.bifurcation_type is not None],
         chunk_list=cont.chunk_list,
     )
     cont_fold = Continuation(
@@ -95,26 +181,37 @@ def extract_bifurcation(cont: Continuation):
     cont_branching = Continuation(
         M=cont.M,
         sol_list=[
-            sol
-            for sol in cont_bifurcation.sol_list
-            if sol.bifurcation_type is BifurcationType.BRANCHING
+            sol for sol in cont_bifurcation.sol_list if sol.bifurcation_type is BifurcationType.BRANCHING
+        ],
+        chunk_list=cont.chunk_list,
+    )
+    cont_unknown = Continuation(
+        M=cont.M,
+        sol_list=[
+            sol for sol in cont_bifurcation.sol_list if sol.bifurcation_type is BifurcationType.UNKNOWN
         ],
         chunk_list=cont.chunk_list,
     )
 
-    return cont_bifurcation, cont_fold, cont_branching
+    return cont_bifurcation, cont_fold, cont_branching, cont_unknown
 
 
 def continuation_plotter():
+    import matplotlib.pyplot as plt
+    from .mplrc import load_rcparams
+
+    load_rcparams()
     fig, ax = plt.subplots()
     fold_style = {"color": "C1", "s": 50, "zorder": 2.5, "marker": "x"}
     branching_style = {"color": "C6", "s": 50, "zorder": 2.5, "marker": "x"}
+    unknown_style = {"color": "C3", "s": 50, "zorder": 2.5, "marker": "x"}
     ax.scatter([], [], **fold_style, label="fold bifurcation")
     ax.scatter([], [], **branching_style, label="branching point")
+    ax.scatter([], [], **unknown_style, label="other bif.")
 
     def plot(cont: Continuation, ih=None, pred=False):
         cont_accepted, cont_rejected = extract_accepted(cont)
-        cont_bifurcation, cont_fold, cont_branching = extract_bifurcation(cont_accepted)
+        cont_bifurcation, cont_fold, cont_branching, cont_unknown = extract_bifurcation(cont_accepted)
 
         if len(cont_accepted) != 0:
             om_accepted = np.array([sol.x[-1] for sol in cont_accepted.sol_list])
@@ -146,6 +243,11 @@ def continuation_plotter():
             om_branching = [sol.x[-1] for sol in cont_branching.sol_list]
             ampl_branching = compute_amplitude(cont_branching, ih)
             ax.scatter(om_branching, ampl_branching, **branching_style)
+
+        if len(cont_unknown) != 0:
+            om_unknown = [sol.x[-1] for sol in cont_unknown.sol_list]
+            ampl_unknown = compute_amplitude(cont_unknown, ih)
+            ax.scatter(om_unknown, ampl_unknown, **unknown_style)
 
         ax.set_xlabel(r"$\omega$ [rad/s]")
         ax.set_ylabel("Amplitude [m]")
@@ -181,9 +283,7 @@ def solve(nh_list: list[tuple[int, int]], chunck_list: list[dict]) -> list[Conti
 
 
 def main():
-    load_rcparams()
-
-    nh_list = [12]
+    nh_list = [19]
     chunck_list = CHUNCK_LIST
 
     cont_list = solve(nh_list, chunck_list)

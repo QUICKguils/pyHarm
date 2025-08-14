@@ -35,7 +35,7 @@ class SystemSolution:
     Attributes:
         flag_restart (bool): Raised whenever (last_solution != index-1).
         flag_accepted (bool): Raised by the nonlinear solver, if the solution is considered as valid.
-        flag_bifurcation (bool): Raised by the predictor, if a bifurcation has been detected.
+        bifurcation_type (None | BifurcationType): Type of the detected bifurcation, if any.
         flag_solved (bool): Raised by the `save` method, if the solution is considered as solved.
         flag_intosolver (bool): Raised when the solution went through the solver.
         flag_R (bool): Presence of a Residual result.
@@ -59,7 +59,7 @@ class SystemSolution:
     def __init__(self, xs: np.ndarray, last_solution=None, **kwargs):
         self.flag_restart = False
         self.flag_accepted = False
-        self.flag_bifurcation = False
+        self.bifurcation_type = None
         self.flag_solved = False
         self.flag_intosolver = False
         self.flag_R = False

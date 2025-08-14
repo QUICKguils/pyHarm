@@ -1,6 +1,9 @@
+import numpy as np
+from scipy import linalg
+
 from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
-from pyHarm.Bifurcators.ABCBifurcator import ABCBifurcator, default_detect
-from pyHarm.Solver import SystemSolution
+from pyHarm.Bifurcators.ABCBifurcator import ABCBifurcator, BifurcationType
+from pyHarm.Solver import FirstSolution, SystemSolution
 
 
 class BifurcatorJump(ABCBifurcator):
@@ -23,10 +26,39 @@ class BifurcatorJump(ABCBifurcator):
         self.opts = getCustomOptionDictionary(self.opts, self.default_options)
 
     def detect(self, sol: SystemSolution) -> bool:
-        return default_detect(self, sol)
+        """yee"""
 
-    def localize(self):
+        J = sol.get_jacobian("full")
+        sol.det_Jf = linalg.det(J)
+        sol.det_Jx = linalg.det(J[:-1, :-1])
+
+        if isinstance(sol, FirstSolution):
+            return
+
+        prev_sol = sol.precedent_solution
+
+        # TODO: maybe separate detection from simple jumps
+        if np.sign(sol.det_Jx) != np.sign(prev_sol.det_Jx):
+            sol.flag_bifurcation = True
+            if np.sign(sol.det_Jf) == np.sign(prev_sol.det_Jf):
+            # if np.sign(sol.det_Jf) == np.sign(prev_sol.det_Jf) or np.sign(sol.det_Jf) != np.sign(sol.det_Jx):
+                sol.bifurcation_type = BifurcationType.FOLD
+            else:
+                sol.bifurcation_type = BifurcationType.BRANCHING
+                sol.sign_ds *= -1
+            if self.opts["verbose"]:
+                print(f"Warning: a {sol.bifurcation_type.value} was detected")
+        elif np.dot(prev_sol.dir, sol.dir) < -np.cos(np.deg2rad(self.opts["blind_spot"] / 2)):
+            sol.flag_bifurcation = True
+            sol.bifurcation_type = BifurcationType.UNKNOWN
+            sol.sign_ds *= -1
+            if self.opts["verbose"]:
+                print("A potential higher order bifurcation is detected")
+
+        return sol.bifurcation_type is not None
+
+    def localize(self, *args):
         pass
 
-    def track(self):
+    def track(self, *args):
         pass

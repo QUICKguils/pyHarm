@@ -1,9 +1,10 @@
 import numpy as np
+from scipy import linalg
 
 from pyHarm.BaseUtilFuncs import getCustomOptionDictionary
-from pyHarm.Bifurcators.ABCBifurcator import ABCBifurcator
+from pyHarm.Bifurcators.ABCBifurcator import ABCBifurcator, BifurcationType
 from pyHarm.NonLinearSolver.SolverNewtonRaphson import SolverNewtonRaphson
-from pyHarm.Solver import SystemSolution
+from pyHarm.Solver import FirstSolution, SystemSolution
 
 
 class BifurcatorABE(ABCBifurcator):
@@ -22,17 +23,38 @@ class BifurcatorABE(ABCBifurcator):
         self.opts = getCustomOptionDictionary(self.opts, self.default_options)
 
     def detect(self, sol: SystemSolution) -> bool:
-        """True if a bifurcation has been detected between two solution points.
+        """yee"""
 
-        Folds are flagged as bif, but not detected by this method.
-        """
-        pass
+        J = sol.get_jacobian("full")
+        sol.det_Jf = linalg.det(J)
+        sol.det_Jx = linalg.det(J[:-1, :-1])
+
+        if isinstance(sol, FirstSolution):
+            return
+
+        prev_sol = sol.precedent_solution
+
+        detected = False
+        if np.sign(sol.det_Jx) != np.sign(prev_sol.det_Jx):
+            if np.sign(sol.det_Jf) == np.sign(prev_sol.det_Jf):
+            # if np.sign(sol.det_Jf) == np.sign(prev_sol.det_Jf) or np.sign(sol.det_Jf) != np.sign(sol.det_Jx):
+                sol.bifurcation_type = BifurcationType.FOLD
+            else:
+                sol.bifurcation_type = BifurcationType.BRANCHING
+                detected = True
+        elif np.dot(prev_sol.dir, sol.dir) < -np.cos(np.deg2rad(self.opts["blind_spot"] / 2)):
+            sol.bifurcation_type = BifurcationType.UNKNOWN
+            detected = True
+
+            if self.opts["verbose"]:
+                print("A potential higher order bifurcation is detected")
+
+        return detected
 
     def localize(self, sol: SystemSolution, solver: SolverNewtonRaphson):
-        """This basically operated a bisection to find the bifurcation point.
-
-        Bisection is performed between the two solution point where the
-        bifurcation has been detected.
+        """
+        This basically consist of a mini local analysis, except that
+        the intermediate secant solution are not stored in the SolList.
         """
 
         # see allgower, p.87

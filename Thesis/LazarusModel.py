@@ -101,9 +101,9 @@ CHUNCK_ALL = {
             "stepsizer": "acceptance",
             "predictor": "tangent",
             "corrector": "arc_length",
-            # "bifurcator": "detect",
-            "bifurcator": "perturbation_allgower",
-            "bifurcator_options": {"perturbation": -1e-5},
+            "bifurcator": "jump",
+            # "bifurcator": "perturbation_allgower",
+            # "bifurcator_options": {"perturbation": -1e-5},
             "stopper": "bounds",
             "solver": "NewtonRaphson",
             # "solver_options": {"max_iter": 4, "pert": 1E-4},
@@ -182,7 +182,7 @@ def extract_accepted(cont: Continuation):
 def extract_bifurcation(cont: Continuation):
     cont_bifurcation = Continuation(
         M=cont.M,
-        sol_list=[sol for sol in cont.sol_list if sol.flag_bifurcation],
+        sol_list=[sol for sol in cont.sol_list if sol.bifurcation_type is not None],
         chunk_list=cont.chunk_list,
     )
     cont_fold = Continuation(

@@ -281,9 +281,6 @@ class FRF_NonLinear(ABCAnalysis):
         if self.bifurcator.in_operation:
             self.bifurcator.track(self.solver)
 
-        # Update last sol (potential change from perturb.)
-        last_sol = get_last_solution(self.SolList)
-
         # Predict the next solution point location
         self.predictor.predict(last_sol)
 

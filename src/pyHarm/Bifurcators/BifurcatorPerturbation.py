@@ -48,9 +48,8 @@ class BifurcatorPerturbation(ABCBifurcator):
 
         detected = False
         if np.sign(sol.det_Jx) != np.sign(prev_sol.det_Jx):
-            if np.sign(sol.det_Jf) == np.sign(prev_sol.det_Jf) or np.sign(sol.det_Jf) != np.sign(
-                sol.det_Jx
-            ):
+            if np.sign(sol.det_Jf) == np.sign(prev_sol.det_Jf):
+            # if np.sign(sol.det_Jf) == np.sign(prev_sol.det_Jf) or np.sign(sol.det_Jf) != np.sign(sol.det_Jx):
                 sol.flag_bifurcation = True
                 sol.bifurcation_type = BifurcationType.FOLD
             else:
@@ -104,7 +103,7 @@ class BifurcatorPerturbation(ABCBifurcator):
         sol_accepted = [sol for sol in sol_list if sol.flag_accepted]
 
         # Take a few of the last computed solutions
-        n_last_sols_desired = 5
+        n_last_sols_desired = 20
         n_last_sols = min(len(sol_accepted), n_last_sols_desired)
         last_sols = sol_accepted[-n_last_sols:]
 
